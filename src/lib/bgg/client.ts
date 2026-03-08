@@ -2,6 +2,11 @@ import { XMLParser } from "fast-xml-parser"
 
 const BGG_API_BASE = "https://boardgamegeek.com/xmlapi2"
 
+const BGG_HEADERS = {
+  "User-Agent": "BoardLog/1.0 (https://github.com/sahokk/board-log)",
+  Accept: "application/xml",
+}
+
 const parser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: "@_",
@@ -31,7 +36,7 @@ function normalizeImageUrl(url?: string): string | undefined {
 // ゲーム検索（名前・ID一覧を返す）
 export async function searchBggGames(query: string): Promise<BggSearchItem[]> {
   const url = `${BGG_API_BASE}/search?query=${encodeURIComponent(query)}&type=boardgame`
-  const res = await fetch(url, { next: { revalidate: 3600 } })
+  const res = await fetch(url, { headers: BGG_HEADERS, next: { revalidate: 3600 } })
   if (!res.ok) throw new Error(`BGG search failed: ${res.status}`)
 
   const xml = await res.text()
@@ -57,7 +62,7 @@ export async function getBggGameDetails(ids: string[]): Promise<BggGameDetail[]>
   if (ids.length === 0) return []
 
   const url = `${BGG_API_BASE}/thing?id=${ids.join(",")}`
-  const res = await fetch(url, { next: { revalidate: 86400 } })
+  const res = await fetch(url, { headers: BGG_HEADERS, next: { revalidate: 86400 } })
   if (!res.ok) throw new Error(`BGG thing failed: ${res.status}`)
 
   const xml = await res.text()
