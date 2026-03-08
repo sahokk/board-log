@@ -2,9 +2,12 @@ import { XMLParser } from "fast-xml-parser"
 
 const BGG_API_BASE = "https://boardgamegeek.com/xmlapi2"
 
-const BGG_HEADERS = {
+const BGG_TOKEN = process.env.BGG_API_TOKEN
+
+const BGG_HEADERS: Record<string, string> = {
   "User-Agent": "BoardLog/1.0 (https://github.com/sahokk/board-log)",
   Accept: "application/xml",
+  ...(BGG_TOKEN ? { Authorization: `Bearer ${BGG_TOKEN}` } : {}),
 }
 
 const parser = new XMLParser({
