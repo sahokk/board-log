@@ -23,22 +23,26 @@ export function DeleteButton({ playId }: { playId: string }) {
 
   if (confirming) {
     return (
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-gray-600">本当に削除しますか？</span>
-        <button
-          onClick={handleDelete}
-          disabled={deleting}
-          className="rounded border border-red-300 px-3 py-1 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50"
-        >
-          {deleting ? "削除中..." : "削除する"}
-        </button>
-        <button
-          onClick={() => setConfirming(false)}
-          disabled={deleting}
-          className="rounded border border-gray-300 px-3 py-1 text-sm text-gray-600 hover:bg-gray-50"
-        >
-          キャンセル
-        </button>
+      <div className="space-y-3">
+        <p className="text-center text-sm font-medium text-gray-700">
+          本当に削除しますか？
+        </p>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setConfirming(false)}
+            disabled={deleting}
+            className="flex-1 rounded-xl border border-gray-200 bg-white px-6 py-3 text-center text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:shadow-md disabled:opacity-50"
+          >
+            キャンセル
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="flex-1 rounded-xl border border-red-200 bg-red-50 px-6 py-3 text-center text-sm font-medium text-red-600 shadow-sm transition-all hover:bg-red-100 hover:shadow-md disabled:opacity-50"
+          >
+            {deleting ? "削除中..." : "削除する"}
+          </button>
+        </div>
       </div>
     )
   }
@@ -46,9 +50,9 @@ export function DeleteButton({ playId }: { playId: string }) {
   return (
     <button
       onClick={() => setConfirming(true)}
-      className="text-sm text-gray-400 hover:text-red-500"
+      className="w-full rounded-xl border border-red-200 bg-white px-6 py-3 text-center text-sm font-medium text-red-600 shadow-sm transition-all hover:bg-red-50 hover:shadow-md"
     >
-      この記録を削除
+      削除
     </button>
   )
 }
