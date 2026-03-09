@@ -3,6 +3,27 @@
 import { useState } from "react"
 import Image from "next/image"
 
+const GENRE_OPTIONS = [
+  "戦略",
+  "協力",
+  "パーティー",
+  "ファミリー",
+  "抽象",
+  "デッキ構築",
+  "ワーカープレイスメント",
+  "エリアコントロール",
+  "ダイス",
+  "カードゲーム",
+  "正体隠匿",
+  "交渉",
+  "競り",
+  "パズル",
+  "ドラフト",
+  "拡大再生産",
+  "レガシー",
+  "推理",
+] as const
+
 interface Props {
   initialDisplayName: string
   initialImageUrl: string | null
@@ -19,7 +40,10 @@ export function ProfileEditForm({
   onSuccess,
 }: Props) {
   const [displayName, setDisplayName] = useState(initialDisplayName)
-  const [favoriteGenres, setFavoriteGenres] = useState(initialFavoriteGenres)
+  const [selectedGenres, setSelectedGenres] = useState<string[]>(() => {
+    if (!initialFavoriteGenres) return []
+    return initialFavoriteGenres.split(",").map((g) => g.trim()).filter((g) => g.length > 0)
+  })
   const [submitting, setSubmitting] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -86,7 +110,7 @@ export function ProfileEditForm({
         body: JSON.stringify({
           displayName: displayName.trim(),
           customImageUrl: imageUrl,
-          favoriteGenres: favoriteGenres.trim(),
+          favoriteGenres: selectedGenres.join(", "),
         }),
       })
 
@@ -164,15 +188,33 @@ export function ProfileEditForm({
         <label className="mb-2 block text-sm font-medium text-amber-900">
           好きなジャンル
         </label>
-        <input
-          type="text"
-          value={favoriteGenres}
-          onChange={(e) => setFavoriteGenres(e.target.value)}
-          placeholder="戦略, デッキ構築, 協力"
-          className="w-full rounded-xl border border-amber-200 bg-amber-50/30 px-4 py-3 text-sm text-amber-950 shadow-sm placeholder:text-amber-700/50 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
-        />
-        <p className="mt-1 text-xs text-amber-800/70">
-          カンマ区切りで入力してください
+        <div className="flex flex-wrap gap-2">
+          {GENRE_OPTIONS.map((genre) => {
+            const isSelected = selectedGenres.includes(genre)
+            return (
+              <button
+                key={genre}
+                type="button"
+                onClick={() => {
+                  setSelectedGenres((prev) =>
+                    isSelected
+                      ? prev.filter((g) => g !== genre)
+                      : [...prev, genre]
+                  )
+                }}
+                className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                  isSelected
+                    ? "bg-amber-900 text-white"
+                    : "bg-amber-100/60 text-amber-800 hover:bg-amber-200/60"
+                }`}
+              >
+                {genre}
+              </button>
+            )
+          })}
+        </div>
+        <p className="mt-2 text-xs text-amber-800/70">
+          タップして選択（複数選択可）
         </p>
       </div>
 
