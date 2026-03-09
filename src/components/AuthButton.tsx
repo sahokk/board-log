@@ -35,13 +35,15 @@ export function AuthButton() {
           className="flex items-center gap-2 rounded-full transition-opacity hover:opacity-80"
         >
           {session.user?.image ? (
-            <Image
-              src={session.user.image}
-              alt={session.user.name ?? "User"}
-              width={32}
-              height={32}
-              className="rounded-full"
-            />
+            <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full">
+              <Image
+                src={session.user.image}
+                alt={session.user.name ?? "User"}
+                fill
+                className="object-cover"
+                sizes="32px"
+              />
+            </div>
           ) : (
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm">
               👤

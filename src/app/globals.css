@@ -26,11 +26,7 @@ body {
 
 /* Wood grain texture using CSS gradients */
 .wood-texture {
-  background:
-    linear-gradient(90deg, transparent 79px, rgba(139, 115, 85, 0.04) 79px, rgba(139, 115, 85, 0.04) 81px, transparent 81px),
-    linear-gradient(90deg, transparent 37px, rgba(139, 115, 85, 0.03) 37px, rgba(139, 115, 85, 0.03) 38px, transparent 38px),
-    linear-gradient(90deg, transparent 145px, rgba(139, 115, 85, 0.05) 145px, rgba(139, 115, 85, 0.05) 147px, transparent 147px),
-    linear-gradient(to bottom, #f9f3ed 0%, #f5ede4 100%);
+  background: linear-gradient(to bottom, #f9f3ed 0%, #f5ede4 100%);
 }
 
 .wood-card {
@@ -42,9 +38,6 @@ body {
 }
 
 .wood-header {
-  background:
-    linear-gradient(90deg, transparent 91px, rgba(139, 115, 85, 0.06) 91px, rgba(139, 115, 85, 0.06) 93px, transparent 93px),
-    linear-gradient(90deg, transparent 43px, rgba(139, 115, 85, 0.04) 43px, rgba(139, 115, 85, 0.04) 44px, transparent 44px),
-    linear-gradient(to right, #f9f3ed 0%, #f5ede4 50%, #f9f3ed 100%);
+  background: linear-gradient(to right, #f9f3ed 0%, #f5ede4 50%, #f9f3ed 100%);
   border-bottom: 1px solid rgba(139, 115, 85, 0.15);
 }

@@ -24,6 +24,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     session({ session, user }) {
       session.user.id = user.id
+      // Override with custom profile data if available
+      const dbUser = user as typeof user & {
+        customImageUrl?: string | null
+        displayName?: string | null
+      }
+      if (dbUser.customImageUrl) {
+        session.user.image = dbUser.customImageUrl
+      }
+      if (dbUser.displayName) {
+        session.user.name = dbUser.displayName
+      }
       return session
     },
   },
