@@ -10,6 +10,13 @@ export const metadata: Metadata = {
   title: "BoardLog - ボードゲームの思い出アルバム",
   description:
     "遊んだボードゲームを記録して、思い出アルバムのように振り返ろう",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
 }
 
 export default function RootLayout({

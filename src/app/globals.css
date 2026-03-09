@@ -1,11 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8f9fa;
-  --foreground: #1a1a1a;
-  --card-background: #ffffff;
-  --border-color: #e5e7eb;
-  --accent: #6b7280;
+  --background: #f5ede4;
+  --foreground: #2c2416;
+  --card-background: #faf7f2;
+  --border-color: #e5d5c3;
+  --accent: #8b7355;
+  --wood-light: #f9f3ed;
+  --wood-medium: #e8ddd0;
+  --wood-dark: #d4c4b0;
 }
 
 @theme inline {
@@ -19,4 +22,29 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), sans-serif;
+}
+
+/* Wood grain texture using CSS gradients */
+.wood-texture {
+  background:
+    linear-gradient(90deg, transparent 79px, rgba(139, 115, 85, 0.04) 79px, rgba(139, 115, 85, 0.04) 81px, transparent 81px),
+    linear-gradient(90deg, transparent 37px, rgba(139, 115, 85, 0.03) 37px, rgba(139, 115, 85, 0.03) 38px, transparent 38px),
+    linear-gradient(90deg, transparent 145px, rgba(139, 115, 85, 0.05) 145px, rgba(139, 115, 85, 0.05) 147px, transparent 147px),
+    linear-gradient(to bottom, #f9f3ed 0%, #f5ede4 100%);
+}
+
+.wood-card {
+  background:
+    linear-gradient(90deg, transparent 63px, rgba(139, 115, 85, 0.03) 63px, rgba(139, 115, 85, 0.03) 64px, transparent 64px),
+    linear-gradient(90deg, transparent 127px, rgba(139, 115, 85, 0.02) 127px, rgba(139, 115, 85, 0.02) 128px, transparent 128px),
+    linear-gradient(to bottom, #faf7f2 0%, #f7f0e8 100%);
+  border: 1px solid rgba(139, 115, 85, 0.15);
+}
+
+.wood-header {
+  background:
+    linear-gradient(90deg, transparent 91px, rgba(139, 115, 85, 0.06) 91px, rgba(139, 115, 85, 0.06) 93px, transparent 93px),
+    linear-gradient(90deg, transparent 43px, rgba(139, 115, 85, 0.04) 43px, rgba(139, 115, 85, 0.04) 44px, transparent 44px),
+    linear-gradient(to right, #f9f3ed 0%, #f5ede4 50%, #f9f3ed 100%);
+  border-bottom: 1px solid rgba(139, 115, 85, 0.15);
 }

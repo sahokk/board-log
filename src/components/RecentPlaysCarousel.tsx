@@ -68,9 +68,9 @@ export function RecentPlaysCarousel({ plays }: Props) {
             key={`${play.id}-${index}`}
             className="group shrink-0 w-48"
           >
-            <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
+            <div className="wood-card overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
               {/* 箱画像 */}
-              <div className="relative aspect-square bg-linear-to-br from-gray-50 to-gray-100">
+              <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
                 {play.game.imageUrl ? (
                   <Image
                     src={play.game.imageUrl}
@@ -80,7 +80,7 @@ export function RecentPlaysCarousel({ plays }: Props) {
                     sizes="192px"
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center text-gray-300">
+                  <div className="flex h-full items-center justify-center text-amber-300">
                     <span className="text-4xl">🎲</span>
                   </div>
                 )}
@@ -88,7 +88,7 @@ export function RecentPlaysCarousel({ plays }: Props) {
 
               {/* タイトルのみ */}
               <div className="p-3">
-                <p className="line-clamp-2 text-sm font-semibold text-gray-900 group-hover:text-gray-700">
+                <p className="line-clamp-2 text-sm font-semibold text-amber-950 group-hover:text-amber-800">
                   {play.game.name}
                 </p>
               </div>

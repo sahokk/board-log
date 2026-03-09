@@ -29,13 +29,13 @@ export function RecordClient({ game }: Props) {
   // ゲーム未選択の場合
   if (!game) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
-        <p className="mb-4 text-gray-600">
+      <div className="wood-card rounded-2xl p-8 text-center shadow-sm">
+        <p className="mb-4 text-amber-900">
           記録するゲームを選んでください
         </p>
         <Link
-          href="/search"
-          className="inline-block rounded-md bg-gray-900 px-5 py-2 text-sm text-white hover:bg-gray-700"
+          href="/"
+          className="inline-block rounded-xl bg-amber-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md"
         >
           ゲームを検索する
         </Link>
@@ -78,8 +78,8 @@ export function RecordClient({ game }: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* 選択中のゲーム */}
-      <div className="flex items-center gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
-        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded bg-white">
+      <div className="wood-card flex items-center gap-4 rounded-2xl p-4 shadow-sm">
+        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-linear-to-br from-amber-50/30 to-amber-100/30">
           {game.imageUrl ? (
             <Image
               src={game.imageUrl}
@@ -89,16 +89,16 @@ export function RecordClient({ game }: Props) {
               sizes="64px"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-gray-400">
+            <div className="flex h-full items-center justify-center text-amber-400">
               <span className="text-2xl">🎲</span>
             </div>
           )}
         </div>
         <div className="flex-1">
-          <p className="font-medium text-gray-900">{game.name}</p>
+          <p className="font-medium text-amber-950">{game.name}</p>
           <Link
-            href="/search"
-            className="text-xs text-gray-500 hover:text-gray-700 underline"
+            href="/"
+            className="text-xs text-amber-800/70 underline hover:text-amber-950"
           >
             ゲームを変える
           </Link>
@@ -107,24 +107,24 @@ export function RecordClient({ game }: Props) {
 
       {/* プレイ日 */}
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">
-          プレイ日 <span className="text-red-500">*</span>
+        <label className="mb-2 block text-sm font-medium text-amber-900">
+          プレイ日 <span className="text-red-600">*</span>
         </label>
         <input
           type="date"
           value={playedAt}
           onChange={(e) => setPlayedAt(e.target.value)}
           required
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+          className="w-full rounded-xl border border-amber-200 bg-amber-50/30 px-4 py-3 text-sm text-amber-950 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
         />
       </div>
 
       {/* 評価（星） */}
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">
-          評価 <span className="text-red-500">*</span>
+        <label className="mb-2 block text-sm font-medium text-amber-900">
+          評価 <span className="text-red-600">*</span>
         </label>
-        <div className="flex gap-1">
+        <div className="flex gap-2">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
               key={star}
@@ -132,14 +132,14 @@ export function RecordClient({ game }: Props) {
               onClick={() => setRating(star)}
               onMouseEnter={() => setHoverRating(star)}
               onMouseLeave={() => setHoverRating(0)}
-              className="text-3xl transition-transform hover:scale-110 focus:outline-none"
+              className="text-4xl transition-transform hover:scale-110 focus:outline-none"
               aria-label={`${star}点`}
             >
               <span
                 className={
                   star <= (hoverRating || rating)
-                    ? "text-yellow-400"
-                    : "text-gray-300"
+                    ? "text-amber-500"
+                    : "text-amber-200/40"
                 }
               >
                 ★
@@ -148,34 +148,36 @@ export function RecordClient({ game }: Props) {
           ))}
         </div>
         {rating > 0 && (
-          <p className="mt-1 text-xs text-gray-500">{rating} / 5</p>
+          <p className="mt-2 text-sm text-amber-800/70">{rating} / 5</p>
         )}
       </div>
 
       {/* メモ */}
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">
+        <label className="mb-2 block text-sm font-medium text-amber-900">
           メモ（任意）
         </label>
         <textarea
           value={memo}
           onChange={(e) => setMemo(e.target.value)}
           placeholder="感想・メンバー・スコアなど..."
-          rows={4}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+          rows={5}
+          className="w-full rounded-xl border border-amber-200 bg-amber-50/30 px-4 py-3 text-sm text-amber-950 shadow-sm placeholder:text-amber-700/50 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
         />
       </div>
 
       {/* エラー */}
       {error && (
-        <p className="text-sm text-red-600">{error}</p>
+        <div className="rounded-xl border border-red-300 bg-red-50 p-4">
+          <p className="text-sm text-red-700">{error}</p>
+        </div>
       )}
 
       {/* 送信 */}
       <button
         type="submit"
         disabled={submitting}
-        className="w-full rounded-md bg-gray-900 py-3 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-50"
+        className="w-full rounded-xl bg-amber-900 py-3 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md disabled:opacity-50"
       >
         {submitting ? "保存中..." : "記録を保存する"}
       </button>
