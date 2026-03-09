@@ -1,0 +1,206 @@
+"use client"
+
+import { useState } from "react"
+import Image from "next/image"
+
+interface Props {
+  initialDisplayName: string
+  initialImageUrl: string | null
+  initialFavoriteGenres: string
+  onCancel: () => void
+  onSuccess: () => void
+}
+
+export function ProfileEditForm({
+  initialDisplayName,
+  initialImageUrl,
+  initialFavoriteGenres,
+  onCancel,
+  onSuccess,
+}: Props) {
+  const [displayName, setDisplayName] = useState(initialDisplayName)
+  const [favoriteGenres, setFavoriteGenres] = useState(initialFavoriteGenres)
+  const [submitting, setSubmitting] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(initialImageUrl)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      setError("画像ファイルを選択してください")
+      return
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError("ファイルサイズは5MB以下にしてください")
+      return
+    }
+
+    setSelectedFile(file)
+    setError(null)
+
+    // Create preview URL
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setPreviewUrl(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSubmitting(true)
+    setError(null)
+
+    try {
+      let imageUrl = initialImageUrl || ""
+
+      // Upload file if selected
+      if (selectedFile) {
+        setUploading(true)
+        const formData = new FormData()
+        formData.append("file", selectedFile)
+
+        const uploadRes = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        })
+
+        const uploadData = await uploadRes.json()
+        if (!uploadRes.ok) throw new Error(uploadData.error ?? "アップロードに失敗しました")
+
+        imageUrl = uploadData.url
+        setUploading(false)
+      }
+
+      // Update user profile
+      const res = await fetch("/api/user", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          displayName: displayName.trim(),
+          customImageUrl: imageUrl,
+          favoriteGenres: favoriteGenres.trim(),
+        }),
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? "保存に失敗しました")
+
+      onSuccess()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "エラーが発生しました")
+    } finally {
+      setSubmitting(false)
+      setUploading(false)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Display Name */}
+      <div>
+        <label className="mb-2 block text-sm font-medium text-amber-900">
+          表示名
+        </label>
+        <input
+          type="text"
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
+          placeholder="山田 太郎"
+          className="w-full rounded-xl border border-amber-200 bg-amber-50/30 px-4 py-3 text-sm text-amber-950 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
+        />
+        <p className="mt-1 text-xs text-amber-800/70">
+          空欄の場合、Googleアカウント名が使用されます
+        </p>
+      </div>
+
+      {/* Profile Image Upload */}
+      <div>
+        <label className="mb-2 block text-sm font-medium text-amber-900">
+          プロフィール画像
+        </label>
+        <div className="flex items-center gap-4">
+          {/* Preview */}
+          <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full bg-amber-100 ring-2 ring-amber-200">
+            {previewUrl ? (
+              <Image
+                src={previewUrl}
+                alt="Preview"
+                fill
+                className="object-cover"
+                sizes="80px"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center text-3xl text-amber-400">
+                👤
+              </div>
+            )}
+          </div>
+
+          {/* File Input */}
+          <div className="flex-1">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="block w-full text-sm text-amber-900 file:mr-4 file:rounded-lg file:border-0 file:bg-amber-900 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-amber-800"
+            />
+            <p className="mt-1 text-xs text-amber-800/70">
+              JPEG, PNG, WebP, GIF (最大5MB)
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Favorite Genres */}
+      <div>
+        <label className="mb-2 block text-sm font-medium text-amber-900">
+          好きなジャンル
+        </label>
+        <input
+          type="text"
+          value={favoriteGenres}
+          onChange={(e) => setFavoriteGenres(e.target.value)}
+          placeholder="戦略, デッキ構築, 協力"
+          className="w-full rounded-xl border border-amber-200 bg-amber-50/30 px-4 py-3 text-sm text-amber-950 shadow-sm placeholder:text-amber-700/50 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
+        />
+        <p className="mt-1 text-xs text-amber-800/70">
+          カンマ区切りで入力してください
+        </p>
+      </div>
+
+      {/* Error Display */}
+      {error && (
+        <div className="rounded-xl border border-red-300 bg-red-50 p-4">
+          <p className="text-sm text-red-700">{error}</p>
+        </div>
+      )}
+
+      {/* Action Buttons */}
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={submitting}
+          className="wood-card flex-1 rounded-xl px-6 py-3 text-center text-sm font-medium text-amber-900 shadow-sm transition-all hover:bg-amber-100/30 disabled:opacity-50"
+        >
+          キャンセル
+        </button>
+        <button
+          type="submit"
+          disabled={submitting || uploading}
+          className="flex-1 rounded-xl bg-amber-900 px-6 py-3 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md disabled:opacity-50"
+        >
+          {uploading ? "アップロード中..." : submitting ? "保存中..." : "保存する"}
+        </button>
+      </div>
+    </form>
+  )
+}

@@ -16,6 +16,11 @@ model User {
   emailVerified DateTime?
   image         String?
 
+  // Profile customization fields
+  displayName     String? // Custom display name (overrides OAuth name)
+  customImageUrl  String? // Custom profile image URL (overrides OAuth image)
+  favoriteGenres  String? // Comma-separated genre tags
+
   accounts    Account[]
   sessions    Session[]
   playRecords PlayRecord[]
