@@ -51,12 +51,12 @@ export function SearchClient() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="ゲーム名を入力（例: Catan, 7 Wonders）"
-          className="flex-1 rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm shadow-sm focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-100"
+          className="flex-1 rounded-xl border border-amber-200 bg-amber-50/30 px-5 py-3 text-sm text-amber-950 shadow-sm placeholder:text-amber-700/50 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
         />
         <button
           type="submit"
           disabled={loading || !query.trim()}
-          className="rounded-xl bg-gray-900 px-6 py-3 text-sm font-medium text-white shadow-sm transition-all hover:bg-gray-800 hover:shadow-md disabled:opacity-50"
+          className="rounded-xl bg-amber-900 px-6 py-3 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md disabled:opacity-50"
         >
           {loading ? "検索中..." : "検索"}
         </button>
@@ -64,12 +64,12 @@ export function SearchClient() {
 
       {/* エラー */}
       {error && (
-        <p className="mb-6 text-sm text-red-600">{error}</p>
+        <p className="mb-6 text-sm text-red-700">{error}</p>
       )}
 
       {/* 結果なし */}
       {searched && !loading && results.length === 0 && !error && (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-amber-800/70">
           「{query}」に一致するゲームが見つかりませんでした。
         </p>
       )}
@@ -80,10 +80,10 @@ export function SearchClient() {
           {results.map((game) => (
             <div
               key={game.id}
-              className="flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+              className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
             >
               {/* 箱画像 */}
-              <div className="relative aspect-square bg-linear-to-br from-gray-50 to-gray-100">
+              <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
                 {game.imageUrl ? (
                   <Image
                     src={game.imageUrl}
@@ -93,7 +93,7 @@ export function SearchClient() {
                     sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center text-gray-300">
+                  <div className="flex h-full items-center justify-center text-amber-300">
                     <span className="text-4xl">🎲</span>
                   </div>
                 )}
@@ -101,18 +101,18 @@ export function SearchClient() {
 
               {/* ゲーム情報 */}
               <div className="flex flex-1 flex-col p-4">
-                <p className="mb-1 line-clamp-2 text-sm font-semibold text-gray-900">
+                <p className="mb-1 line-clamp-2 text-sm font-semibold text-amber-950">
                   {game.name}
                 </p>
                 {game.yearPublished && (
-                  <p className="mb-3 text-xs font-medium text-gray-400">
+                  <p className="mb-3 text-xs font-medium text-amber-700/60">
                     {game.yearPublished}年
                   </p>
                 )}
                 <div className="mt-auto">
                   <Link
                     href={`/record?gameId=${game.id}`}
-                    className="block w-full rounded-lg bg-gray-900 px-4 py-2 text-center text-xs font-medium text-white transition-colors hover:bg-gray-800"
+                    className="block w-full rounded-lg bg-amber-900 px-4 py-2 text-center text-xs font-medium text-white transition-colors hover:bg-amber-800"
                   >
                     記録する
                   </Link>

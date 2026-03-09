@@ -23,9 +23,9 @@ export default async function EditPlayPage({ params }: Props) {
   if (!play) notFound()
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="wood-texture min-h-screen py-12">
       <div className="mx-auto max-w-lg px-6">
-        <h1 className="mb-8 text-3xl font-bold tracking-tight text-gray-900">
+        <h1 className="mb-8 text-3xl font-bold tracking-tight text-amber-950">
           プレイ記録を編集
         </h1>
         <EditClient

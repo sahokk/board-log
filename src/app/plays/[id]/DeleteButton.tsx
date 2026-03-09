@@ -24,21 +24,21 @@ export function DeleteButton({ playId }: { playId: string }) {
   if (confirming) {
     return (
       <div className="space-y-3">
-        <p className="text-center text-sm font-medium text-gray-700">
+        <p className="text-center text-sm font-medium text-amber-900">
           本当に削除しますか？
         </p>
         <div className="flex gap-3">
           <button
             onClick={() => setConfirming(false)}
             disabled={deleting}
-            className="flex-1 rounded-xl border border-gray-200 bg-white px-6 py-3 text-center text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:shadow-md disabled:opacity-50"
+            className="wood-card flex-1 rounded-xl px-6 py-3 text-center text-sm font-medium text-amber-900 shadow-sm transition-all hover:bg-amber-100/30 hover:shadow-md disabled:opacity-50"
           >
             キャンセル
           </button>
           <button
             onClick={handleDelete}
             disabled={deleting}
-            className="flex-1 rounded-xl border border-red-200 bg-red-50 px-6 py-3 text-center text-sm font-medium text-red-600 shadow-sm transition-all hover:bg-red-100 hover:shadow-md disabled:opacity-50"
+            className="flex-1 rounded-xl border border-red-300 bg-red-50 px-6 py-3 text-center text-sm font-medium text-red-700 shadow-sm transition-all hover:bg-red-100 hover:shadow-md disabled:opacity-50"
           >
             {deleting ? "削除中..." : "削除する"}
           </button>
@@ -50,7 +50,7 @@ export function DeleteButton({ playId }: { playId: string }) {
   return (
     <button
       onClick={() => setConfirming(true)}
-      className="w-full rounded-xl border border-red-200 bg-white px-6 py-3 text-center text-sm font-medium text-red-600 shadow-sm transition-all hover:bg-red-50 hover:shadow-md"
+      className="wood-card w-full rounded-xl px-6 py-3 text-center text-sm font-medium text-red-700 shadow-sm transition-all hover:bg-red-50/50 hover:shadow-md"
     >
       削除
     </button>
