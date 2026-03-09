@@ -14,10 +14,16 @@ function formatDate(date: Date): string {
 
 function StarDisplay({ rating }: { rating: number }) {
   return (
-    <span className="text-xs text-yellow-400">
-      {"★".repeat(rating)}
-      <span className="text-gray-300">{"★".repeat(5 - rating)}</span>
-    </span>
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <span
+          key={star}
+          className={star <= rating ? "text-amber-400" : "text-gray-200"}
+        >
+          ★
+        </span>
+      ))}
+    </div>
   )
 }
 
@@ -34,69 +40,78 @@ export default async function PlaysPage() {
   })
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">プレイ履歴</h1>
-        <Link
-          href="/search"
-          className="rounded-md bg-gray-900 px-4 py-2 text-sm text-white hover:bg-gray-700"
-        >
-          + 記録する
-        </Link>
-      </div>
-
-      {plays.length === 0 ? (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 py-16 text-center">
-          <p className="mb-2 text-gray-500">まだプレイ記録がありません</p>
-          <p className="mb-6 text-sm text-gray-400">
-            ゲームを検索してプレイを記録してみましょう
-          </p>
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="mx-auto max-w-6xl px-6">
+        {/* ヘッダー部分 */}
+        <div className="mb-10 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900">プレイ履歴</h1>
+            <p className="mt-1 text-sm text-gray-500">あなたのボードゲームの思い出</p>
+          </div>
           <Link
             href="/search"
-            className="inline-block rounded-md bg-gray-900 px-5 py-2 text-sm text-white hover:bg-gray-700"
+            className="rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-gray-800 hover:shadow-md"
           >
-            ゲームを探す
+            + 記録する
           </Link>
         </div>
-      ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {plays.map((play) => (
-            <Link
-              key={play.id}
-              href={`/plays/${play.id}`}
-              className="group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow"
-            >
-              {/* 箱画像 */}
-              <div className="relative aspect-square bg-gray-100">
-                {play.game.imageUrl ? (
-                  <Image
-                    src={play.game.imageUrl}
-                    alt={play.game.name}
-                    fill
-                    className="object-contain p-2"
-                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-gray-400">
-                    <span className="text-3xl">🎲</span>
-                  </div>
-                )}
-              </div>
 
-              {/* 情報 */}
-              <div className="p-3">
-                <p className="mb-1 line-clamp-1 text-sm font-medium text-gray-900 group-hover:text-gray-700">
-                  {play.game.name}
-                </p>
-                <StarDisplay rating={play.rating} />
-                <p className="mt-1 text-xs text-gray-400">
-                  {formatDate(play.playedAt)}
-                </p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
+        {plays.length === 0 ? (
+          <div className="rounded-2xl border border-gray-200 bg-white p-16 text-center shadow-sm">
+            <div className="mx-auto max-w-sm">
+              <div className="mb-4 text-5xl">🎲</div>
+              <p className="mb-2 text-lg font-medium text-gray-700">まだプレイ記録がありません</p>
+              <p className="mb-8 text-sm text-gray-500">
+                ゲームを検索してプレイを記録してみましょう
+              </p>
+              <Link
+                href="/search"
+                className="inline-block rounded-xl bg-gray-900 px-6 py-3 text-sm font-medium text-white shadow-sm transition-all hover:bg-gray-800 hover:shadow-md"
+              >
+                ゲームを探す
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            {plays.map((play) => (
+              <Link
+                key={play.id}
+                href={`/plays/${play.id}`}
+                className="group flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+              >
+                {/* 箱画像 */}
+                <div className="relative aspect-square bg-linear-to-br from-gray-50 to-gray-100">
+                  {play.game.imageUrl ? (
+                    <Image
+                      src={play.game.imageUrl}
+                      alt={play.game.name}
+                      fill
+                      className="object-contain p-3"
+                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-gray-300">
+                      <span className="text-4xl">🎲</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* 情報 */}
+                <div className="p-4">
+                  <p className="mb-2 line-clamp-2 text-sm font-semibold text-gray-900 group-hover:text-gray-700">
+                    {play.game.name}
+                  </p>
+                  <StarDisplay rating={play.rating} />
+                  <p className="mt-2 text-xs font-medium text-gray-400">
+                    {formatDate(play.playedAt)}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

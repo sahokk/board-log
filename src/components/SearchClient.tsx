@@ -45,18 +45,18 @@ export function SearchClient() {
   return (
     <div>
       {/* 検索フォーム */}
-      <form onSubmit={handleSearch} className="mb-8 flex gap-2">
+      <form onSubmit={handleSearch} className="mb-8 flex gap-3">
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="ゲーム名を入力（例: Catan, 7 Wonders）"
-          className="flex-1 rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-gray-500 focus:outline-none"
+          className="flex-1 rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm shadow-sm focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-100"
         />
         <button
           type="submit"
           disabled={loading || !query.trim()}
-          className="rounded-md bg-gray-900 px-5 py-2 text-sm text-white hover:bg-gray-700 disabled:opacity-50"
+          className="rounded-xl bg-gray-900 px-6 py-3 text-sm font-medium text-white shadow-sm transition-all hover:bg-gray-800 hover:shadow-md disabled:opacity-50"
         >
           {loading ? "検索中..." : "検索"}
         </button>
@@ -76,43 +76,43 @@ export function SearchClient() {
 
       {/* 検索結果グリッド */}
       {results.length > 0 && (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {results.map((game) => (
             <div
               key={game.id}
-              className="flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow"
+              className="flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
             >
               {/* 箱画像 */}
-              <div className="relative aspect-square bg-gray-100">
+              <div className="relative aspect-square bg-linear-to-br from-gray-50 to-gray-100">
                 {game.imageUrl ? (
                   <Image
                     src={game.imageUrl}
                     alt={game.name}
                     fill
-                    className="object-contain p-2"
+                    className="object-contain p-3"
                     sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center text-gray-400">
-                    <span className="text-3xl">🎲</span>
+                  <div className="flex h-full items-center justify-center text-gray-300">
+                    <span className="text-4xl">🎲</span>
                   </div>
                 )}
               </div>
 
               {/* ゲーム情報 */}
-              <div className="flex flex-1 flex-col p-3">
-                <p className="mb-1 line-clamp-2 text-sm font-medium text-gray-900">
+              <div className="flex flex-1 flex-col p-4">
+                <p className="mb-1 line-clamp-2 text-sm font-semibold text-gray-900">
                   {game.name}
                 </p>
                 {game.yearPublished && (
-                  <p className="mb-3 text-xs text-gray-500">
+                  <p className="mb-3 text-xs font-medium text-gray-400">
                     {game.yearPublished}年
                   </p>
                 )}
                 <div className="mt-auto">
                   <Link
                     href={`/record?gameId=${game.id}`}
-                    className="block w-full rounded bg-gray-900 px-3 py-1.5 text-center text-xs text-white hover:bg-gray-700"
+                    className="block w-full rounded-lg bg-gray-900 px-4 py-2 text-center text-xs font-medium text-white transition-colors hover:bg-gray-800"
                   >
                     記録する
                   </Link>
