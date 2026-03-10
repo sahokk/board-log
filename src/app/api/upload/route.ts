@@ -39,10 +39,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Determine upload type (profile or game)
+    const type = request.nextUrl.searchParams.get("type") ?? "profile"
+    const bucket = type === "game" ? "game-images" : "profile-images"
+
     // Generate unique filename
     const fileExt = file.name.split(".").pop()
     const fileName = `${session.user.id}-${Date.now()}.${fileExt}`
-    const filePath = `profile-images/${fileName}`
+    const filePath = `${bucket}/${fileName}`
 
     // Convert File to ArrayBuffer
     const arrayBuffer = await file.arrayBuffer()
@@ -50,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     // Upload to Supabase Storage
     const { data, error } = await supabaseAdmin.storage
-      .from("profile-images")
+      .from(bucket)
       .upload(filePath, buffer, {
         contentType: file.type,
         upsert: false,
@@ -67,7 +71,7 @@ export async function POST(request: NextRequest) {
     // Get public URL
     const {
       data: { publicUrl },
-    } = supabaseAdmin.storage.from("profile-images").getPublicUrl(data.path)
+    } = supabaseAdmin.storage.from(bucket).getPublicUrl(data.path)
 
     return NextResponse.json({
       success: true,
