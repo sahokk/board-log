@@ -55,6 +55,14 @@ export default async function ProfilePage() {
 
   const stats = { totalPlays, uniqueGames, averageRating }
 
+  // Play dates for calendar heatmap
+  const playDateMap = new Map<string, number>()
+  plays.forEach((p) => {
+    const date = p.playedAt.toISOString().split("T")[0]
+    playDateMap.set(date, (playDateMap.get(date) ?? 0) + 1)
+  })
+  const playDates = Array.from(playDateMap, ([date, count]) => ({ date, count }))
+
   return (
     <div className="wood-texture min-h-screen py-12">
       <div className="mx-auto max-w-4xl px-6">
@@ -63,6 +71,7 @@ export default async function ProfilePage() {
           stats={stats}
           ratingCounts={ratingCounts}
           favoriteGames={favoriteGames}
+          playDates={playDates}
         />
       </div>
     </div>

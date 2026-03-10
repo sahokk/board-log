@@ -11,6 +11,7 @@ import {
 } from "@/lib/profile-utils"
 import { ProfileEditForm } from "@/components/ProfileEditForm"
 import { BusinessCardExporter } from "@/components/BusinessCardExporter"
+import { PlayCalendar } from "@/components/PlayCalendar"
 
 interface Game {
   id: string
@@ -38,14 +39,20 @@ interface RatingCount {
   count: number
 }
 
+interface PlayDate {
+  date: string
+  count: number
+}
+
 interface Props {
   user: UserData
   stats: Stats
   ratingCounts: RatingCount[]
   favoriteGames: Game[]
+  playDates: PlayDate[]
 }
 
-export function ProfileClient({ user, stats, ratingCounts, favoriteGames }: Props) {
+export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDates }: Props) {
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
 
@@ -151,6 +158,16 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames }: Prop
           </div>
         </div>
       </div>
+
+      {/* Play Calendar */}
+      {stats.totalPlays > 0 && (
+        <div className="mb-12">
+          <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">
+            プレイカレンダー
+          </h2>
+          <PlayCalendar playDates={playDates} />
+        </div>
+      )}
 
       {/* Rating Distribution */}
       <div className="mb-12">
