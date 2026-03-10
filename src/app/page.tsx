@@ -1,5 +1,5 @@
 import { RecentPlays } from "@/components/RecentPlays"
-import { SearchClient } from "@/components/SearchClient"
+import { GameSearchSection } from "@/components/GameSearchSection"
 import { auth } from "@/lib/auth"
 import Link from "next/link"
 
@@ -45,7 +45,7 @@ export default async function Home() {
               プレイしたゲームを記録しよう
             </p>
           </div>
-          <SearchClient />
+          <GameSearchSection />
         </section>
       </div>
     </div>

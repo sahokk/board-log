@@ -74,7 +74,8 @@ model VerificationToken {
 // Application domain models
 
 model Game {
-  id       String  @id // BGG game ID
+  id       String  @id @default(cuid())
+  bggId    String? @unique // BGG game ID (for future BGG integration)
   name     String
   imageUrl String?
 
