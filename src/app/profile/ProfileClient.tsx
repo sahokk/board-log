@@ -12,6 +12,8 @@ import {
 import { ProfileEditForm } from "@/components/ProfileEditForm"
 import { BusinessCardExporter } from "@/components/BusinessCardExporter"
 import { PlayCalendar } from "@/components/PlayCalendar"
+import { TitleBadges } from "@/components/TitleBadges"
+import type { TitleWithUnlocked } from "@/lib/titles"
 
 interface Game {
   id: string
@@ -50,9 +52,10 @@ interface Props {
   ratingCounts: RatingCount[]
   favoriteGames: Game[]
   playDates: PlayDate[]
+  titles: TitleWithUnlocked[]
 }
 
-export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDates }: Props) {
+export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDates, titles }: Props) {
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
 
@@ -206,6 +209,14 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
             )
           })}
         </div>
+      </div>
+
+      {/* Titles / Achievements */}
+      <div className="mb-12">
+        <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">
+          称号
+        </h2>
+        <TitleBadges titles={titles} />
       </div>
 
       {/* Favorite Games */}

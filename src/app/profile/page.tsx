@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { calculateTitles } from "@/lib/titles"
 import { ProfileClient } from "./ProfileClient"
 
 export default async function ProfilePage() {
@@ -63,6 +64,11 @@ export default async function ProfilePage() {
   })
   const playDates = Array.from(playDateMap, ([date, count]) => ({ date, count }))
 
+  // Calculate titles/achievements
+  const titles = calculateTitles(
+    plays.map((p) => ({ playedAt: p.playedAt, gameId: p.gameId, rating: p.rating }))
+  )
+
   return (
     <div className="wood-texture min-h-screen py-12">
       <div className="mx-auto max-w-4xl px-6">
@@ -72,6 +78,7 @@ export default async function ProfilePage() {
           ratingCounts={ratingCounts}
           favoriteGames={favoriteGames}
           playDates={playDates}
+          titles={titles}
         />
       </div>
     </div>
