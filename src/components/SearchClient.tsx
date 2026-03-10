@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { ManualGameForm } from "@/components/ManualGameForm"
 
 interface GameResult {
   id: string
@@ -18,6 +19,7 @@ export function SearchClient() {
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showManualForm, setShowManualForm] = useState(false)
 
   const handleSearch = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,6 +28,7 @@ export function SearchClient() {
     setLoading(true)
     setError(null)
     setSearched(true)
+    setShowManualForm(false)
 
     try {
       const res = await fetch(
@@ -41,6 +44,20 @@ export function SearchClient() {
       setLoading(false)
     }
   }, [query])
+
+  if (showManualForm) {
+    return (
+      <div>
+        <h2 className="mb-6 text-xl font-bold text-amber-950">ゲームを手動で追加</h2>
+        <div className="wood-card rounded-2xl p-6 shadow-sm">
+          <ManualGameForm
+            onCancel={() => setShowManualForm(false)}
+            initialName={query}
+          />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -64,62 +81,108 @@ export function SearchClient() {
 
       {/* エラー */}
       {error && (
-        <p className="mb-6 text-sm text-red-700">{error}</p>
+        <div className="mb-6">
+          <p className="text-sm text-red-700">{error}</p>
+          <button
+            onClick={() => setShowManualForm(true)}
+            className="mt-3 rounded-xl bg-amber-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md"
+          >
+            ゲームを手動で追加
+          </button>
+        </div>
       )}
 
       {/* 結果なし */}
       {searched && !loading && results.length === 0 && !error && (
-        <p className="text-sm text-amber-800/70">
-          「{query}」に一致するゲームが見つかりませんでした。
-        </p>
+        <div className="text-center">
+          <p className="mb-4 text-sm text-amber-800/70">
+            「{query}」に一致するゲームが見つかりませんでした。
+          </p>
+          <button
+            onClick={() => setShowManualForm(true)}
+            className="rounded-xl bg-amber-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md"
+          >
+            ゲームを手動で追加
+          </button>
+        </div>
       )}
 
       {/* 検索結果グリッド */}
       {results.length > 0 && (
-        <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {results.map((game) => (
-            <div
-              key={game.id}
-              className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
-            >
-              {/* 箱画像 */}
-              <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
-                {game.imageUrl ? (
-                  <Image
-                    src={game.imageUrl}
-                    alt={game.name}
-                    fill
-                    className="object-contain p-3"
-                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-amber-300">
-                    <span className="text-4xl">🎲</span>
-                  </div>
-                )}
-              </div>
+        <>
+          <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            {results.map((game) => (
+              <div
+                key={game.id}
+                className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+              >
+                {/* 箱画像 */}
+                <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
+                  {game.imageUrl ? (
+                    <Image
+                      src={game.imageUrl}
+                      alt={game.name}
+                      fill
+                      className="object-contain p-3"
+                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-amber-300">
+                      <span className="text-4xl">🎲</span>
+                    </div>
+                  )}
+                </div>
 
-              {/* ゲーム情報 */}
-              <div className="flex flex-1 flex-col p-4">
-                <p className="mb-1 line-clamp-2 text-sm font-semibold text-amber-950">
-                  {game.name}
-                </p>
-                {game.yearPublished && (
-                  <p className="mb-3 text-xs font-medium text-amber-700/60">
-                    {game.yearPublished}年
+                {/* ゲーム情報 */}
+                <div className="flex flex-1 flex-col p-4">
+                  <p className="mb-1 line-clamp-2 text-sm font-semibold text-amber-950">
+                    {game.name}
                   </p>
-                )}
-                <div className="mt-auto">
-                  <Link
-                    href={`/record?gameId=${game.id}`}
-                    className="block w-full rounded-lg bg-amber-900 px-4 py-2 text-center text-xs font-medium text-white transition-colors hover:bg-amber-800"
-                  >
-                    記録する
-                  </Link>
+                  {game.yearPublished && (
+                    <p className="mb-3 text-xs font-medium text-amber-700/60">
+                      {game.yearPublished}年
+                    </p>
+                  )}
+                  <div className="mt-auto">
+                    <Link
+                      href={`/record?gameId=${game.id}`}
+                      className="block w-full rounded-lg bg-amber-900 px-4 py-2 text-center text-xs font-medium text-white transition-colors hover:bg-amber-800"
+                    >
+                      記録する
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          {/* Manual add option below results */}
+          <div className="mt-8 text-center">
+            <p className="mb-2 text-sm text-amber-800/70">
+              お探しのゲームが見つかりませんか？
+            </p>
+            <button
+              onClick={() => setShowManualForm(true)}
+              className="text-sm font-medium text-amber-900 underline transition-colors hover:text-amber-700"
+            >
+              ゲームを手動で追加する
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* Initial state - before search */}
+      {!searched && !loading && (
+        <div className="text-center">
+          <p className="mb-4 text-sm text-amber-800/70">
+            ゲーム名で検索するか、手動で追加できます
+          </p>
+          <button
+            onClick={() => setShowManualForm(true)}
+            className="text-sm font-medium text-amber-900 underline transition-colors hover:text-amber-700"
+          >
+            ゲームを手動で追加する
+          </button>
         </div>
       )}
     </div>
