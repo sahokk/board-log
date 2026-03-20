@@ -3,7 +3,12 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
-export function DeleteButton({ playId }: { playId: string }) {
+interface Props {
+  readonly playId: string
+  readonly label?: string
+}
+
+export function DeleteButton({ playId, label = "削除" }: Props) {
   const router = useRouter()
   const [confirming, setConfirming] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -50,9 +55,9 @@ export function DeleteButton({ playId }: { playId: string }) {
   return (
     <button
       onClick={() => setConfirming(true)}
-      className="wood-card w-full rounded-xl px-6 py-3 text-center text-sm font-medium text-red-700 shadow-sm transition-all hover:bg-red-50/50 hover:shadow-md"
+      className="w-full rounded-xl border border-red-200/60 px-6 py-3 text-center text-sm font-medium text-red-600/70 transition-all hover:border-red-300 hover:bg-red-50/50 hover:text-red-700"
     >
-      削除
+      {label}
     </button>
   )
 }

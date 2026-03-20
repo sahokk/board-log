@@ -12,27 +12,26 @@ interface Game {
 }
 
 interface Props {
-  game: Game | null
+  readonly game: Game | null
+  readonly existingEntryId: string | null
+  readonly existingRating: number | null
 }
 
-export function RecordClient({ game }: Props) {
+export function RecordClient({ game, existingEntryId, existingRating }: Props) {
   const router = useRouter()
   const today = new Date().toISOString().split("T")[0]
 
   const [playedAt, setPlayedAt] = useState(today)
-  const [rating, setRating] = useState<number>(0)
+  const [rating, setRating] = useState<number>(existingRating ?? 0)
   const [hoverRating, setHoverRating] = useState<number>(0)
   const [memo, setMemo] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // ゲーム未選択の場合
   if (!game) {
     return (
       <div className="wood-card rounded-2xl p-8 text-center shadow-sm">
-        <p className="mb-4 text-amber-900">
-          記録するゲームを選んでください
-        </p>
+        <p className="mb-4 text-amber-900">記録するゲームを選んでください</p>
         <Link
           href="/"
           className="inline-block rounded-xl bg-amber-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md"
@@ -43,7 +42,7 @@ export function RecordClient({ game }: Props) {
     )
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (rating === 0) {
       setError("評価を選択してください")
@@ -54,21 +53,46 @@ export function RecordClient({ game }: Props) {
     setError(null)
 
     try {
-      const res = await fetch("/api/plays", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          gameId: game.id,
-          playedAt,
-          rating,
-          memo: memo.trim() || null,
-        }),
-      })
+      let entryId: string
 
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? "保存に失敗しました")
+      if (existingEntryId) {
+        // 既存エントリーに新しいセッションを追加（評価も更新）
+        const [sessionRes] = await Promise.all([
+          fetch(`/api/plays/${existingEntryId}/sessions`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ playedAt, memo: memo.trim() || null }),
+          }),
+          // 評価が変わっていれば更新
+          existingRating === rating
+            ? Promise.resolve()
+            : fetch(`/api/plays/${existingEntryId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ rating }),
+              }),
+        ])
+        const sessionData = await sessionRes.json()
+        if (!sessionRes.ok) throw new Error(sessionData.error ?? "保存に失敗しました")
+        entryId = existingEntryId
+      } else {
+        // 新規GameEntry + PlaySession
+        const res = await fetch("/api/plays", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gameId: game.id,
+            rating,
+            playedAt,
+            memo: memo.trim() || null,
+          }),
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error ?? "保存に失敗しました")
+        entryId = data.entry.id
+      }
 
-      router.push("/plays")
+      router.push(`/plays/${entryId}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : "エラーが発生しました")
       setSubmitting(false)
@@ -105,25 +129,16 @@ export function RecordClient({ game }: Props) {
         </div>
       </div>
 
-      {/* プレイ日 */}
+      {/* 評価 */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-amber-900">
-          プレイ日 <span className="text-red-600">*</span>
-        </label>
-        <input
-          type="date"
-          value={playedAt}
-          onChange={(e) => setPlayedAt(e.target.value)}
-          required
-          className="w-full rounded-xl border border-amber-200 bg-amber-50/30 px-4 py-3 text-sm text-amber-950 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
-        />
-      </div>
-
-      {/* 評価（星） */}
-      <div>
-        <label className="mb-2 block text-sm font-medium text-amber-900">
-          評価 <span className="text-red-600">*</span>
-        </label>
+        <p className="mb-2 text-sm font-medium text-amber-900">
+          このゲームの評価 <span className="text-red-600">*</span>
+        </p>
+        {existingRating && (
+          <p className="mb-2 text-xs text-amber-700/60">
+            現在の評価: {"★".repeat(existingRating)}{"☆".repeat(5 - existingRating)}（変更可）
+          </p>
+        )}
         <div className="flex gap-2">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
@@ -137,9 +152,7 @@ export function RecordClient({ game }: Props) {
             >
               <span
                 className={
-                  star <= (hoverRating || rating)
-                    ? "text-amber-500"
-                    : "text-amber-200/40"
+                  star <= (hoverRating || rating) ? "text-amber-500" : "text-amber-200/40"
                 }
               >
                 ★
@@ -152,12 +165,28 @@ export function RecordClient({ game }: Props) {
         )}
       </div>
 
+      {/* プレイ日 */}
+      <div>
+        <label htmlFor="playedAt" className="mb-2 block text-sm font-medium text-amber-900">
+          プレイ日 <span className="text-red-600">*</span>
+        </label>
+        <input
+          id="playedAt"
+          type="date"
+          value={playedAt}
+          onChange={(e) => setPlayedAt(e.target.value)}
+          required
+          className="w-full rounded-xl border border-amber-200 bg-amber-50/30 px-4 py-3 text-sm text-amber-950 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
+        />
+      </div>
+
       {/* メモ */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-amber-900">
+        <label htmlFor="memo" className="mb-2 block text-sm font-medium text-amber-900">
           メモ（任意）
         </label>
         <textarea
+          id="memo"
           value={memo}
           onChange={(e) => setMemo(e.target.value)}
           placeholder="感想・メンバー・スコアなど..."
@@ -166,14 +195,12 @@ export function RecordClient({ game }: Props) {
         />
       </div>
 
-      {/* エラー */}
       {error && (
         <div className="rounded-xl border border-red-300 bg-red-50 p-4">
           <p className="text-sm text-red-700">{error}</p>
         </div>
       )}
 
-      {/* 送信 */}
       <button
         type="submit"
         disabled={submitting}

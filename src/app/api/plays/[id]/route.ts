@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
+// PUT: GameEntry の評価を更新
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -13,33 +14,30 @@ export async function PUT(
 
   const { id } = await params
 
-  const play = await prisma.playRecord.findFirst({
+  const entry = await prisma.gameEntry.findFirst({
     where: { id, userId: session.user.id },
   })
 
-  if (!play) {
+  if (!entry) {
     return NextResponse.json({ error: "Not found" }, { status: 404 })
   }
 
   const body = await request.json()
-  const { playedAt, rating, memo } = body
+  const { rating } = body
 
-  if (!playedAt || !rating || rating < 1 || rating > 5) {
-    return NextResponse.json({ error: "Invalid data" }, { status: 400 })
+  if (!rating || rating < 1 || rating > 5) {
+    return NextResponse.json({ error: "rating must be 1-5" }, { status: 400 })
   }
 
-  const updated = await prisma.playRecord.update({
+  const updated = await prisma.gameEntry.update({
     where: { id },
-    data: {
-      playedAt: new Date(playedAt),
-      rating,
-      memo: memo || null,
-    },
+    data: { rating },
   })
 
-  return NextResponse.json({ success: true, play: updated })
+  return NextResponse.json({ success: true, entry: updated })
 }
 
+// DELETE: GameEntry を削除（PlaySession は cascade で削除）
 export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -51,15 +49,15 @@ export async function DELETE(
 
   const { id } = await params
 
-  const play = await prisma.playRecord.findFirst({
+  const entry = await prisma.gameEntry.findFirst({
     where: { id, userId: session.user.id },
   })
 
-  if (!play) {
+  if (!entry) {
     return NextResponse.json({ error: "Not found" }, { status: 404 })
   }
 
-  await prisma.playRecord.delete({ where: { id } })
+  await prisma.gameEntry.delete({ where: { id } })
 
   return NextResponse.json({ success: true })
 }

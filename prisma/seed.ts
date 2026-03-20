@@ -88,23 +88,27 @@ async function main() {
   console.log(`✅ ゲーム ${GAMES.length}件 upsert完了`)
 
   // 既存のデモ記録を削除してから再作成
-  const existingIds = GAMES.map((g) => g.id)
-  await prisma.playRecord.deleteMany({
-    where: { userId: user.id, gameId: { in: existingIds } },
+  const existingGameIds = GAMES.map((g) => g.id)
+  await prisma.gameEntry.deleteMany({
+    where: { userId: user.id, gameId: { in: existingGameIds } },
   })
 
-  // プレイ記録を作成
+  // プレイ記録を作成（GameEntry upsert + PlaySession create）
   for (const record of PLAY_RECORDS) {
     const game = GAMES[record.gameIndex]
     const playedAt = new Date()
     playedAt.setDate(playedAt.getDate() - record.daysAgo)
 
-    await prisma.playRecord.create({
+    const entry = await prisma.gameEntry.upsert({
+      where: { userId_gameId: { userId: user.id, gameId: game.id } },
+      update: { rating: record.rating },
+      create: { userId: user.id, gameId: game.id, rating: record.rating },
+    })
+
+    await prisma.playSession.create({
       data: {
-        userId: user.id,
-        gameId: game.id,
+        gameEntryId: entry.id,
         playedAt,
-        rating: record.rating,
         memo: record.memo || null,
       },
     })
