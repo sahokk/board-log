@@ -63,6 +63,61 @@ export default async function PlayDetailPage({ params }: Props) {
           {entry.game.name}
         </h1>
 
+        {/* BGG メタデータ */}
+        {(entry.game.bggId || entry.game.categories || entry.game.mechanics || entry.game.weight || entry.game.playingTime) && (
+          <div className="wood-card mb-6 rounded-2xl p-6 shadow-sm space-y-4">
+            {entry.game.bggId && (
+              <a
+                href={`https://boardgamegeek.com/boardgame/${entry.game.bggId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-amber-800 underline hover:text-amber-950"
+              >
+                BGGで詳細を見る →
+              </a>
+            )}
+            {(entry.game.minPlayers || entry.game.maxPlayers || entry.game.playingTime) && (
+              <div className="flex flex-wrap gap-4 text-sm text-amber-800/80">
+                {(entry.game.minPlayers || entry.game.maxPlayers) && (
+                  <span>
+                    👥 {entry.game.minPlayers ?? "?"}{entry.game.maxPlayers && entry.game.maxPlayers !== entry.game.minPlayers ? `〜${entry.game.maxPlayers}` : ""}人
+                  </span>
+                )}
+                {entry.game.playingTime && (
+                  <span>⏱ {entry.game.playingTime}分</span>
+                )}
+                {entry.game.weight && (
+                  <span>⚖️ 複雑度 {entry.game.weight.toFixed(1)} / 5</span>
+                )}
+              </div>
+            )}
+            {entry.game.categories && (
+              <div>
+                <p className="mb-2 text-xs font-medium text-amber-800/60">カテゴリ</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {entry.game.categories.split(",").map((cat) => (
+                    <span key={cat} className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">
+                      {cat.trim()}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {entry.game.mechanics && (
+              <div>
+                <p className="mb-2 text-xs font-medium text-amber-800/60">メカニクス</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {entry.game.mechanics.split(",").map((mech) => (
+                    <span key={mech} className="rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+                      {mech.trim()}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* 評価 */}
         <div className="wood-card mb-6 rounded-2xl p-6 shadow-sm">
           <div className="flex items-center justify-between">

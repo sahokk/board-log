@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { calculateTitles } from "@/lib/titles"
+import { getBggGameDetails } from "@/lib/bgg/client"
 import { ProfileClient } from "./ProfileClient"
 
 export default async function ProfilePage() {
@@ -33,6 +34,45 @@ export default async function ProfilePage() {
       sessions: { orderBy: { playedAt: "desc" } },
     },
   })
+
+  // BGGメタデータが未取得のゲームを補完
+  const gamesNeedingEnrichment = entries
+    .map((e) => e.game)
+    .filter((g) => g.bggId && !g.categories && !g.mechanics && g.weight == null)
+  if (gamesNeedingEnrichment.length > 0) {
+    try {
+      const ids = gamesNeedingEnrichment.map((g) => g.bggId!)
+      const details = await getBggGameDetails(ids)
+      await Promise.all(
+        details.map((d) =>
+          prisma.game.update({
+            where: { bggId: d.id },
+            data: {
+              categories: d.categories.length > 0 ? d.categories.join(",") : null,
+              mechanics: d.mechanics.length > 0 ? d.mechanics.join(",") : null,
+              weight: d.weight ?? null,
+              playingTime: d.playingTime ?? null,
+              minPlayers: d.minPlayers ?? null,
+              maxPlayers: d.maxPlayers ?? null,
+            },
+          })
+        )
+      )
+      // メモリ上のentriesも更新して即座に統計に反映
+      details.forEach((d) => {
+        const game = entries.find((e) => e.game.bggId === d.id)?.game
+        if (!game) return
+        game.categories = d.categories.length > 0 ? d.categories.join(",") : null
+        game.mechanics = d.mechanics.length > 0 ? d.mechanics.join(",") : null
+        game.weight = d.weight ?? null
+        game.playingTime = d.playingTime ?? null
+        game.minPlayers = d.minPlayers ?? null
+        game.maxPlayers = d.maxPlayers ?? null
+      })
+    } catch (e) {
+      console.warn("BGG enrichment failed:", e)
+    }
+  }
 
   const allSessions = entries.flatMap((e) =>
     e.sessions.map((s) => ({ ...s, gameId: e.gameId }))
@@ -68,6 +108,49 @@ export default async function ProfilePage() {
   })
   const playDates = Array.from(playDateMap, ([date, count]) => ({ date, count }))
 
+  // カテゴリ統計
+  const categoryMap = new Map<string, number>()
+  entries.forEach((e) => {
+    if (e.game.categories) {
+      e.game.categories.split(",").forEach((cat) => {
+        const t = cat.trim()
+        if (t) categoryMap.set(t, (categoryMap.get(t) ?? 0) + 1)
+      })
+    }
+  })
+  const topCategories = Array.from(categoryMap, ([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 8)
+
+  // メカニクス統計
+  const mechanicMap = new Map<string, number>()
+  entries.forEach((e) => {
+    if (e.game.mechanics) {
+      e.game.mechanics.split(",").forEach((mech) => {
+        const t = mech.trim()
+        if (t) mechanicMap.set(t, (mechanicMap.get(t) ?? 0) + 1)
+      })
+    }
+  })
+  const topMechanics = Array.from(mechanicMap, ([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 8)
+
+  // 複雑度分布
+  const weightBuckets = [
+    { label: "軽め (〜2)", min: 0, max: 2 },
+    { label: "普通 (2〜3)", min: 2, max: 3 },
+    { label: "やや重め (3〜4)", min: 3, max: 4 },
+    { label: "重め (4〜)", min: 4, max: 6 },
+  ]
+  const weightDistribution = weightBuckets.map(({ label, min, max }) => ({
+    label,
+    count: entries.filter((e) => {
+      const w = e.game.weight
+      return w != null && w >= min && w < max
+    }).length,
+  }))
+
   // 称号
   const titles = calculateTitles({
     entries: entries.map((e) => ({ gameId: e.gameId, rating: e.rating })),
@@ -84,6 +167,9 @@ export default async function ProfilePage() {
           favoriteGames={favoriteGames}
           playDates={playDates}
           titles={titles}
+          topCategories={topCategories}
+          topMechanics={topMechanics}
+          weightDistribution={weightDistribution}
         />
       </div>
     </div>

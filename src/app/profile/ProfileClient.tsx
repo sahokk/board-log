@@ -46,6 +46,16 @@ interface PlayDate {
   count: number
 }
 
+interface TagCount {
+  name: string
+  count: number
+}
+
+interface WeightBucket {
+  label: string
+  count: number
+}
+
 interface Props {
   user: UserData
   stats: Stats
@@ -53,9 +63,12 @@ interface Props {
   favoriteGames: Game[]
   playDates: PlayDate[]
   titles: TitleWithUnlocked[]
+  topCategories: TagCount[]
+  topMechanics: TagCount[]
+  weightDistribution: WeightBucket[]
 }
 
-export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDates, titles }: Props) {
+export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDates, titles, topCategories, topMechanics, weightDistribution }: Props) {
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
 
@@ -234,6 +247,78 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* カテゴリ統計 */}
+      {topCategories.length > 0 && (
+        <div className="mb-12">
+          <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">よく遊ぶカテゴリ</h2>
+          <div className="wood-card rounded-2xl p-5 shadow-sm space-y-2">
+            {topCategories.map(({ name, count }) => {
+              const pct = (count / topCategories[0].count) * 100
+              return (
+                <div key={name} className="flex items-center gap-3">
+                  <span className="w-36 shrink-0 text-xs font-medium text-amber-800 truncate">{name}</span>
+                  <div className="flex-1">
+                    <div className="h-4 overflow-hidden rounded-md bg-amber-100/40">
+                      <div className="h-full bg-linear-to-r from-amber-400 to-amber-500 transition-all duration-300" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                  <span className="w-10 shrink-0 text-right text-xs font-medium text-amber-700">{count}作品</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* メカニクス統計 */}
+      {topMechanics.length > 0 && (
+        <div className="mb-12">
+          <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">よく遊ぶメカニクス</h2>
+          <div className="wood-card rounded-2xl p-5 shadow-sm space-y-2">
+            {topMechanics.map(({ name, count }) => {
+              const pct = (count / topMechanics[0].count) * 100
+              return (
+                <div key={name} className="flex items-center gap-3">
+                  <span className="w-36 shrink-0 text-xs font-medium text-amber-800 truncate">{name}</span>
+                  <div className="flex-1">
+                    <div className="h-4 overflow-hidden rounded-md bg-amber-100/40">
+                      <div className="h-full bg-linear-to-r from-amber-500 to-amber-600 transition-all duration-300" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                  <span className="w-10 shrink-0 text-right text-xs font-medium text-amber-700">{count}作品</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* 複雑度分布 */}
+      {weightDistribution.some((b) => b.count > 0) && (
+        <div className="mb-12">
+          <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">複雑度の傾向</h2>
+          <div className="wood-card rounded-2xl p-5 shadow-sm space-y-2">
+            {(() => {
+              const total = weightDistribution.reduce((s, b) => s + b.count, 0)
+              return weightDistribution.map(({ label, count }) => {
+                const pct = total > 0 ? (count / total) * 100 : 0
+                return (
+                  <div key={label} className="flex items-center gap-3">
+                    <span className="w-32 shrink-0 text-xs font-medium text-amber-800">{label}</span>
+                    <div className="flex-1">
+                      <div className="h-4 overflow-hidden rounded-md bg-amber-100/40">
+                        <div className="h-full bg-linear-to-r from-amber-600 to-amber-700 transition-all duration-300" style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                    <span className="w-10 shrink-0 text-right text-xs font-medium text-amber-700">{count}作品</span>
+                  </div>
+                )
+              })
+            })()}
           </div>
         </div>
       )}

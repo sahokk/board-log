@@ -7,6 +7,7 @@ import { ManualGameForm } from "@/components/ManualGameForm"
 
 interface GameResult {
   id: string
+  bggId?: string | null
   name: string
   yearPublished?: number
   imageUrl?: string
@@ -143,13 +144,23 @@ export function SearchClient() {
                       {game.yearPublished}年
                     </p>
                   )}
-                  <div className="mt-auto">
+                  <div className="mt-auto flex flex-col gap-2">
                     <Link
                       href={`/record?gameId=${game.id}`}
                       className="block w-full rounded-lg bg-amber-900 px-4 py-2 text-center text-xs font-medium text-white transition-colors hover:bg-amber-800"
                     >
                       記録する
                     </Link>
+                    {game.bggId && (
+                      <a
+                        href={`https://boardgamegeek.com/boardgame/${game.bggId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full rounded-lg border border-amber-300 px-4 py-2 text-center text-xs font-medium text-amber-800 transition-colors hover:bg-amber-50"
+                      >
+                        BGGで見る
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
