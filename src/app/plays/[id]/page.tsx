@@ -6,14 +6,6 @@ import { prisma } from "@/lib/prisma"
 import { DeleteButton } from "./DeleteButton"
 import { SessionList } from "./SessionList"
 
-function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat("ja-JP", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  }).format(date)
-}
-
 interface Props {
   readonly params: Promise<{ id: string }>
 }
@@ -125,7 +117,6 @@ export default async function PlayDetailPage({ params }: Props) {
                 memo: s.memo,
                 imageUrl: s.imageUrl,
               }))}
-              formatDate={formatDate}
             />
           )}
         </div>

@@ -12,10 +12,17 @@ interface Session {
 
 interface Props {
   readonly sessions: Session[]
-  readonly formatDate: (date: Date) => string
 }
 
-export function SessionList({ sessions, formatDate }: Props) {
+function formatDate(dateStr: string): string {
+  return new Intl.DateTimeFormat("ja-JP", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(dateStr))
+}
+
+export function SessionList({ sessions }: Props) {
   const router = useRouter()
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [confirmingId, setConfirmingId] = useState<string | null>(null)
@@ -39,7 +46,7 @@ export function SessionList({ sessions, formatDate }: Props) {
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1">
               <p className="text-sm font-semibold text-amber-950">
-                {formatDate(new Date(session.playedAt))}
+                {formatDate(session.playedAt)}
               </p>
               {session.memo && (
                 <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-amber-900/80">
