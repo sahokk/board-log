@@ -2,7 +2,7 @@ import { XMLParser } from "fast-xml-parser"
 
 const BGG_API_BASE = "https://boardgamegeek.com/xmlapi2"
 
-const BGG_TOKEN = process.env.BGG_API_TOKEN
+const BGG_TOKEN = process.env.BGG_TOKEN
 
 const BGG_HEADERS: Record<string, string> = {
   "User-Agent": "BoardLog/1.0 (https://github.com/sahokk/board-log)",
@@ -15,6 +15,24 @@ const parser = new XMLParser({
   attributeNamePrefix: "@_",
   isArray: (name) => ["item", "name"].includes(name),
 })
+
+function attrStr(val: unknown): string {
+  if (val === null || val === undefined) return ""
+  if (typeof val === "string") return val
+  if (typeof val === "number") return String(val)
+  if (typeof val === "object") {
+    const v = (val as Record<string, unknown>)["@_value"]
+    if (typeof v === "string") return v
+    if (typeof v === "number") return String(v)
+    return ""
+  }
+  return ""
+}
+
+function resolveName(names: Record<string, unknown>[]): string {
+  const primary = names.find((n) => n["@_type"] === "primary")
+  return attrStr(primary?.["@_value"]) || attrStr(names[0]?.["@_value"])
+}
 
 export interface BggSearchItem {
   id: string
@@ -49,12 +67,11 @@ export async function searchBggGames(query: string): Promise<BggSearchItem[]> {
   return items.slice(0, 20).map((item: unknown) => {
     const i = item as Record<string, unknown>
     const names = (i.name as Record<string, unknown>[]) ?? []
-    const primary = names.find((n) => n["@_type"] === "primary")
     const year = (i.yearpublished as Record<string, unknown>)?.["@_value"]
 
     return {
       id: String(i["@_id"]),
-      name: String(primary?.["@_value"] ?? names[0]?.["@_value"] ?? ""),
+      name: resolveName(names),
       yearPublished: year ? Number(year) : undefined,
     }
   })
@@ -75,12 +92,11 @@ export async function getBggGameDetails(ids: string[]): Promise<BggGameDetail[]>
   return items.map((item: unknown) => {
     const i = item as Record<string, unknown>
     const names = (i.name as Record<string, unknown>[]) ?? []
-    const primary = names.find((n) => n["@_type"] === "primary")
     const year = (i.yearpublished as Record<string, unknown>)?.["@_value"]
 
     return {
       id: String(i["@_id"]),
-      name: String(primary?.["@_value"] ?? names[0]?.["@_value"] ?? ""),
+      name: resolveName(names),
       yearPublished: year ? Number(year) : undefined,
       imageUrl: normalizeImageUrl(i.image as string | undefined),
       thumbnailUrl: normalizeImageUrl(i.thumbnail as string | undefined),
