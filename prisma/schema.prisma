@@ -74,10 +74,17 @@ model VerificationToken {
 // Application domain models
 
 model Game {
-  id       String  @id @default(cuid())
-  bggId    String? @unique // BGG game ID
-  name     String
-  imageUrl String?
+  id          String  @id @default(cuid())
+  bggId       String? @unique // BGG game ID
+  name        String
+  nameJa      String? // 日本語名（BGG alternate nameより）
+  imageUrl    String?
+  categories  String? // BGGカテゴリ（カンマ区切り）例: "Fantasy,Economic"
+  mechanics   String? // BGGメカニクス（カンマ区切り）例: "Deck Building,Worker Placement"
+  weight      Float?  // BGG複雑度 1.0〜5.0
+  playingTime Int?    // 標準プレイ時間（分）
+  minPlayers  Int?
+  maxPlayers  Int?
 
   gameEntries GameEntry[]
 

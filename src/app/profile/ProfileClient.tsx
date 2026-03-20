@@ -13,6 +13,7 @@ import { ProfileEditForm } from "@/components/ProfileEditForm"
 import { BusinessCardExporter } from "@/components/BusinessCardExporter"
 import { PlayCalendar } from "@/components/PlayCalendar"
 import { TitleBadges } from "@/components/TitleBadges"
+import { MechanicTag } from "@/components/MechanicTag"
 import type { TitleWithUnlocked } from "@/lib/titles"
 
 interface Game {
@@ -46,6 +47,17 @@ interface PlayDate {
   count: number
 }
 
+interface TagCount {
+  name: string
+  nameEn?: string // メカニクスのツールチップ用英語名
+  count: number
+}
+
+interface WeightBucket {
+  label: string
+  count: number
+}
+
 interface Props {
   user: UserData
   stats: Stats
@@ -53,9 +65,18 @@ interface Props {
   favoriteGames: Game[]
   playDates: PlayDate[]
   titles: TitleWithUnlocked[]
+  topCategories: TagCount[]
+  topMechanics: TagCount[]
+  weightDistribution: WeightBucket[]
 }
 
-export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDates, titles }: Props) {
+function tagClass(i: number): string {
+  if (i === 0) return "bg-amber-700 text-white"
+  if (i < 3) return "bg-amber-200 text-amber-900"
+  return "bg-amber-100/70 text-amber-800"
+}
+
+export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDates, titles, topCategories, topMechanics, weightDistribution }: Readonly<Props>) {
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
 
@@ -120,9 +141,9 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
               <p className="mt-1 text-sm text-amber-800/70 truncate">{user.email}</p>
               {genres.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {genres.map((genre, idx) => (
+                  {genres.map((genre) => (
                     <span
-                      key={idx}
+                      key={genre}
                       className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800"
                     >
                       {genre}
@@ -234,6 +255,93 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* カテゴリ統計 */}
+      {topCategories.length > 0 && (
+        <div className="mb-12">
+          <h2 className="mb-4 text-2xl font-bold tracking-tight text-amber-950">よく遊ぶカテゴリ</h2>
+          <div className="wood-card rounded-2xl p-5 shadow-sm">
+            <div className="flex flex-wrap gap-2">
+              {topCategories.map(({ name, count }, i) => (
+                <span
+                  key={name}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${tagClass(i)}`}
+                >
+                  {name}
+                  <span className={`text-xs ${i === 0 ? "text-amber-200" : "text-amber-600"}`}>
+                    {count}
+                  </span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* メカニクス統計 */}
+      {topMechanics.length > 0 && (
+        <div className="mb-12">
+          <h2 className="mb-4 text-2xl font-bold tracking-tight text-amber-950">よく遊ぶメカニクス</h2>
+          <div className="wood-card rounded-2xl p-5 shadow-sm">
+            <div className="flex flex-wrap gap-2">
+              {topMechanics.map(({ name, nameEn, count }, i) => (
+                <span key={name} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${tagClass(i)}`}>
+                  <MechanicTag name={nameEn ?? name} variant="bare" />
+                  <span className={`text-xs ${i === 0 ? "text-amber-200" : "text-amber-600"}`}>
+                    {count}
+                  </span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 複雑度分布 */}
+      {weightDistribution.some((b) => b.count > 0) && (
+        <div className="mb-12">
+          <h2 className="mb-4 text-2xl font-bold tracking-tight text-amber-950">複雑度の傾向</h2>
+          <div className="wood-card rounded-2xl p-5 shadow-sm">
+            {/* 積み上げ横棒 */}
+            {(() => {
+              const total = weightDistribution.reduce((s, b) => s + b.count, 0)
+              const colors = ["bg-amber-200", "bg-amber-400", "bg-amber-600", "bg-amber-800"]
+              const filled = weightDistribution.filter((b) => b.count > 0)
+              return (
+                <>
+                  <div className="mb-3 flex h-7 w-full overflow-hidden rounded-full">
+                    {filled.map(({ label, count }) => {
+                      const pct = total > 0 ? (count / total) * 100 : 0
+                      return (
+                        <div
+                          key={label}
+                          className={`${colors[weightDistribution.findIndex(b => b.label === label)]} transition-all duration-300`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      )
+                    })}
+                  </div>
+                  <div className="flex justify-between text-xs text-amber-800/70 mb-4">
+                    <span>軽め</span>
+                    <span>重め</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                    {weightDistribution.map(({ label, count }, i) => (
+                      <div key={label} className="flex items-center gap-2">
+                        <span className={`h-3 w-3 shrink-0 rounded-full ${colors[i]}`} />
+                        <div>
+                          <p className="text-xs font-medium text-amber-900">{label}</p>
+                          <p className="text-xs text-amber-700">{count}作品</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )
+            })()}
           </div>
         </div>
       )}
