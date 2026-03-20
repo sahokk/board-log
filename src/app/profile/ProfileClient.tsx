@@ -166,7 +166,7 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
           {/* Rating distribution */}
           <div className="space-y-2">
             {ratingCounts.map(({ rating, count }) => {
-              const percentage = stats.totalPlays > 0 ? (count / stats.totalPlays) * 100 : 0
+              const percentage = stats.uniqueGames > 0 ? (count / stats.uniqueGames) * 100 : 0
               return (
                 <div key={rating} className="flex items-center gap-3">
                   <div className="flex w-20 shrink-0 items-center gap-0.5">
@@ -188,7 +188,7 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
                     </div>
                   </div>
                   <div className="w-12 shrink-0 text-right text-xs font-medium text-amber-700">
-                    {count}回
+                    {count}作品
                   </div>
                 </div>
               )
