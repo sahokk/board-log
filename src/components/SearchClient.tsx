@@ -4,6 +4,7 @@ import { useState, useCallback } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ManualGameForm } from "@/components/ManualGameForm"
+import { BggAttribution } from "@/components/BggAttribution"
 
 interface GameResult {
   id: string
@@ -26,7 +27,7 @@ export function SearchClient() {
   const [error, setError] = useState<string | null>(null)
   const [showManualForm, setShowManualForm] = useState(false)
 
-  const handleSearch = useCallback(async (e: React.FormEvent) => {
+  const handleSearch = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!query.trim()) return
 
@@ -205,17 +206,20 @@ export function SearchClient() {
             </button>
           </div>
 
-          {/* 手動追加 */}
-          <div className="mt-6 text-center">
-            <p className="mb-2 text-sm text-amber-800/70">
-              お探しのゲームが見つかりませんか？
-            </p>
-            <button
-              onClick={() => setShowManualForm(true)}
-              className="text-sm font-medium text-amber-900 underline transition-colors hover:text-amber-700"
-            >
-              ゲームを手動で追加する
-            </button>
+          {/* BGG クレジット + 手動追加 */}
+          <div className="mt-6 flex flex-col items-center gap-4">
+            <BggAttribution />
+            <div className="text-center">
+              <p className="mb-2 text-sm text-amber-800/70">
+                お探しのゲームが見つかりませんか？
+              </p>
+              <button
+                onClick={() => setShowManualForm(true)}
+                className="text-sm font-medium text-amber-900 underline transition-colors hover:text-amber-700"
+              >
+                ゲームを手動で追加する
+              </button>
+            </div>
           </div>
         </>
       )}

@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { translateCategory } from "@/lib/bgg/translations"
 import { MechanicTag } from "@/components/MechanicTag"
+import { BggAttribution } from "@/components/BggAttribution"
 import { DeleteButton } from "./DeleteButton"
 import { SessionList } from "./SessionList"
 
@@ -73,16 +74,19 @@ export default async function PlayDetailPage({ params }: Props) {
         {/* BGG メタデータ */}
         {(entry.game.bggId || entry.game.categories || entry.game.mechanics || entry.game.weight || entry.game.playingTime) && (
           <div className="wood-card mb-6 rounded-2xl p-6 shadow-sm space-y-4">
-            {entry.game.bggId && (
-              <a
-                href={`https://boardgamegeek.com/boardgame/${entry.game.bggId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-amber-800 underline hover:text-amber-950"
-              >
-                BGGで詳細を見る →
-              </a>
-            )}
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <BggAttribution />
+              {entry.game.bggId && (
+                <a
+                  href={`https://boardgamegeek.com/boardgame/${entry.game.bggId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium text-amber-800 underline hover:text-amber-950"
+                >
+                  詳細を見る →
+                </a>
+              )}
+            </div>
             {(entry.game.minPlayers || entry.game.maxPlayers || entry.game.playingTime) && (
               <div className="flex flex-wrap gap-4 text-sm text-amber-800/80">
                 {(entry.game.minPlayers || entry.game.maxPlayers) && (
