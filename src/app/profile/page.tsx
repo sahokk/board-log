@@ -125,17 +125,19 @@ export default async function ProfilePage() {
     .sort((a, b) => b.count - a.count)
     .slice(0, 8)
 
-  // メカニクス統計（日本語変換して集計）
-  const mechanicMap = new Map<string, number>()
+  // メカニクス統計（英語名も保持してツールチップに使用）
+  const mechanicMap = new Map<string, { count: number; nameEn: string }>()
   entries.forEach((e) => {
     if (e.game.mechanics) {
       e.game.mechanics.split(",").forEach((mech) => {
-        const t = translateMechanic(mech.trim())
-        if (t) mechanicMap.set(t, (mechanicMap.get(t) ?? 0) + 1)
+        const en = mech.trim()
+        const ja = translateMechanic(en)
+        const existing = mechanicMap.get(ja)
+        mechanicMap.set(ja, { count: (existing?.count ?? 0) + 1, nameEn: en })
       })
     }
   })
-  const topMechanics = Array.from(mechanicMap, ([name, count]) => ({ name, count }))
+  const topMechanics = Array.from(mechanicMap, ([name, { count, nameEn }]) => ({ name, nameEn, count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 8)
 

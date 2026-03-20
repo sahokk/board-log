@@ -3,7 +3,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { translateCategory, translateMechanic } from "@/lib/bgg/translations"
+import { translateCategory } from "@/lib/bgg/translations"
+import { MechanicTag } from "@/components/MechanicTag"
 import { DeleteButton } from "./DeleteButton"
 import { SessionList } from "./SessionList"
 
@@ -114,9 +115,7 @@ export default async function PlayDetailPage({ params }: Props) {
                 <p className="mb-2 text-xs font-medium text-amber-800/60">メカニクス</p>
                 <div className="flex flex-wrap gap-1.5">
                   {entry.game.mechanics.split(",").map((mech) => (
-                    <span key={mech} className="rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-xs font-medium text-amber-700">
-                      {translateMechanic(mech.trim())}
-                    </span>
+                    <MechanicTag key={mech} name={mech.trim()} variant="outline" />
                   ))}
                 </div>
               </div>

@@ -13,6 +13,7 @@ import { ProfileEditForm } from "@/components/ProfileEditForm"
 import { BusinessCardExporter } from "@/components/BusinessCardExporter"
 import { PlayCalendar } from "@/components/PlayCalendar"
 import { TitleBadges } from "@/components/TitleBadges"
+import { MechanicTag } from "@/components/MechanicTag"
 import type { TitleWithUnlocked } from "@/lib/titles"
 
 interface Game {
@@ -48,6 +49,7 @@ interface PlayDate {
 
 interface TagCount {
   name: string
+  nameEn?: string // メカニクスのツールチップ用英語名
   count: number
 }
 
@@ -285,12 +287,9 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
           <h2 className="mb-4 text-2xl font-bold tracking-tight text-amber-950">よく遊ぶメカニクス</h2>
           <div className="wood-card rounded-2xl p-5 shadow-sm">
             <div className="flex flex-wrap gap-2">
-              {topMechanics.map(({ name, count }, i) => (
-                <span
-                  key={name}
-                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${tagClass(i)}`}
-                >
-                  {name}
+              {topMechanics.map(({ name, nameEn, count }, i) => (
+                <span key={name} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${tagClass(i)}`}>
+                  <MechanicTag name={nameEn ?? name} variant="bare" />
                   <span className={`text-xs ${i === 0 ? "text-amber-200" : "text-amber-600"}`}>
                     {count}
                   </span>
