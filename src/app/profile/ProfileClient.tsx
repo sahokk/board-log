@@ -143,80 +143,58 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
         </div>
       </div>
 
-      {/* Statistics */}
+      {/* Statistics & Rating Distribution */}
       <div className="mb-12">
-        <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">統計</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="wood-card rounded-2xl p-6 text-center shadow-sm">
-            <p className="text-4xl font-bold text-amber-950">{stats.totalPlays}</p>
-            <p className="mt-2 text-sm font-medium text-amber-800">総プレイ数</p>
+        <div className="wood-card rounded-2xl p-5 shadow-sm">
+          {/* Compact stats row */}
+          <div className="flex items-center justify-around border-b border-amber-200/40 pb-4 mb-4">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-amber-950">{stats.totalPlays}</p>
+              <p className="text-xs text-amber-700">プレイ</p>
+            </div>
+            <div className="h-8 w-px bg-amber-200/40" />
+            <div className="text-center">
+              <p className="text-2xl font-bold text-amber-950">{stats.uniqueGames}</p>
+              <p className="text-xs text-amber-700">ゲーム種類</p>
+            </div>
+            <div className="h-8 w-px bg-amber-200/40" />
+            <div className="text-center">
+              <p className="text-2xl font-bold text-amber-950">{stats.averageRating}</p>
+              <p className="text-xs text-amber-700">平均評価</p>
+            </div>
           </div>
-          <div className="wood-card rounded-2xl p-6 text-center shadow-sm">
-            <p className="text-4xl font-bold text-amber-950">{stats.uniqueGames}</p>
-            <p className="mt-2 text-sm font-medium text-amber-800">ゲーム種類</p>
-          </div>
-          <div className="wood-card rounded-2xl p-6 text-center shadow-sm">
-            <p className="text-4xl font-bold text-amber-950">{stats.averageRating}</p>
-            <p className="mt-2 text-sm font-medium text-amber-800">平均評価</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Play Calendar */}
-      {stats.totalPlays > 0 && (
-        <div className="mb-12">
-          <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">
-            プレイカレンダー
-          </h2>
-          <PlayCalendar playDates={playDates} />
-        </div>
-      )}
-
-      {/* Rating Distribution */}
-      <div className="mb-12">
-        <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">
-          評価分布
-        </h2>
-        <div className="wood-card space-y-3 rounded-2xl p-6 shadow-sm">
-          {ratingCounts.map(({ rating, count }) => {
-            const percentage = stats.totalPlays > 0 ? (count / stats.totalPlays) * 100 : 0
-            return (
-              <div key={rating} className="flex items-center gap-4">
-                <div className="flex w-24 shrink-0 items-center gap-0.5">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span
-                      key={star}
-                      className={
-                        star <= rating ? "text-amber-500" : "text-amber-200/40"
-                      }
-                    >
-                      ★
-                    </span>
-                  ))}
-                </div>
-                <div className="flex-1">
-                  <div className="h-8 overflow-hidden rounded-lg bg-amber-100/40">
-                    <div
-                      className="h-full bg-linear-to-r from-amber-500 to-amber-600 transition-all duration-300"
-                      style={{ width: `${percentage}%` }}
-                    />
+          {/* Rating distribution */}
+          <div className="space-y-2">
+            {ratingCounts.map(({ rating, count }) => {
+              const percentage = stats.totalPlays > 0 ? (count / stats.totalPlays) * 100 : 0
+              return (
+                <div key={rating} className="flex items-center gap-3">
+                  <div className="flex w-20 shrink-0 items-center gap-0.5">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span
+                        key={star}
+                        className={`text-sm ${star <= rating ? "text-amber-500" : "text-amber-200/40"}`}
+                      >
+                        ★
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex-1">
+                    <div className="h-5 overflow-hidden rounded-md bg-amber-100/40">
+                      <div
+                        className="h-full bg-linear-to-r from-amber-500 to-amber-600 transition-all duration-300"
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div className="w-12 shrink-0 text-right text-xs font-medium text-amber-700">
+                    {count}回
                   </div>
                 </div>
-                <div className="w-16 shrink-0 text-right text-sm font-medium text-amber-800">
-                  {count}回
-                </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
-      </div>
-
-      {/* Titles / Achievements */}
-      <div className="mb-12">
-        <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">
-          称号
-        </h2>
-        <TitleBadges titles={titles} />
       </div>
 
       {/* Favorite Games */}
@@ -260,6 +238,24 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
         </div>
       )}
 
+      {/* Titles / Achievements */}
+      <div className="mb-12">
+        <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">
+          称号
+        </h2>
+        <TitleBadges titles={titles} />
+      </div>
+      {/* Play Calendar */}
+      {stats.totalPlays > 0 && (
+        <div className="mb-12">
+          <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">
+            プレイカレンダー
+          </h2>
+          <PlayCalendar playDates={playDates} />
+        </div>
+      )}
+
+
       {/* Business Card Section */}
       {stats.totalPlays > 0 && (
         <div className="mb-12">
@@ -277,6 +273,7 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
               user={user}
               stats={stats}
               favoriteGames={favoriteGames}
+              titles={titles}
             />
           </div>
         </div>

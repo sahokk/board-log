@@ -57,7 +57,7 @@ export function PlayCalendar({ playDates }: Props) {
     const weeks: { date: string; count: number; isInRange: boolean }[][] = []
     const monthLabelPositions: { month: number; col: number }[] = []
 
-    let currentDate = new Date(startDate)
+    const currentDate = new Date(startDate)
     let lastMonth = -1
 
     for (let week = 0; week < 53; week++) {
@@ -98,7 +98,7 @@ export function PlayCalendar({ playDates }: Props) {
         <div className="inline-block">
           {/* Month labels */}
           <div className="mb-1 flex" style={{ paddingLeft: "28px" }}>
-            {monthLabels.map(({ month, col }, i) => (
+            {monthLabels.map(({ col }, i) => (
               <div
                 key={i}
                 className="text-xs text-amber-700/60"
@@ -139,7 +139,7 @@ export function PlayCalendar({ playDates }: Props) {
                 {week.map((day, dayIdx) => (
                   <div
                     key={dayIdx}
-                    className={`h-[12px] w-[12px] rounded-sm ${
+                    className={`h-3 w-3 rounded-sm ${
                       day.isInRange ? getCellColor(day.count) : "bg-transparent"
                     } ${day.isInRange ? "cursor-pointer" : ""}`}
                     onMouseEnter={(e) => {
@@ -164,10 +164,10 @@ export function PlayCalendar({ playDates }: Props) {
       {/* Legend */}
       <div className="mt-3 flex items-center justify-end gap-1.5 text-xs text-amber-700/60">
         <span>少ない</span>
-        <div className="h-[12px] w-[12px] rounded-sm bg-amber-100/40" />
-        <div className="h-[12px] w-[12px] rounded-sm bg-amber-300" />
-        <div className="h-[12px] w-[12px] rounded-sm bg-amber-500" />
-        <div className="h-[12px] w-[12px] rounded-sm bg-amber-700" />
+        <div className="h-3 w-3 rounded-sm bg-amber-100/40" />
+        <div className="h-3 w-3 rounded-sm bg-amber-300" />
+        <div className="h-3 w-3 rounded-sm bg-amber-500" />
+        <div className="h-3 w-3 rounded-sm bg-amber-700" />
         <span>多い</span>
       </div>
 
