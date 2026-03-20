@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { calculateTitles } from "@/lib/titles"
 import { ProfileClient } from "./ProfileClient"
 
 export default async function ProfilePage() {
@@ -9,7 +10,6 @@ export default async function ProfilePage() {
     redirect("/api/auth/signin?callbackUrl=/profile")
   }
 
-  // Fetch user with custom fields
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: {
@@ -26,34 +26,53 @@ export default async function ProfilePage() {
     redirect("/api/auth/signin")
   }
 
-  // Fetch play records for statistics
-  const plays = await prisma.playRecord.findMany({
+  const entries = await prisma.gameEntry.findMany({
     where: { userId: session.user.id },
-    include: { game: true },
-    orderBy: { playedAt: "desc" },
+    include: {
+      game: true,
+      sessions: { orderBy: { playedAt: "desc" } },
+    },
   })
 
-  // Calculate statistics
-  const totalPlays = plays.length
-  const uniqueGames = new Set(plays.map((p) => p.gameId)).size
+  const allSessions = entries.flatMap((e) =>
+    e.sessions.map((s) => ({ ...s, gameId: e.gameId }))
+  )
+
+  // 統計
+  const totalPlays = allSessions.length
+  const uniqueGames = entries.length
   const averageRating =
-    totalPlays > 0
-      ? (plays.reduce((sum, p) => sum + p.rating, 0) / totalPlays).toFixed(1)
+    entries.length > 0
+      ? (entries.reduce((sum, e) => sum + e.rating, 0) / entries.length).toFixed(1)
       : "0"
 
-  // Rating distribution
+  // 評価分布（ゲーム単位）
   const ratingCounts = [5, 4, 3, 2, 1].map((rating) => ({
     rating,
-    count: plays.filter((p) => p.rating === rating).length,
+    count: entries.filter((e) => e.rating === rating).length,
   }))
 
-  // Favorite games (rating 5)
-  const favoriteGames = plays
-    .filter((p) => p.rating === 5)
+  // お気に入りゲーム（評価5）
+  const favoriteGames = entries
+    .filter((e) => e.rating === 5)
     .slice(0, 5)
-    .map((p) => p.game)
+    .map((e) => e.game)
 
   const stats = { totalPlays, uniqueGames, averageRating }
+
+  // プレイカレンダー用（セッション日付）
+  const playDateMap = new Map<string, number>()
+  allSessions.forEach((s) => {
+    const date = s.playedAt.toISOString().split("T")[0]
+    playDateMap.set(date, (playDateMap.get(date) ?? 0) + 1)
+  })
+  const playDates = Array.from(playDateMap, ([date, count]) => ({ date, count }))
+
+  // 称号
+  const titles = calculateTitles({
+    entries: entries.map((e) => ({ gameId: e.gameId, rating: e.rating })),
+    sessions: allSessions.map((s) => ({ playedAt: s.playedAt, gameId: s.gameId })),
+  })
 
   return (
     <div className="wood-texture min-h-screen py-12">
@@ -63,6 +82,8 @@ export default async function ProfilePage() {
           stats={stats}
           ratingCounts={ratingCounts}
           favoriteGames={favoriteGames}
+          playDates={playDates}
+          titles={titles}
         />
       </div>
     </div>

@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { EditClient } from "./EditClient"
 
 interface Props {
-  params: Promise<{ id: string }>
+  readonly params: Promise<{ id: string }>
 }
 
 export default async function EditPlayPage({ params }: Props) {
@@ -15,31 +15,27 @@ export default async function EditPlayPage({ params }: Props) {
 
   const { id } = await params
 
-  const play = await prisma.playRecord.findFirst({
+  const entry = await prisma.gameEntry.findFirst({
     where: { id, userId: session.user.id },
     include: { game: true },
   })
 
-  if (!play) notFound()
+  if (!entry) notFound()
 
   return (
     <div className="wood-texture min-h-screen py-12">
       <div className="mx-auto max-w-lg px-6">
         <h1 className="mb-8 text-3xl font-bold tracking-tight text-amber-950">
-          プレイ記録を編集
+          評価を編集
         </h1>
         <EditClient
-          playId={play.id}
+          entryId={entry.id}
           game={{
-            id: play.game.id,
-            name: play.game.name,
-            imageUrl: play.game.imageUrl,
+            id: entry.game.id,
+            name: entry.game.name,
+            imageUrl: entry.game.imageUrl,
           }}
-          initialData={{
-            playedAt: play.playedAt.toISOString().split("T")[0],
-            rating: play.rating,
-            memo: play.memo ?? "",
-          }}
+          initialRating={entry.rating}
         />
       </div>
     </div>

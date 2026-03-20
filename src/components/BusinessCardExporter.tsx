@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react"
 import { toPng } from "html-to-image"
 import { BusinessCard } from "./BusinessCard"
+import type { TitleWithUnlocked } from "@/lib/titles"
 
 interface Game {
   id: string
@@ -28,9 +29,10 @@ interface Props {
   user: UserData
   stats: Stats
   favoriteGames: Game[]
+  titles: TitleWithUnlocked[]
 }
 
-export function BusinessCardExporter({ user, stats, favoriteGames }: Props) {
+export function BusinessCardExporter({ user, stats, favoriteGames, titles }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [exporting, setExporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -118,7 +120,7 @@ export function BusinessCardExporter({ user, stats, favoriteGames }: Props) {
         }}
       >
         <div ref={cardRef}>
-          <BusinessCard user={user} stats={stats} favoriteGames={favoriteGames} />
+          <BusinessCard user={user} stats={stats} favoriteGames={favoriteGames} titles={titles} />
         </div>
       </div>
 
