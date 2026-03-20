@@ -9,10 +9,9 @@ export interface TitleWithUnlocked extends Title {
   unlocked: boolean
 }
 
-interface PlayData {
-  playedAt: Date
-  gameId: string
-  rating: number
+export interface TitleData {
+  entries: { gameId: string; rating: number }[]        // GameEntry一覧
+  sessions: { playedAt: Date; gameId: string }[]       // PlaySession一覧
 }
 
 interface TitleDefinition extends Title {
@@ -109,14 +108,14 @@ const TITLES: TitleDefinition[] = [
   {
     id: "connoisseur",
     name: "目利き",
-    description: "平均評価4.5以上（10回以上プレイ）",
+    description: "平均評価4.5以上（10種類以上プレイ）",
     icon: "🧐",
-    check: (s) => s.totalPlays >= 10 && s.averageRating >= 4.5,
+    check: (s) => s.uniqueGames >= 10 && s.averageRating >= 4.5,
   },
   {
     id: "fan",
     name: "推しが多い",
-    description: "星5の評価を10回つけた",
+    description: "星5の評価を10ゲームにつけた",
     icon: "⭐",
     check: (s) => s.fiveStarCount >= 10,
   },
@@ -138,14 +137,13 @@ const TITLES: TitleDefinition[] = [
   },
 ]
 
-function calculateMaxConsecutiveDays(plays: PlayData[]): number {
-  if (plays.length === 0) return 0
+function calculateMaxConsecutiveDays(sessions: { playedAt: Date }[]): number {
+  if (sessions.length === 0) return 0
 
-  // Get unique dates sorted
-  const dates = [...new Set(plays.map((p) => {
-    const d = new Date(p.playedAt)
+  const dates = [...new Set(sessions.map((s) => {
+    const d = new Date(s.playedAt)
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
-  }))].sort()
+  }))].sort((a, b) => a.localeCompare(b))
 
   if (dates.length === 0) return 0
 
@@ -155,8 +153,7 @@ function calculateMaxConsecutiveDays(plays: PlayData[]): number {
   for (let i = 1; i < dates.length; i++) {
     const prev = new Date(dates[i - 1])
     const curr = new Date(dates[i])
-    const diffMs = curr.getTime() - prev.getTime()
-    const diffDays = diffMs / (1000 * 60 * 60 * 24)
+    const diffDays = (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24)
 
     if (diffDays === 1) {
       currentStreak++
@@ -169,22 +166,23 @@ function calculateMaxConsecutiveDays(plays: PlayData[]): number {
   return maxStreak
 }
 
-export function calculateTitles(plays: PlayData[]): TitleWithUnlocked[] {
-  const totalPlays = plays.length
-  const uniqueGames = new Set(plays.map((p) => p.gameId)).size
-  const averageRating = totalPlays > 0
-    ? plays.reduce((sum, p) => sum + p.rating, 0) / totalPlays
-    : 0
+export function calculateTitles({ entries, sessions }: TitleData): TitleWithUnlocked[] {
+  const totalPlays = sessions.length
+  const uniqueGames = entries.length
+  const averageRating =
+    entries.length > 0
+      ? entries.reduce((sum, e) => sum + e.rating, 0) / entries.length
+      : 0
 
-  // Max plays of same game
-  const gameCountMap = new Map<string, number>()
-  plays.forEach((p) => {
-    gameCountMap.set(p.gameId, (gameCountMap.get(p.gameId) ?? 0) + 1)
+  // 同一ゲームの最大セッション数
+  const sessionCountByGame = new Map<string, number>()
+  sessions.forEach((s) => {
+    sessionCountByGame.set(s.gameId, (sessionCountByGame.get(s.gameId) ?? 0) + 1)
   })
-  const maxSameGame = Math.max(0, ...gameCountMap.values())
+  const maxSameGame = Math.max(0, ...sessionCountByGame.values())
 
-  const fiveStarCount = plays.filter((p) => p.rating === 5).length
-  const maxConsecutiveDays = calculateMaxConsecutiveDays(plays)
+  const fiveStarCount = entries.filter((e) => e.rating === 5).length
+  const maxConsecutiveDays = calculateMaxConsecutiveDays(sessions)
 
   const stats: TitleStats = {
     totalPlays,

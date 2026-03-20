@@ -23,7 +23,7 @@ model User {
 
   accounts    Account[]
   sessions    Session[]
-  playRecords PlayRecord[]
+  gameEntries GameEntry[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -75,31 +75,47 @@ model VerificationToken {
 
 model Game {
   id       String  @id @default(cuid())
-  bggId    String? @unique // BGG game ID (for future BGG integration)
+  bggId    String? @unique // BGG game ID
   name     String
   imageUrl String?
 
-  playRecords PlayRecord[]
+  gameEntries GameEntry[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model PlayRecord {
-  id       String   @id @default(cuid())
-  userId   String
-  gameId   String
-  playedAt DateTime
-  rating   Int // 1-5
-  memo     String?  @db.Text
+// ユーザーとゲームの関係（評価は1ゲームにつき1つ）
+model GameEntry {
+  id     String @id @default(cuid())
+  userId String
+  gameId String
+  rating Int    // 1-5
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  game Game @relation(fields: [gameId], references: [id])
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game     Game          @relation(fields: [gameId], references: [id])
+  sessions PlaySession[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([userId, gameId])
   @@index([userId])
-  @@index([gameId])
+}
+
+// プレイ日ごとの記録（メモ・画像）
+model PlaySession {
+  id          String   @id @default(cuid())
+  gameEntryId String
+  playedAt    DateTime
+  memo        String?  @db.Text
+  imageUrl    String?
+
+  gameEntry GameEntry @relation(fields: [gameEntryId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([gameEntryId])
   @@index([playedAt])
 }

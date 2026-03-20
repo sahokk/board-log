@@ -8,13 +8,16 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const plays = await prisma.playRecord.findMany({
+  const entries = await prisma.gameEntry.findMany({
     where: { userId: session.user.id },
-    include: { game: true },
-    orderBy: { playedAt: "desc" },
+    include: {
+      game: true,
+      sessions: { orderBy: { playedAt: "desc" } },
+    },
+    orderBy: { updatedAt: "desc" },
   })
 
-  return NextResponse.json({ plays })
+  return NextResponse.json({ entries })
 }
 
 export async function POST(request: NextRequest) {
@@ -24,7 +27,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json()
-  const { gameId, playedAt, rating, memo } = body
+  const { gameId, rating, playedAt, memo } = body
 
   if (!gameId || !playedAt || rating == null) {
     return NextResponse.json(
@@ -41,16 +44,21 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  const play = await prisma.playRecord.create({
-    data: {
-      userId: session.user.id,
-      gameId,
-      playedAt: new Date(playedAt),
-      rating: ratingNum,
-      memo: memo || null,
-    },
-    include: { game: true },
+  // GameEntry を upsert（評価は最新のものに更新）
+  const entry = await prisma.gameEntry.upsert({
+    where: { userId_gameId: { userId: session.user.id, gameId } },
+    update: { rating: ratingNum },
+    create: { userId: session.user.id, gameId, rating: ratingNum },
   })
 
-  return NextResponse.json({ play }, { status: 201 })
+  // PlaySession を追加
+  const sess = await prisma.playSession.create({
+    data: {
+      gameEntryId: entry.id,
+      playedAt: new Date(playedAt),
+      memo: memo?.trim() || null,
+    },
+  })
+
+  return NextResponse.json({ entry, session: sess }, { status: 201 })
 }

@@ -2,19 +2,25 @@ import { prisma } from "@/lib/prisma"
 import { RecentPlaysCarousel } from "./RecentPlaysCarousel"
 
 export async function RecentPlays() {
-  // 全ユーザーの最近のプレイ記録を取得
-  const plays = await prisma.playRecord.findMany({
+  // 全ユーザーの最近のプレイセッションを取得
+  const sessions = await prisma.playSession.findMany({
     include: {
-      game: true,
-      user: true,
+      gameEntry: {
+        include: { game: true },
+      },
     },
     orderBy: { playedAt: "desc" },
     take: 20,
   })
 
-  if (plays.length === 0) {
+  if (sessions.length === 0) {
     return null
   }
+
+  const plays = sessions.map((s) => ({
+    id: s.id,
+    game: s.gameEntry.game,
+  }))
 
   return (
     <section className="mb-16">

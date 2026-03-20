@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { RecordClient } from "./RecordClient"
 
 interface Props {
-  searchParams: Promise<{ gameId?: string }>
+  readonly searchParams: Promise<{ gameId?: string }>
 }
 
 export default async function RecordPage({ searchParams }: Props) {
@@ -19,16 +19,24 @@ export default async function RecordPage({ searchParams }: Props) {
     ? await prisma.game.findUnique({ where: { id: gameId } })
     : null
 
+  // 既存のGameEntryがあれば評価を引き継ぐ
+  const existingEntry =
+    game && session.user.id
+      ? await prisma.gameEntry.findFirst({
+          where: { userId: session.user.id, gameId: game.id },
+        })
+      : null
+
   return (
     <div className="wood-texture min-h-screen py-12">
       <div className="mx-auto max-w-lg px-6">
-        <h1 className="mb-8 text-3xl font-bold tracking-tight text-amber-950">プレイを記録</h1>
+        <h1 className="mb-8 text-3xl font-bold tracking-tight text-amber-950">
+          プレイを記録
+        </h1>
         <RecordClient
-          game={
-            game
-              ? { id: game.id, name: game.name, imageUrl: game.imageUrl }
-              : null
-          }
+          game={game ? { id: game.id, name: game.name, imageUrl: game.imageUrl } : null}
+          existingEntryId={existingEntry?.id ?? null}
+          existingRating={existingEntry?.rating ?? null}
         />
       </div>
     </div>

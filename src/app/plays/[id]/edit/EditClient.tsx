@@ -11,29 +11,21 @@ interface Game {
   imageUrl: string | null
 }
 
-interface InitialData {
-  playedAt: string
-  rating: number
-  memo: string
-}
-
 interface Props {
-  playId: string
-  game: Game
-  initialData: InitialData
+  readonly entryId: string
+  readonly game: Game
+  readonly initialRating: number
 }
 
-export function EditClient({ playId, game, initialData }: Props) {
+export function EditClient({ entryId, game, initialRating }: Props) {
   const router = useRouter()
 
-  const [playedAt, setPlayedAt] = useState(initialData.playedAt)
-  const [rating, setRating] = useState<number>(initialData.rating)
+  const [rating, setRating] = useState<number>(initialRating)
   const [hoverRating, setHoverRating] = useState<number>(0)
-  const [memo, setMemo] = useState(initialData.memo)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (rating === 0) {
       setError("評価を選択してください")
@@ -44,20 +36,16 @@ export function EditClient({ playId, game, initialData }: Props) {
     setError(null)
 
     try {
-      const res = await fetch(`/api/plays/${playId}`, {
+      const res = await fetch(`/api/plays/${entryId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          playedAt,
-          rating,
-          memo: memo.trim() || null,
-        }),
+        body: JSON.stringify({ rating }),
       })
 
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? "更新に失敗しました")
 
-      router.push(`/plays/${playId}`)
+      router.push(`/plays/${entryId}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : "エラーが発生しました")
       setSubmitting(false)
@@ -66,7 +54,7 @@ export function EditClient({ playId, game, initialData }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* 選択中のゲーム */}
+      {/* ゲーム表示 */}
       <div className="wood-card flex items-center gap-4 rounded-2xl p-4 shadow-sm">
         <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-linear-to-br from-amber-50/30 to-amber-100/30">
           {game.imageUrl ? (
@@ -83,30 +71,14 @@ export function EditClient({ playId, game, initialData }: Props) {
             </div>
           )}
         </div>
-        <div className="flex-1">
-          <p className="font-semibold text-amber-950">{game.name}</p>
-        </div>
+        <p className="font-semibold text-amber-950">{game.name}</p>
       </div>
 
-      {/* プレイ日 */}
+      {/* 評価 */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-amber-900">
-          プレイ日 <span className="text-red-600">*</span>
-        </label>
-        <input
-          type="date"
-          value={playedAt}
-          onChange={(e) => setPlayedAt(e.target.value)}
-          required
-          className="w-full rounded-xl border border-amber-200 bg-amber-50/30 px-4 py-3 text-sm text-amber-950 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
-        />
-      </div>
-
-      {/* 評価（星） */}
-      <div>
-        <label className="mb-2 block text-sm font-medium text-amber-900">
+        <p className="mb-2 text-sm font-medium text-amber-900">
           評価 <span className="text-red-600">*</span>
-        </label>
+        </p>
         <div className="flex gap-2">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
@@ -120,9 +92,7 @@ export function EditClient({ playId, game, initialData }: Props) {
             >
               <span
                 className={
-                  star <= (hoverRating || rating)
-                    ? "text-amber-500"
-                    : "text-amber-200/40"
+                  star <= (hoverRating || rating) ? "text-amber-500" : "text-amber-200/40"
                 }
               >
                 ★
@@ -135,31 +105,15 @@ export function EditClient({ playId, game, initialData }: Props) {
         )}
       </div>
 
-      {/* メモ */}
-      <div>
-        <label className="mb-2 block text-sm font-medium text-amber-900">
-          メモ（任意）
-        </label>
-        <textarea
-          value={memo}
-          onChange={(e) => setMemo(e.target.value)}
-          placeholder="感想・メンバー・スコアなど..."
-          rows={5}
-          className="w-full rounded-xl border border-amber-200 bg-amber-50/30 px-4 py-3 text-sm text-amber-950 shadow-sm placeholder:text-amber-700/50 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
-        />
-      </div>
-
-      {/* エラー */}
       {error && (
         <div className="rounded-xl border border-red-300 bg-red-50 p-4">
           <p className="text-sm text-red-700">{error}</p>
         </div>
       )}
 
-      {/* ボタン */}
       <div className="flex gap-3">
         <Link
-          href={`/plays/${playId}`}
+          href={`/plays/${entryId}`}
           className="wood-card flex-1 rounded-xl px-6 py-3 text-center text-sm font-medium text-amber-900 shadow-sm transition-all hover:bg-amber-100/30"
         >
           キャンセル

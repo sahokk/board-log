@@ -12,7 +12,7 @@ function formatDate(date: Date): string {
   }).format(date)
 }
 
-function StarDisplay({ rating }: { rating: number }) {
+function StarDisplay({ rating }: { readonly rating: number }) {
   return (
     <div className="flex items-center gap-0.5">
       {[1, 2, 3, 4, 5].map((star) => (
@@ -33,16 +33,19 @@ export default async function PlaysPage() {
     redirect("/api/auth/signin?callbackUrl=/plays")
   }
 
-  const plays = await prisma.playRecord.findMany({
+  const entries = await prisma.gameEntry.findMany({
     where: { userId: session.user.id },
-    include: { game: true },
-    orderBy: { playedAt: "desc" },
+    include: {
+      game: true,
+      sessions: { orderBy: { playedAt: "desc" }, take: 1 },
+    },
+    orderBy: { updatedAt: "desc" },
   })
 
   return (
     <div className="wood-texture min-h-screen py-12">
       <div className="mx-auto max-w-6xl px-6">
-        {/* ヘッダー部分 */}
+        {/* ヘッダー */}
         <div className="mb-10 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-amber-950">プレイ履歴</h1>
@@ -56,7 +59,7 @@ export default async function PlaysPage() {
           </Link>
         </div>
 
-        {plays.length === 0 ? (
+        {entries.length === 0 ? (
           <div className="wood-card rounded-2xl p-16 text-center shadow-sm">
             <div className="mx-auto max-w-sm">
               <div className="mb-4 text-5xl">🎲</div>
@@ -74,41 +77,46 @@ export default async function PlaysPage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {plays.map((play) => (
-              <Link
-                key={play.id}
-                href={`/plays/${play.id}`}
-                className="wood-card group flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
-              >
-                {/* 箱画像 */}
-                <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
-                  {play.game.imageUrl ? (
-                    <Image
-                      src={play.game.imageUrl}
-                      alt={play.game.name}
-                      fill
-                      className="object-contain p-3"
-                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-amber-300">
-                      <span className="text-4xl">🎲</span>
-                    </div>
-                  )}
-                </div>
+            {entries.map((entry) => {
+              const latestSession = entry.sessions[0]
+              return (
+                <Link
+                  key={entry.id}
+                  href={`/plays/${entry.id}`}
+                  className="wood-card group flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+                >
+                  {/* 箱画像 */}
+                  <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
+                    {entry.game.imageUrl ? (
+                      <Image
+                        src={entry.game.imageUrl}
+                        alt={entry.game.name}
+                        fill
+                        className="object-contain p-3"
+                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-amber-300">
+                        <span className="text-4xl">🎲</span>
+                      </div>
+                    )}
+                  </div>
 
-                {/* 情報 */}
-                <div className="p-4">
-                  <p className="mb-2 line-clamp-2 text-sm font-semibold text-amber-950 group-hover:text-amber-800">
-                    {play.game.name}
-                  </p>
-                  <StarDisplay rating={play.rating} />
-                  <p className="mt-2 text-xs font-medium text-amber-700/60">
-                    {formatDate(play.playedAt)}
-                  </p>
-                </div>
-              </Link>
-            ))}
+                  {/* 情報 */}
+                  <div className="p-4">
+                    <p className="mb-2 line-clamp-2 text-sm font-semibold text-amber-950 group-hover:text-amber-800">
+                      {entry.game.name}
+                    </p>
+                    <StarDisplay rating={entry.rating} />
+                    {latestSession && (
+                      <p className="mt-2 text-xs font-medium text-amber-700/60">
+                        {formatDate(latestSession.playedAt)}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         )}
       </div>
