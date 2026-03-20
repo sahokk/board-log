@@ -8,7 +8,7 @@ export function BggAttribution() {
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="https://cf.geekdo-images.com/images/pic4795.png"
+        src="/bgg-logo.webp"
         alt="BoardGameGeek"
         width={24}
         height={24}
