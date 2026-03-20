@@ -8,15 +8,12 @@ export function BggAttribution() {
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/bgg-logo.webp"
+        src="/powered_by_K_02_MED.png"
         alt="BoardGameGeek"
-        width={24}
+        width={120}
         height={24}
         className="rounded"
       />
-      <span className="text-xs font-medium text-amber-800">
-        Powered by BoardGameGeek
-      </span>
     </a>
   )
 }
