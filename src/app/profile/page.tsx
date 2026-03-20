@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { calculateTitles } from "@/lib/titles"
 import { getBggGameDetails } from "@/lib/bgg/client"
+import { translateCategory, translateMechanic } from "@/lib/bgg/translations"
 import { ProfileClient } from "./ProfileClient"
 
 export default async function ProfilePage() {
@@ -48,6 +49,7 @@ export default async function ProfilePage() {
           prisma.game.update({
             where: { bggId: d.id },
             data: {
+              nameJa: d.nameJa ?? null,
               categories: d.categories.length > 0 ? d.categories.join(",") : null,
               mechanics: d.mechanics.length > 0 ? d.mechanics.join(",") : null,
               weight: d.weight ?? null,
@@ -62,6 +64,7 @@ export default async function ProfilePage() {
       details.forEach((d) => {
         const game = entries.find((e) => e.game.bggId === d.id)?.game
         if (!game) return
+        game.nameJa = d.nameJa ?? null
         game.categories = d.categories.length > 0 ? d.categories.join(",") : null
         game.mechanics = d.mechanics.length > 0 ? d.mechanics.join(",") : null
         game.weight = d.weight ?? null
@@ -108,12 +111,12 @@ export default async function ProfilePage() {
   })
   const playDates = Array.from(playDateMap, ([date, count]) => ({ date, count }))
 
-  // カテゴリ統計
+  // カテゴリ統計（日本語変換して集計）
   const categoryMap = new Map<string, number>()
   entries.forEach((e) => {
     if (e.game.categories) {
       e.game.categories.split(",").forEach((cat) => {
-        const t = cat.trim()
+        const t = translateCategory(cat.trim())
         if (t) categoryMap.set(t, (categoryMap.get(t) ?? 0) + 1)
       })
     }
@@ -122,12 +125,12 @@ export default async function ProfilePage() {
     .sort((a, b) => b.count - a.count)
     .slice(0, 8)
 
-  // メカニクス統計
+  // メカニクス統計（日本語変換して集計）
   const mechanicMap = new Map<string, number>()
   entries.forEach((e) => {
     if (e.game.mechanics) {
       e.game.mechanics.split(",").forEach((mech) => {
-        const t = mech.trim()
+        const t = translateMechanic(mech.trim())
         if (t) mechanicMap.set(t, (mechanicMap.get(t) ?? 0) + 1)
       })
     }

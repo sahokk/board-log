@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 
 interface GameResult {
   id: string
+  bggId: string | null
   name: string
   yearPublished?: number
   imageUrl?: string
@@ -19,7 +20,7 @@ export async function GET(request: NextRequest) {
   const trimmed = query.trim()
 
   try {
-    // 1. Search local DB first
+    // 1. ローカルDB検索
     const localGames = await prisma.game.findMany({
       where: { name: { contains: trimmed, mode: "insensitive" } },
       take: 10,
@@ -27,11 +28,12 @@ export async function GET(request: NextRequest) {
 
     const localResults: GameResult[] = localGames.map((g) => ({
       id: g.id,
+      bggId: g.bggId,
       name: g.name,
       imageUrl: g.imageUrl ?? undefined,
     }))
 
-    // 2. Try BGG search (graceful fallback)
+    // 2. BGG検索（graceful fallback）
     let bggResults: GameResult[] = []
     try {
       const searchResults = await searchBggGames(trimmed)
@@ -39,19 +41,32 @@ export async function GET(request: NextRequest) {
         const ids = searchResults.slice(0, 10).map((r) => r.id)
         const details = await getBggGameDetails(ids)
 
-        // Upsert BGG results using bggId
         const upserted = await Promise.all(
           details.map((game) =>
             prisma.game.upsert({
               where: { bggId: game.id },
               update: {
                 name: game.name,
+                nameJa: game.nameJa ?? null,
                 imageUrl: game.imageUrl ?? null,
+                categories: game.categories.length > 0 ? game.categories.join(",") : null,
+                mechanics: game.mechanics.length > 0 ? game.mechanics.join(",") : null,
+                weight: game.weight ?? null,
+                playingTime: game.playingTime ?? null,
+                minPlayers: game.minPlayers ?? null,
+                maxPlayers: game.maxPlayers ?? null,
               },
               create: {
                 bggId: game.id,
                 name: game.name,
+                nameJa: game.nameJa ?? null,
                 imageUrl: game.imageUrl ?? null,
+                categories: game.categories.length > 0 ? game.categories.join(",") : null,
+                mechanics: game.mechanics.length > 0 ? game.mechanics.join(",") : null,
+                weight: game.weight ?? null,
+                playingTime: game.playingTime ?? null,
+                minPlayers: game.minPlayers ?? null,
+                maxPlayers: game.maxPlayers ?? null,
               },
             })
           )
@@ -59,6 +74,7 @@ export async function GET(request: NextRequest) {
 
         bggResults = upserted.map((g, i) => ({
           id: g.id,
+          bggId: g.bggId,
           name: g.name,
           yearPublished: details[i].yearPublished,
           imageUrl: g.imageUrl ?? undefined,
@@ -69,7 +85,7 @@ export async function GET(request: NextRequest) {
       console.warn("BGG API unavailable:", bggError)
     }
 
-    // 3. Merge: local results first, then BGG results (deduplicate by id)
+    // 3. マージ（ローカル優先、重複除去）
     const seenIds = new Set(localResults.map((g) => g.id))
     const merged = [...localResults]
     for (const game of bggResults) {

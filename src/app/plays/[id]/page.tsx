@@ -3,6 +3,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { translateCategory, translateMechanic } from "@/lib/bgg/translations"
 import { DeleteButton } from "./DeleteButton"
 import { SessionList } from "./SessionList"
 
@@ -59,9 +60,14 @@ export default async function PlayDetailPage({ params }: Props) {
         </div>
 
         {/* ゲーム名 */}
-        <h1 className="mb-8 text-center text-3xl font-bold tracking-tight text-amber-950">
-          {entry.game.name}
-        </h1>
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold tracking-tight text-amber-950">
+            {entry.game.nameJa ?? entry.game.name}
+          </h1>
+          {entry.game.nameJa && (
+            <p className="mt-1 text-sm text-amber-800/60">{entry.game.name}</p>
+          )}
+        </div>
 
         {/* BGG メタデータ */}
         {(entry.game.bggId || entry.game.categories || entry.game.mechanics || entry.game.weight || entry.game.playingTime) && (
@@ -97,7 +103,7 @@ export default async function PlayDetailPage({ params }: Props) {
                 <div className="flex flex-wrap gap-1.5">
                   {entry.game.categories.split(",").map((cat) => (
                     <span key={cat} className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">
-                      {cat.trim()}
+                      {translateCategory(cat.trim())}
                     </span>
                   ))}
                 </div>
@@ -109,7 +115,7 @@ export default async function PlayDetailPage({ params }: Props) {
                 <div className="flex flex-wrap gap-1.5">
                   {entry.game.mechanics.split(",").map((mech) => (
                     <span key={mech} className="rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-xs font-medium text-amber-700">
-                      {mech.trim()}
+                      {translateMechanic(mech.trim())}
                     </span>
                   ))}
                 </div>
