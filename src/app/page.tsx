@@ -1,4 +1,3 @@
-import { RecentPlays } from "@/components/RecentPlays"
 import { GameSearchSection } from "@/components/GameSearchSection"
 import { auth } from "@/lib/auth"
 import Link from "next/link"
@@ -32,9 +31,6 @@ export default async function Home() {
 
       {/* メインコンテンツ */}
       <div className="mx-auto max-w-6xl px-6 py-12">
-        {/* 最近のプレイ */}
-        <RecentPlays />
-
         {/* ゲーム検索 */}
         <section>
           <div className="mb-6">
