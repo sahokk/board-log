@@ -37,11 +37,11 @@ export function WishlistButton({ gameId, initialWishlisted, size = "default" }: 
         aria-label={wishlisted ? "気になるリストから削除" : "気になるリストに追加"}
         className={`flex h-7 w-7 items-center justify-center rounded-full text-sm shadow transition-colors disabled:opacity-50 ${
           wishlisted
-            ? "bg-amber-500 text-white hover:bg-amber-600"
+            ? "bg-white/90 hover:bg-white"
             : "bg-white/80 text-amber-700 hover:bg-amber-50"
         }`}
       >
-        {wishlisted ? "♥" : "♡"}
+        {wishlisted ? "🩷" : "🤍"}
       </button>
     )
   }
@@ -56,7 +56,7 @@ export function WishlistButton({ gameId, initialWishlisted, size = "default" }: 
           : "border border-amber-300 text-amber-800 hover:bg-amber-50"
       }`}
     >
-      <span>{wishlisted ? "♥" : "♡"}</span>
+      <span>{wishlisted ? "🩷" : "🤍"}</span>
       <span>{wishlisted ? "気になり中" : "気になる"}</span>
     </button>
   )

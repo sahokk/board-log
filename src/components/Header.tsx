@@ -30,7 +30,7 @@ export async function Header() {
             href="/wishlist"
             className="flex items-center gap-1 text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
           >
-            <span className="text-base">♡</span>
+            <span className="text-base">🤍</span>
             <span className="hidden sm:inline">気になる</span>
           </Link>
           <AuthButton username={username} />
