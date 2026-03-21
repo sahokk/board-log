@@ -121,11 +121,32 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
     )
   }
 
+  // scale: 800px → fit within the profile card width (~580px on desktop) ≈ 0.45
+  const SCALE = 0.45
+  const previewW = Math.round(800 * SCALE)
+  const previewH = Math.round(1000 * SCALE)
+
   return (
     <div className="space-y-4">
       {/* Hidden card for export */}
       <div style={{ position: "absolute", left: "-9999px", top: 0, width: "800px", height: "1000px" }}>
         <div ref={cardRef}>
+          <BusinessCard
+            user={user}
+            stats={stats}
+            featuredGames={displayGames}
+            boardgameType={boardgameType}
+            titles={titles}
+          />
+        </div>
+      </div>
+
+      {/* Card preview */}
+      <div
+        className="overflow-hidden rounded-2xl shadow-md"
+        style={{ width: previewW, height: previewH }}
+      >
+        <div style={{ transform: `scale(${SCALE})`, transformOrigin: "top left", width: 800, height: 1000 }}>
           <BusinessCard
             user={user}
             stats={stats}
