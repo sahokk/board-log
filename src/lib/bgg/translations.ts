@@ -232,6 +232,33 @@ export const mechanicJa: Record<string, string> = {
   "Trick-taking": "トリックテイキング",
   "Ladder Climbing": "大富豪系",
 
+  // ターン順系
+  "Turn Order: Claim Action": "ターン順取り合い",
+  "Turn Order: Progressive": "累進ターン順",
+  "Turn Order: Role Order": "役職ターン順",
+  "Turn Order: Stat-Based": "ステータスターン順",
+
+  // フィジカル系
+  "Physical Removal": "コンポーネント除去",
+  "Slide / Push": "スライド＆押し出し",
+  "Speed Matching": "スピードマッチング",
+
+  // カード特殊操作
+  "Melding and Splaying": "メルドスプレイ",
+  "Line Drawing": "線引き",
+  "Pieces as Map": "ピース配置マップ",
+  "Multiple Maps": "複数マップ",
+  "Score-and-Reset Game": "スコアリセット型",
+
+  // 経済・ルール
+  "Loans": "借金・ローン",
+  "Lose a Turn": "1回休み",
+  "Induction": "帰納的推理",
+  "Sudden Death Ending": "サドンデス終了",
+  "Singing": "歌唱",
+  "Rock-Paper-Scissors": "じゃんけん",
+  "Bingo": "ビンゴ",
+
   // その他
   "Variable Phase Order": "フェーズ変動",
   "Variable Set-up": "可変セットアップ",
