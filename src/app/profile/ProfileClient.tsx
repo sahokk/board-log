@@ -23,6 +23,7 @@ interface Game {
 }
 
 interface UserData {
+  username?: string | null
   displayName?: string | null
   name?: string | null
   customImageUrl?: string | null
@@ -99,6 +100,7 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
         </div>
         <div className="wood-card rounded-2xl p-8 shadow-sm">
           <ProfileEditForm
+            initialUsername={user.username ?? null}
             initialDisplayName={displayName}
             initialImageUrl={profileImage}
             initialFavoriteGenres={user.favoriteGenres || ""}
@@ -139,6 +141,27 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
                 {displayName}
               </h1>
               <p className="mt-1 text-sm text-amber-800/70 truncate">{user.email}</p>
+              {user.username && (
+                <div className="mt-2 flex items-center gap-2 flex-wrap">
+                  <a
+                    href={`/u/${user.username}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-medium text-amber-700 underline hover:text-amber-950"
+                  >
+                    boardlog.app/u/{user.username}
+                  </a>
+                  <a
+                    href={"https://x.com/intent/tweet?text=" + encodeURIComponent(displayName + "のボードゲームプロフィール🎲") + "&url=" + encodeURIComponent("https://boardlog.app/u/" + user.username)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 rounded-full bg-black px-2.5 py-1 text-xs font-medium text-white hover:bg-neutral-800 transition-colors"
+                  >
+                    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.733-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    シェア
+                  </a>
+                </div>
+              )}
               {genres.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-2">
                   {genres.map((genre) => (
