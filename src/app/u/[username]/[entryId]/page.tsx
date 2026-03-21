@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
+import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { translateCategory } from "@/lib/bgg/translations"
 import { MechanicTag } from "@/components/MechanicTag"
+import { WishlistButton } from "@/components/WishlistButton"
 import type { Metadata } from "next"
 
 interface Props {
@@ -45,6 +47,14 @@ export default async function PublicGameDetailPage({ params }: Props) {
   if (!entry) notFound()
 
   const { game } = entry
+
+  // ログイン中ならウィッシュリスト状態を確認
+  const session = await auth()
+  const wishlisted = session?.user?.id
+    ? (await prisma.wishlistItem.findUnique({
+        where: { userId_gameId: { userId: session.user.id, gameId: game.id } },
+      })) !== null
+    : false
 
   return (
     <div className="wood-texture min-h-screen py-12">
@@ -151,6 +161,13 @@ export default async function PublicGameDetailPage({ params }: Props) {
             </div>
           </div>
         </div>
+
+        {/* 気になるリストに追加 */}
+        {session?.user?.id && (
+          <div className="mb-6">
+            <WishlistButton gameId={game.id} initialWishlisted={wishlisted} />
+          </div>
+        )}
 
         {/* プレイ記録一覧 */}
         <div className="mb-6">
