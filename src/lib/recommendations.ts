@@ -73,15 +73,17 @@ export async function getRecommendations(userId: string): Promise<RecommendedGam
     // おすすめ理由：最初に一致したカテゴリ or メカニクス
     let reason = ""
     for (const cat of topCategories) {
-      if (game.categories?.includes(cat)) {
-        reason = `「${translateCategory(cat)}」をよく遊ぶあなたに`
+      const ja = translateCategory(cat)
+      if (ja && game.categories?.includes(cat)) {
+        reason = `「${ja}」をよく遊ぶあなたに`
         break
       }
     }
     if (!reason) {
       for (const mech of topMechanics) {
-        if (game.mechanics?.includes(mech)) {
-          reason = `「${translateMechanic(mech)}」好きにおすすめ`
+        const ja = translateMechanic(mech)
+        if (ja && game.mechanics?.includes(mech)) {
+          reason = `「${ja}」好きにおすすめ`
           break
         }
       }

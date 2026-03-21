@@ -9,45 +9,31 @@ import { WishlistButton } from "@/components/WishlistButton"
 import type { Metadata } from "next"
 
 interface Props {
-  readonly params: Promise<{ username: string; entryId: string }>
+  readonly params: Promise<{ username: string; gameId: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { entryId } = await params
-  const entry = await prisma.gameEntry.findUnique({
-    where: { id: entryId },
-    select: { game: { select: { name: true, nameJa: true } } },
+  const { gameId } = await params
+  const game = await prisma.game.findUnique({
+    where: { id: gameId },
+    select: { name: true, nameJa: true },
   })
-  if (!entry) return { title: "ゲームが見つかりません" }
-  return { title: (entry.game.nameJa ?? entry.game.name) + " | BoardLog" }
+  if (!game) return { title: "ゲームが見つかりません" }
+  return { title: (game.nameJa ?? game.name) + " | BoardLog" }
 }
 
-function formatDate(date: Date | null): string {
-  if (!date) return "日付未設定"
-  return new Intl.DateTimeFormat("ja-JP", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  }).format(date)
-}
+export default async function PublicGamePage({ params }: Props) {
+  const { username, gameId } = await params
 
-export default async function PublicGameDetailPage({ params }: Props) {
-  const { username, entryId } = await params
-
-  const entry = await prisma.gameEntry.findFirst({
-    where: {
-      id: entryId,
-      user: { username },
-    },
-    include: {
-      game: true,
-      sessions: { orderBy: { playedAt: "desc" }, select: { id: true, playedAt: true } },
-    },
+  // ユーザーの存在確認
+  const user = await prisma.user.findUnique({
+    where: { username },
+    select: { id: true },
   })
+  if (!user) notFound()
 
-  if (!entry) notFound()
-
-  const { game } = entry
+  const game = await prisma.game.findUnique({ where: { id: gameId } })
+  if (!game) notFound()
 
   // ログイン中ならウィッシュリスト状態を確認
   const session = await auth()
@@ -150,23 +136,6 @@ export default async function PublicGameDetailPage({ params }: Props) {
           </div>
         )}
 
-        {/* 評価 */}
-        <div className="wood-card mb-6 rounded-2xl p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-amber-800/70">評価</span>
-            <div className="flex gap-0.5">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span
-                  key={star}
-                  className={star <= entry.rating ? "text-amber-500" : "text-amber-200/40"}
-                >
-                  ★
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-
         {/* アクション */}
         {session?.user?.id && (
           <div className="mb-6 flex flex-col gap-3">
@@ -179,31 +148,6 @@ export default async function PublicGameDetailPage({ params }: Props) {
             <WishlistButton gameId={game.id} initialWishlisted={wishlisted} />
           </div>
         )}
-
-        {/* プレイ記録一覧 */}
-        <div className="mb-6">
-          <h2 className="mb-3 text-lg font-bold text-amber-950">
-            プレイ記録{" "}
-            <span className="text-sm font-normal text-amber-800/60">
-              {entry.sessions.length}回
-            </span>
-          </h2>
-          {entry.sessions.length === 0 ? (
-            <div className="wood-card rounded-2xl p-8 text-center shadow-sm">
-              <p className="text-sm text-amber-800/70">まだプレイ記録がありません</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {entry.sessions.map((session) => (
-                <div key={session.id} className="wood-card rounded-2xl p-4 shadow-sm">
-                  <p className="text-sm font-semibold text-amber-950">
-                    {formatDate(session.playedAt)}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
       </div>
     </div>
   )

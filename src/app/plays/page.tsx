@@ -115,11 +115,9 @@ export default async function PlaysPage() {
 												entry.game.name}
 										</p>
 										<StarDisplay rating={entry.rating} />
-										{latestSession && (
+										{latestSession?.playedAt && (
 											<p className="mt-2 text-xs font-medium text-amber-700/60">
-												{formatDate(
-													latestSession.playedAt,
-												)}
+												{formatDate(latestSession.playedAt)}
 											</p>
 										)}
 									</div>
