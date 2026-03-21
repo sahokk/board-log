@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { requireAuth } from "@/lib/api-utils"
+import { CARD_THEMES } from "@/lib/card-themes"
 
 export async function PUT(request: NextRequest) {
-  // Authenticate user
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+  const { userId, error } = await requireAuth()
+  if (error) return error
 
   try {
     // Parse and validate request body
@@ -37,7 +35,7 @@ export async function PUT(request: NextRequest) {
       }
       // Check uniqueness (excluding current user)
       const existing = await prisma.user.findFirst({
-        where: { username: trimmedUsername, NOT: { id: session.user.id } },
+        where: { username: trimmedUsername, NOT: { id: userId } },
       })
       if (existing) {
         return NextResponse.json(
@@ -49,7 +47,7 @@ export async function PUT(request: NextRequest) {
 
     // Update user profile
     const updatedUser = await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: userId },
       data: {
         username: trimmedUsername,
         displayName: displayName?.trim() || null,
@@ -58,7 +56,6 @@ export async function PUT(request: NextRequest) {
       },
     })
 
-    // Return updated user data
     return NextResponse.json({
       success: true,
       user: {
@@ -68,8 +65,8 @@ export async function PUT(request: NextRequest) {
         favoriteGenres: updatedUser.favoriteGenres,
       },
     })
-  } catch (error) {
-    console.error("User update error:", error)
+  } catch (err) {
+    console.error("User update error:", err)
     return NextResponse.json(
       { error: "Failed to update profile" },
       { status: 500 }
@@ -78,15 +75,14 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+  const { userId, error } = await requireAuth()
+  if (error) return error
+
   const body = await request.json()
 
   if (typeof body.isProfilePublic === "boolean") {
     await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: userId },
       data: { isProfilePublic: body.isProfilePublic },
     })
     return NextResponse.json({ success: true })
@@ -95,15 +91,18 @@ export async function PATCH(request: NextRequest) {
   if (Array.isArray(body.featuredEntryIds)) {
     const ids = body.featuredEntryIds.slice(0, 3).filter((id: unknown) => typeof id === "string")
     await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: userId },
       data: { featuredEntryIds: JSON.stringify(ids) },
     })
     return NextResponse.json({ success: true })
   }
 
   if (typeof body.cardTheme === "string") {
+    if (!CARD_THEMES.some((t) => t.id === body.cardTheme)) {
+      return NextResponse.json({ error: "Invalid theme" }, { status: 400 })
+    }
     await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: userId },
       data: { cardTheme: body.cardTheme },
     })
     return NextResponse.json({ success: true })
@@ -113,15 +112,12 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function GET() {
-  // Get current user profile data
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+  const { userId, error } = await requireAuth()
+  if (error) return error
 
   try {
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: userId },
       select: {
         username: true,
         displayName: true,
@@ -137,8 +133,8 @@ export async function GET() {
     }
 
     return NextResponse.json({ user })
-  } catch (error) {
-    console.error("User fetch error:", error)
+  } catch (err) {
+    console.error("User fetch error:", err)
     return NextResponse.json(
       { error: "Failed to fetch profile" },
       { status: 500 }

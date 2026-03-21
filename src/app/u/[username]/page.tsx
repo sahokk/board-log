@@ -6,6 +6,7 @@ import { getDisplayName, getProfileImage, parseFavoriteGenres } from "@/lib/prof
 import { calculateTitles } from "@/lib/titles"
 import { calculateBoardgameType } from "@/lib/boardgame-type"
 import { translateCategory, translateMechanic } from "@/lib/bgg/translations"
+import { GameImage } from "@/components/GameImage"
 import { TitleBadges } from "@/components/TitleBadges"
 import { MechanicTag } from "@/components/MechanicTag"
 import { BoardgameTypeCard } from "@/components/BoardgameTypeCard"
@@ -288,19 +289,11 @@ export default async function PublicProfilePage({ params }: Props) {
                   className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
                 >
                   <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
-                    {game.imageUrl ? (
-                      <Image
-                        src={game.imageUrl}
-                        alt={game.nameJa ?? game.name}
-                        fill
-                        className="object-contain p-3"
-                        sizes="(max-width: 640px) 50vw, 20vw"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-amber-300">
-                        <span className="text-4xl">🎲</span>
-                      </div>
-                    )}
+                    <GameImage
+                      src={game.imageUrl}
+                      alt={game.nameJa ?? game.name}
+                      sizes="(max-width: 640px) 50vw, 20vw"
+                    />
                   </div>
                   <div className="p-3">
                     <p className="line-clamp-2 text-xs font-semibold text-amber-950">
@@ -334,19 +327,11 @@ export default async function PublicProfilePage({ params }: Props) {
                     className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
                   >
                     <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
-                      {entry.game.imageUrl ? (
-                        <Image
-                          src={entry.game.imageUrl}
-                          alt={entry.game.nameJa ?? entry.game.name}
-                          fill
-                          className="object-contain p-3"
-                          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-amber-300">
-                          <span className="text-4xl">🎲</span>
-                        </div>
-                      )}
+                      <GameImage
+                        src={entry.game.imageUrl}
+                        alt={entry.game.nameJa ?? entry.game.name}
+                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
+                      />
                     </div>
                     <div className="p-3">
                       <p className="mb-1.5 line-clamp-2 text-xs font-semibold text-amber-950">

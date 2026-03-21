@@ -1,21 +1,19 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { requireAuth } from "@/lib/api-utils"
 
 // PUT: GameEntry の評価を更新
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+  const { userId, error } = await requireAuth()
+  if (error) return error
 
   const { id } = await params
 
   const entry = await prisma.gameEntry.findFirst({
-    where: { id, userId: session.user.id },
+    where: { id, userId },
   })
 
   if (!entry) {
@@ -42,15 +40,13 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+  const { userId, error } = await requireAuth()
+  if (error) return error
 
   const { id } = await params
 
   const entry = await prisma.gameEntry.findFirst({
-    where: { id, userId: session.user.id },
+    where: { id, userId },
   })
 
   if (!entry) {

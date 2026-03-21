@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { requireAuth } from "@/lib/api-utils"
 
 export async function GET() {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+  const { userId, error } = await requireAuth()
+  if (error) return error
 
   const entries = await prisma.gameEntry.findMany({
-    where: { userId: session.user.id },
+    where: { userId },
     include: {
       game: true,
       sessions: { orderBy: { playedAt: "desc" } },
@@ -21,10 +19,8 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+  const { userId, error } = await requireAuth()
+  if (error) return error
 
   const body = await request.json()
   const { gameId, rating, playedAt, memo } = body
@@ -46,9 +42,9 @@ export async function POST(request: NextRequest) {
 
   // GameEntry を upsert（評価は最新のものに更新）
   const entry = await prisma.gameEntry.upsert({
-    where: { userId_gameId: { userId: session.user.id, gameId } },
+    where: { userId_gameId: { userId, gameId } },
     update: { rating: ratingNum },
-    create: { userId: session.user.id, gameId, rating: ratingNum },
+    create: { userId, gameId, rating: ratingNum },
   })
 
   // PlaySession を追加

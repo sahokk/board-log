@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { getUserGameEntries } from "@/lib/queries"
 import { calculateTitles } from "@/lib/titles"
 import { calculateBoardgameType } from "@/lib/boardgame-type"
 import { ProfileClient } from "./ProfileClient"
@@ -29,13 +30,7 @@ export default async function ProfilePage() {
 
   if (!user) redirect("/api/auth/signin")
 
-  const entries = await prisma.gameEntry.findMany({
-    where: { userId: session.user.id },
-    include: {
-      game: true,
-      sessions: { orderBy: { playedAt: "desc" } },
-    },
-  })
+  const entries = await getUserGameEntries(session.user.id)
 
   const allSessions = entries.flatMap((e) =>
     e.sessions.map((s) => ({ ...s, gameId: e.gameId }))
