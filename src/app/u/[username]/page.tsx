@@ -232,7 +232,11 @@ export default async function PublicProfilePage({ params }: Props) {
             </h2>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {user.wishlistItems.map(({ game }) => (
-                <div key={game.id} className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm">
+                <Link
+                  key={game.id}
+                  href={`/record?gameId=${game.id}`}
+                  className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+                >
                   <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
                     {game.imageUrl ? (
                       <Image
@@ -252,8 +256,9 @@ export default async function PublicProfilePage({ params }: Props) {
                     <p className="line-clamp-2 text-xs font-semibold text-amber-950">
                       {game.nameJa ?? game.name}
                     </p>
+                    <p className="mt-1 text-xs text-amber-700/60">記録する →</p>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>

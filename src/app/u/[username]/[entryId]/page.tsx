@@ -166,9 +166,15 @@ export default async function PublicGameDetailPage({ params }: Props) {
           </div>
         </div>
 
-        {/* 気になるリストに追加 */}
+        {/* アクション */}
         {session?.user?.id && (
-          <div className="mb-6">
+          <div className="mb-6 flex flex-col gap-3">
+            <Link
+              href={`/record?gameId=${game.id}`}
+              className="block w-full rounded-xl bg-amber-900 py-3 text-center text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md"
+            >
+              このゲームを記録する
+            </Link>
             <WishlistButton gameId={game.id} initialWishlisted={wishlisted} />
           </div>
         )}
