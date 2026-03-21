@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import type { BoardgameType } from "@/lib/boardgame-type"
 
 interface Props {
@@ -20,33 +20,44 @@ function AxisBar({ label, leftLabel, rightLabel, score }: Readonly<{
   rightLabel: string
   score: number
 }>) {
-  const [showTooltip, setShowTooltip] = useState(false)
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null)
+  const btnRef = useRef<HTMLButtonElement>(null)
   const tooltip = AXIS_TOOLTIPS[label]
+
+  const showTooltip = () => {
+    if (!btnRef.current) return
+    const rect = btnRef.current.getBoundingClientRect()
+    setTooltipPos({ x: rect.left + rect.width / 2, y: rect.top })
+  }
 
   return (
     <div>
       <div className="mb-1.5 flex items-center gap-1">
         <p className="text-xs font-semibold text-amber-800">{label}</p>
         {tooltip && (
-          <div className="relative">
+          <>
             <button
+              ref={btnRef}
               type="button"
               className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-200/60 text-[10px] font-bold text-amber-700 hover:bg-amber-300/60 transition-colors"
-              onMouseEnter={() => setShowTooltip(true)}
-              onMouseLeave={() => setShowTooltip(false)}
-              onFocus={() => setShowTooltip(true)}
-              onBlur={() => setShowTooltip(false)}
+              onMouseEnter={showTooltip}
+              onMouseLeave={() => setTooltipPos(null)}
+              onFocus={showTooltip}
+              onBlur={() => setTooltipPos(null)}
               aria-label={`${label}の説明`}
             >
               ?
             </button>
-            {showTooltip && (
-              <div className="absolute bottom-full left-1/2 z-50 mb-2 w-56 -translate-x-1/2 rounded-lg bg-amber-950 px-3 py-2 shadow-lg">
+            {tooltipPos && (
+              <div
+                className="pointer-events-none fixed z-50 w-56 -translate-x-1/2 rounded-lg bg-amber-950 px-3 py-2 shadow-lg"
+                style={{ left: tooltipPos.x, top: tooltipPos.y - 8, transform: "translate(-50%, -100%)" }}
+              >
                 <p className="text-xs leading-relaxed text-amber-100">{tooltip}</p>
                 <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-amber-950" />
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
       <div className="relative mx-2 h-2 rounded-full bg-amber-100">

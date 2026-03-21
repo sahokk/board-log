@@ -221,15 +221,16 @@ export default async function PublicProfilePage({ params }: Props) {
               </div>
 
               {/* Right: Stats */}
-              <div className="grid grid-cols-2 sm:grid-cols-1 gap-6 sm:gap-5 sm:shrink-0 border-t sm:border-t-0 sm:border-l border-amber-200/60 pt-5 sm:pt-0 sm:pl-8">
+              <div className="flex items-center justify-center gap-8 sm:flex-col sm:items-end sm:justify-start sm:gap-5 sm:shrink-0 border-t sm:border-t-0 sm:border-l border-amber-200/60 pt-5 sm:pt-0 sm:pl-8">
                 <div className="text-center sm:text-right">
-                  <p className="text-3xl sm:text-4xl font-bold tracking-tight text-amber-950">
+                  <p className="text-3xl sm:text-4xl font-bold tabular-nums tracking-tight text-amber-950">
                     {totalSessions}
                   </p>
                   <p className="mt-0.5 text-xs font-medium text-amber-700/70">総プレイ数</p>
                 </div>
+                <div className="h-8 w-px sm:h-px sm:w-12 bg-amber-200/60" />
                 <div className="text-center sm:text-right">
-                  <p className="text-3xl sm:text-4xl font-bold tracking-tight text-amber-950">
+                  <p className="text-3xl sm:text-4xl font-bold tabular-nums tracking-tight text-amber-950">
                     {uniqueGames}
                   </p>
                   <p className="mt-0.5 text-xs font-medium text-amber-700/70">ゲーム種類</p>
@@ -374,11 +375,6 @@ export default async function PublicProfilePage({ params }: Props) {
                       ) : (
                         <div className="flex h-full items-center justify-center text-amber-300">
                           <span className="text-4xl">🎲</span>
-                        </div>
-                      )}
-                      {entry._count.sessions > 1 && (
-                        <div className="absolute right-1.5 top-1.5 rounded-full bg-amber-900/80 px-1.5 py-0.5 text-[10px] font-bold text-white backdrop-blur-sm">
-                          {entry._count.sessions}回
                         </div>
                       )}
                     </div>
