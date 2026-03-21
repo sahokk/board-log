@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState, useEffect, useLayoutEffect } from "react"
 import Image from "next/image"
 import { toPng } from "html-to-image"
 import { BusinessCard } from "./BusinessCard"
@@ -44,7 +44,7 @@ interface Props {
 
 export function BusinessCardExporter({ user, stats, allGames, featuredGames, savedFeaturedIds, boardgameType, savedCardTheme, titles }: Readonly<Props>) {
   const cardRef = useRef<HTMLDivElement>(null)
-  const previewWrapperRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [exporting, setExporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isReady, setIsReady] = useState(false)
@@ -63,8 +63,16 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
     return () => clearTimeout(timer)
   }, [])
 
+  // Synchronously measure container width before first paint
+  useLayoutEffect(() => {
+    if (containerRef.current) {
+      setScale(containerRef.current.offsetWidth / 1000)
+    }
+  }, [])
+
+  // Keep scale updated on resize
   useEffect(() => {
-    const el = previewWrapperRef.current
+    const el = containerRef.current
     if (!el) return
     const obs = new ResizeObserver(([entry]) => {
       setScale(entry.contentRect.width / 1000)
@@ -158,7 +166,7 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
   const previewH = Math.round(560 * scale)
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" ref={containerRef}>
       {/* Hidden card for export */}
       <div style={{ position: "absolute", left: "-9999px", top: 0, width: "1000px", height: "560px" }}>
         <div ref={cardRef}>
@@ -166,8 +174,8 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
         </div>
       </div>
 
-      {/* Card preview — width tracks the container, scale is derived */}
-      <div ref={previewWrapperRef} className="w-full overflow-hidden rounded-2xl shadow-md" style={{ height: previewH }}>
+      {/* Card preview — scale derived from container width */}
+      <div className="overflow-hidden rounded-2xl shadow-md" style={{ height: previewH }}>
         <div style={{ transform: `scale(${scale})`, transformOrigin: "top left", width: 1000, height: 560 }}>
           <BusinessCard user={user} stats={stats} featuredGames={displayGames} boardgameType={boardgameType} theme={theme} titles={titles} />
         </div>
