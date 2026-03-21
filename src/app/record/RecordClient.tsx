@@ -19,9 +19,7 @@ interface Props {
 
 export function RecordClient({ game, existingEntryId, existingRating }: Props) {
   const router = useRouter()
-  const today = new Date().toISOString().split("T")[0]
-
-  const [playedAt, setPlayedAt] = useState(today)
+  const [playedAt, setPlayedAt] = useState("")
   const [rating, setRating] = useState<number>(existingRating ?? 0)
   const [hoverRating, setHoverRating] = useState<number>(0)
   const [memo, setMemo] = useState("")
@@ -168,14 +166,13 @@ export function RecordClient({ game, existingEntryId, existingRating }: Props) {
       {/* プレイ日 */}
       <div>
         <label htmlFor="playedAt" className="mb-2 block text-sm font-medium text-amber-900">
-          プレイ日 <span className="text-red-600">*</span>
+          プレイ日（任意）
         </label>
         <input
           id="playedAt"
           type="date"
           value={playedAt}
           onChange={(e) => setPlayedAt(e.target.value)}
-          required
           className="w-full rounded-xl border border-amber-200 bg-amber-50/30 px-4 py-3 text-sm text-amber-950 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
         />
       </div>

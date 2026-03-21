@@ -29,9 +29,9 @@ export async function POST(request: NextRequest) {
   const body = await request.json()
   const { gameId, rating, playedAt, memo } = body
 
-  if (!gameId || !playedAt || rating == null) {
+  if (!gameId || rating == null) {
     return NextResponse.json(
-      { error: "gameId, playedAt, rating are required" },
+      { error: "gameId and rating are required" },
       { status: 400 }
     )
   }
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
   const sess = await prisma.playSession.create({
     data: {
       gameEntryId: entry.id,
-      playedAt: new Date(playedAt),
+      playedAt: playedAt ? new Date(playedAt) : new Date(),
       memo: memo?.trim() || null,
     },
   })
