@@ -143,9 +143,9 @@ function scoreFromSignals(
 export function calculateBoardgameType(data: BoardgameTypeInput): BoardgameType | null {
   const { entries, games } = data
 
-  if (entries.length < 3) return null
+  if (entries.length < 1) return null
   const totalSessions = entries.reduce((sum, e) => sum + e.sessionCount, 0)
-  if (totalSessions < 5) return null
+  if (totalSessions < 1) return null
 
   const gameMap = new Map(games.map((g) => [g.gameId, g]))
   const gameList = entries.map((e) => gameMap.get(e.gameId)).filter(Boolean) as typeof games

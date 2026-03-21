@@ -16,6 +16,7 @@ interface Game {
   name: string
   imageUrl: string | null
   sessionCount: number
+  rating: number
 }
 
 interface UserData {

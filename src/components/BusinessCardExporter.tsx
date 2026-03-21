@@ -13,6 +13,7 @@ interface Game {
   name: string
   imageUrl: string | null
   sessionCount: number
+  rating: number
 }
 
 interface UserData {
@@ -47,6 +48,10 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
   const [showPicker, setShowPicker] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>(savedFeaturedIds)
   const [saving, setSaving] = useState(false)
+
+  let exportLabel = "準備中..."
+  if (isReady) exportLabel = "画像DL"
+  if (exporting) exportLabel = "生成中..."
 
   useEffect(() => {
     const timer = setTimeout(() => setIsReady(true), 1000)
@@ -107,7 +112,7 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
   }
 
   const handleShare = () => {
-    const siteUrl = window.location.origin
+    const siteUrl = globalThis.location.origin
     const shareText = `ボードゲームの記録をBoardLogで管理しています！ 🎲\n総プレイ数: ${stats.totalPlays}回 | ゲーム種類: ${stats.uniqueGames}個\n\n${siteUrl}\n\n#BoardLog #ボードゲーム #ボドゲ`
     globalThis.open(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`,
@@ -138,7 +143,7 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
           disabled={exporting || !isReady}
           className="flex-1 rounded-lg bg-amber-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-amber-800 disabled:opacity-50 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:outline-none"
         >
-          {exporting ? "生成中..." : !isReady ? "準備中..." : "画像DL"}
+          {exportLabel}
         </button>
         <button
           onClick={() => setShowPicker((v) => !v)}
@@ -185,6 +190,7 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
                     )}
                   </div>
                   <p className="line-clamp-2 text-[10px] leading-tight text-amber-900">{game.name}</p>
+                  <p className="mt-0.5 text-[10px] text-amber-500">{"★".repeat(game.rating)}{"☆".repeat(5 - game.rating)}</p>
                   {selected && (
                     <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-600 text-[9px] font-bold text-white">
                       {selectedIds.indexOf(game.entryId) + 1}

@@ -62,14 +62,15 @@ export default async function ProfilePage() {
     })),
   })
 
-  // All played games for the picker
+  // All played games for the picker — sorted by rating desc, then session count desc
   const allGames = entries.map((e) => ({
     id: e.game.id,
     entryId: e.id,
     name: e.game.nameJa || e.game.name,
     imageUrl: e.game.imageUrl,
     sessionCount: e.sessions.length,
-  })).sort((a, b) => b.sessionCount - a.sessionCount)
+    rating: e.rating,
+  })).sort((a, b) => b.rating - a.rating || b.sessionCount - a.sessionCount)
 
   // Resolve featured games from saved IDs, fallback to top-3 by session count
   const savedIds: string[] = user.featuredEntryIds ? JSON.parse(user.featuredEntryIds) : []
