@@ -28,7 +28,9 @@ function AxisBar({ label, leftLabel, rightLabel, score }: Readonly<{
   const showTooltip = () => {
     if (!btnRef.current) return
     const rect = btnRef.current.getBoundingClientRect()
-    setTooltipPos({ x: rect.left + rect.width / 2, y: rect.top })
+    // w-56 = 224px, half = 112px — clamp so tooltip stays within viewport
+    const x = Math.min(Math.max(rect.left + rect.width / 2, 112), window.innerWidth - 112)
+    setTooltipPos({ x, y: rect.top })
   }
 
   return (
