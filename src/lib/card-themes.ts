@@ -10,6 +10,7 @@ export interface CardTheme {
 }
 
 export const CARD_THEMES: CardTheme[] = [
+  // ── Classic ──────────────────────────────────────────────
   {
     id: "amber",
     name: "アンバー",
@@ -69,6 +70,47 @@ export const CARD_THEMES: CardTheme[] = [
     accentColor: "#fecaca",
     accentMuted: "rgba(254,202,202,0.6)",
     decorRgb: "239,68,68",
+  },
+  // ── Pastel / Cute ─────────────────────────────────────────
+  {
+    id: "sakura",
+    name: "さくら",
+    swatch: "#be185d",
+    leftBg: "linear-gradient(160deg, #881337 0%, #be185d 55%, #fbcfe8 100%)",
+    footerBg: "linear-gradient(135deg, #881337 0%, #be185d 100%)",
+    accentColor: "#fce7f3",
+    accentMuted: "rgba(252,231,243,0.7)",
+    decorRgb: "236,72,153",
+  },
+  {
+    id: "lavender",
+    name: "ラベンダー",
+    swatch: "#a855f7",
+    leftBg: "linear-gradient(160deg, #4a044e 0%, #a855f7 55%, #f0abfc 100%)",
+    footerBg: "linear-gradient(135deg, #4a044e 0%, #a855f7 100%)",
+    accentColor: "#fae8ff",
+    accentMuted: "rgba(250,232,255,0.7)",
+    decorRgb: "217,70,239",
+  },
+  {
+    id: "aqua",
+    name: "アクア",
+    swatch: "#0891b2",
+    leftBg: "linear-gradient(160deg, #164e63 0%, #0891b2 55%, #a5f3fc 100%)",
+    footerBg: "linear-gradient(135deg, #164e63 0%, #0891b2 100%)",
+    accentColor: "#cffafe",
+    accentMuted: "rgba(207,250,254,0.7)",
+    decorRgb: "6,182,212",
+  },
+  {
+    id: "lemon",
+    name: "レモン",
+    swatch: "#ca8a04",
+    leftBg: "linear-gradient(160deg, #3a2000 0%, #a16207 55%, #fef08a 100%)",
+    footerBg: "linear-gradient(135deg, #3a2000 0%, #a16207 100%)",
+    accentColor: "#fefce8",
+    accentMuted: "rgba(254,252,232,0.7)",
+    decorRgb: "234,179,8",
   },
 ]
 

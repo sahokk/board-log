@@ -164,9 +164,9 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
       </div>
 
       {/* Theme swatches */}
-      <div className="flex items-center gap-2">
-        <p className="text-xs font-medium text-amber-800/70 shrink-0">カラー</p>
-        <div className="flex gap-2">
+      <div className="flex items-start gap-3">
+        <p className="mt-1 text-xs font-medium text-amber-800/70 shrink-0">カラー</p>
+        <div className="flex flex-wrap gap-2">
           {CARD_THEMES.map((t) => (
             <button
               key={t.id}
