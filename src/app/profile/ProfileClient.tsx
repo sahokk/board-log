@@ -197,7 +197,7 @@ export function ProfileClient({ user, stats, allGames, featuredGames, savedFeatu
         <div className="wood-card rounded-2xl p-12 text-center shadow-sm">
           <div className="mb-4 text-5xl">🎲</div>
           <p className="mb-2 text-lg font-medium text-amber-900">まだプレイ記録がありません</p>
-          <p className="mb-6 text-sm text-amber-800/70">ゲームをプレイしたら記録してみましょう</p>
+          <p className="mb-6 text-sm text-amber-800/70">遊んだゲームを登録してみましょう</p>
           <Link
             href="/"
             className="inline-block rounded-xl bg-amber-900 px-6 py-3 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800"

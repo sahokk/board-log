@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma"
 import { getDisplayName, getProfileImage, parseFavoriteGenres } from "@/lib/profile-utils"
 import { calculateTitles } from "@/lib/titles"
 import { calculateBoardgameType } from "@/lib/boardgame-type"
-import { translateCategory, translateMechanic } from "@/lib/bgg/translations"
+import { translateMechanic } from "@/lib/bgg/translations"
 import { GameImage } from "@/components/GameImage"
 import { TitleBadges } from "@/components/TitleBadges"
 import { MechanicTag } from "@/components/MechanicTag"
@@ -83,20 +83,6 @@ export default async function PublicProfilePage({ params }: Props) {
   const entries = user.gameEntries
   const uniqueGames = entries.length
   const totalSessions = entries.reduce((sum, e) => sum + e._count.sessions, 0)
-
-  // カテゴリ統計
-  const categoryMap = new Map<string, number>()
-  entries.forEach((e) => {
-    if (e.game.categories) {
-      e.game.categories.split(",").forEach((cat) => {
-        const t = translateCategory(cat.trim())
-        if (t) categoryMap.set(t, (categoryMap.get(t) ?? 0) + 1)
-      })
-    }
-  })
-  const topCategories = Array.from(categoryMap, ([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 8)
 
   // メカニクス統計
   const mechanicMap = new Map<string, { count: number; nameEn: string }>()
@@ -232,46 +218,22 @@ export default async function PublicProfilePage({ params }: Props) {
           <TitleBadges titles={titles} />
         </div>
 
-        {/* カテゴリ・メカニクス (side by side on desktop) */}
-        {(topCategories.length > 0 || topMechanics.length > 0) && (
-          <div className="mb-12 grid gap-6 sm:grid-cols-2">
-            {topCategories.length > 0 && (
-              <div>
-                <h2 className="mb-4 text-xl font-bold tracking-tight text-amber-950">よく遊ぶカテゴリ</h2>
-                <div className="wood-card rounded-2xl p-5 shadow-sm">
-                  <div className="flex flex-wrap gap-2">
-                    {topCategories.map(({ name, count }, i) => (
-                      <span
-                        key={name}
-                        className={"inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium " + tagClass(i)}
-                      >
-                        {name}
-                        <span className={"text-xs " + (i === 0 ? "text-amber-200" : "text-amber-600")}>
-                          {count}
-                        </span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
+        {/* メカニクス */}
+        {topMechanics.length > 0 && (
+          <div className="mb-12">
+            <h2 className="mb-4 text-xl font-bold tracking-tight text-amber-950">よく遊ぶメカニクス</h2>
+            <div className="wood-card rounded-2xl p-5 shadow-sm">
+              <div className="flex flex-wrap gap-2">
+                {topMechanics.map(({ name, nameEn, count }, i) => (
+                  <span key={name} className={"inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium " + tagClass(i)}>
+                    <MechanicTag name={nameEn ?? name} variant="bare" />
+                    <span className={"text-xs " + (i === 0 ? "text-amber-200" : "text-amber-600")}>
+                      {count}
+                    </span>
+                  </span>
+                ))}
               </div>
-            )}
-            {topMechanics.length > 0 && (
-              <div>
-                <h2 className="mb-4 text-xl font-bold tracking-tight text-amber-950">よく遊ぶメカニクス</h2>
-                <div className="wood-card rounded-2xl p-5 shadow-sm">
-                  <div className="flex flex-wrap gap-2">
-                    {topMechanics.map(({ name, nameEn, count }, i) => (
-                      <span key={name} className={"inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium " + tagClass(i)}>
-                        <MechanicTag name={nameEn ?? name} variant="bare" />
-                        <span className={"text-xs " + (i === 0 ? "text-amber-200" : "text-amber-600")}>
-                          {count}
-                        </span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
+            </div>
           </div>
         )}
 
@@ -306,10 +268,10 @@ export default async function PublicProfilePage({ params }: Props) {
           </div>
         )}
 
-        {/* プレイ履歴 */}
+        {/* 遊んだゲームリスト */}
         <div className="mb-12">
           <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">
-            {"プレイ履歴"}<span className="ml-2 text-base font-normal text-amber-800/60">{uniqueGames}タイトル</span>
+            {"遊んだゲームリスト"}<span className="ml-2 text-base font-normal text-amber-800/60">{uniqueGames}タイトル</span>
           </h2>
           {entries.length === 0 ? (
             <div className="wood-card rounded-2xl p-12 text-center shadow-sm">
@@ -319,7 +281,6 @@ export default async function PublicProfilePage({ params }: Props) {
           ) : (
             <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {entries.map((entry) => {
-                const latestSession = entry.sessions[0]
                 return (
                   <Link
                     key={entry.id}
@@ -350,11 +311,6 @@ export default async function PublicProfilePage({ params }: Props) {
                         </div>
                         <span className="text-xs text-amber-700/50">{entry._count.sessions}回</span>
                       </div>
-                      {latestSession?.playedAt && (
-                        <p className="mt-1 text-xs text-amber-700/60">
-                          {new Intl.DateTimeFormat("ja-JP", { year: "numeric", month: "short", day: "numeric" }).format(latestSession.playedAt)}
-                        </p>
-                      )}
                     </div>
                   </Link>
                 )

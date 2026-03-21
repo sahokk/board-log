@@ -39,7 +39,7 @@ export default async function PlayDetailPage({ params }: Props) {
           href="/plays"
           className="mb-8 inline-flex items-center text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
         >
-          ← プレイ履歴に戻る
+          ← 遊んだゲームリストに戻る
         </Link>
 
         {/* ゲーム箱画像 */}
