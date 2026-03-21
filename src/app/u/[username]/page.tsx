@@ -100,6 +100,7 @@ export default async function PublicProfilePage({ params }: Props) {
   const titles = calculateTitles({
     entries: entries.map((e) => ({ gameId: e.gameId, rating: e.rating })),
     sessions: allSessions.map((s) => ({ playedAt: s.playedAt, gameId: s.gameId })),
+    games: entries.map((e) => ({ categories: e.game.categories, mechanics: e.game.mechanics })),
   })
 
   const shareText = encodeURIComponent(displayName + "のボードゲームプロフィール🎲")

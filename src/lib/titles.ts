@@ -10,8 +10,10 @@ export interface TitleWithUnlocked extends Title {
 }
 
 export interface TitleData {
-  entries: { gameId: string; rating: number }[]        // GameEntry一覧
-  sessions: { playedAt: Date; gameId: string }[]       // PlaySession一覧
+  entries: { gameId: string; rating: number }[]
+  sessions: { playedAt: Date; gameId: string }[]
+  games?: { categories: string | null; mechanics: string | null }[] // プレイ済みゲームのメタデータ
+  wishlistCount?: number
 }
 
 interface TitleDefinition extends Title {
@@ -25,6 +27,11 @@ interface TitleStats {
   maxSameGame: number
   fiveStarCount: number
   maxConsecutiveDays: number
+  uniqueCategories: number
+  uniqueMechanics: number
+  maxSameCategory: number
+  maxSameMechanic: number
+  wishlistCount: number
 }
 
 const TITLES: TitleDefinition[] = [
@@ -135,6 +142,68 @@ const TITLES: TitleDefinition[] = [
     icon: "🏆",
     check: (s) => s.maxConsecutiveDays >= 30,
   },
+
+  // カテゴリ系
+  {
+    id: "genre-explorer",
+    name: "ジャンル探検家",
+    description: "5種類以上のカテゴリのゲームをプレイした",
+    icon: "🗺️",
+    check: (s) => s.uniqueCategories >= 5,
+  },
+  {
+    id: "genre-allrounder",
+    name: "オールラウンダー",
+    description: "10種類以上のカテゴリのゲームをプレイした",
+    icon: "🌈",
+    check: (s) => s.uniqueCategories >= 10,
+  },
+  {
+    id: "genre-specialist",
+    name: "ジャンルの達人",
+    description: "同じカテゴリのゲームを10本以上プレイした",
+    icon: "🎯",
+    check: (s) => s.maxSameCategory >= 10,
+  },
+
+  // メカニクス系
+  {
+    id: "mechanic-hunter",
+    name: "メカニクスハンター",
+    description: "5種類以上のメカニクスを経験した",
+    icon: "⚙️",
+    check: (s) => s.uniqueMechanics >= 5,
+  },
+  {
+    id: "mechanic-expert",
+    name: "ゲームシステム通",
+    description: "15種類以上のメカニクスを経験した",
+    icon: "🔧",
+    check: (s) => s.uniqueMechanics >= 15,
+  },
+  {
+    id: "mechanic-devotee",
+    name: "こだわりのスタイル",
+    description: "同じメカニクスのゲームを10本以上プレイした",
+    icon: "💡",
+    check: (s) => s.maxSameMechanic >= 10,
+  },
+
+  // 気になる系
+  {
+    id: "wishlist-dreamer",
+    name: "夢想家",
+    description: "気になるリストに3件追加した",
+    icon: "🌙",
+    check: (s) => s.wishlistCount >= 3,
+  },
+  {
+    id: "wishlist-collector",
+    name: "欲しいものリスト",
+    description: "気になるリストに10件追加した",
+    icon: "📋",
+    check: (s) => s.wishlistCount >= 10,
+  },
 ]
 
 function calculateMaxConsecutiveDays(sessions: { playedAt: Date }[]): number {
@@ -166,7 +235,7 @@ function calculateMaxConsecutiveDays(sessions: { playedAt: Date }[]): number {
   return maxStreak
 }
 
-export function calculateTitles({ entries, sessions }: TitleData): TitleWithUnlocked[] {
+export function calculateTitles({ entries, sessions, games = [], wishlistCount = 0 }: TitleData): TitleWithUnlocked[] {
   const totalPlays = sessions.length
   const uniqueGames = entries.length
   const averageRating =
@@ -174,7 +243,6 @@ export function calculateTitles({ entries, sessions }: TitleData): TitleWithUnlo
       ? entries.reduce((sum, e) => sum + e.rating, 0) / entries.length
       : 0
 
-  // 同一ゲームの最大セッション数
   const sessionCountByGame = new Map<string, number>()
   sessions.forEach((s) => {
     sessionCountByGame.set(s.gameId, (sessionCountByGame.get(s.gameId) ?? 0) + 1)
@@ -184,6 +252,24 @@ export function calculateTitles({ entries, sessions }: TitleData): TitleWithUnlo
   const fiveStarCount = entries.filter((e) => e.rating === 5).length
   const maxConsecutiveDays = calculateMaxConsecutiveDays(sessions)
 
+  // カテゴリ・メカニクス統計
+  const categoryCount = new Map<string, number>()
+  const mechanicCount = new Map<string, number>()
+  games.forEach((g) => {
+    g.categories?.split(",").forEach((c) => {
+      const key = c.trim()
+      if (key) categoryCount.set(key, (categoryCount.get(key) ?? 0) + 1)
+    })
+    g.mechanics?.split(",").forEach((m) => {
+      const key = m.trim()
+      if (key) mechanicCount.set(key, (mechanicCount.get(key) ?? 0) + 1)
+    })
+  })
+  const uniqueCategories = categoryCount.size
+  const uniqueMechanics = mechanicCount.size
+  const maxSameCategory = Math.max(0, ...categoryCount.values())
+  const maxSameMechanic = Math.max(0, ...mechanicCount.values())
+
   const stats: TitleStats = {
     totalPlays,
     uniqueGames,
@@ -191,6 +277,11 @@ export function calculateTitles({ entries, sessions }: TitleData): TitleWithUnlo
     maxSameGame,
     fiveStarCount,
     maxConsecutiveDays,
+    uniqueCategories,
+    uniqueMechanics,
+    maxSameCategory,
+    maxSameMechanic,
+    wishlistCount,
   }
 
   return TITLES.map((title) => ({
