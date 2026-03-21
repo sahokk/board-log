@@ -17,6 +17,7 @@ model User {
   image         String?
 
   // Profile customization fields
+  username        String? @unique // Public profile URL slug (e.g. /u/username)
   displayName     String? // Custom display name (overrides OAuth name)
   customImageUrl  String? // Custom profile image URL (overrides OAuth image)
   favoriteGenres  String? // Comma-separated genre tags

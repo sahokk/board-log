@@ -25,6 +25,7 @@ const GENRE_OPTIONS = [
 ] as const
 
 interface Props {
+  initialUsername: string | null
   initialDisplayName: string
   initialImageUrl: string | null
   initialFavoriteGenres: string
@@ -33,12 +34,14 @@ interface Props {
 }
 
 export function ProfileEditForm({
+  initialUsername,
   initialDisplayName,
   initialImageUrl,
   initialFavoriteGenres,
   onCancel,
   onSuccess,
 }: Props) {
+  const [username, setUsername] = useState(initialUsername ?? "")
   const [displayName, setDisplayName] = useState(initialDisplayName)
   const [selectedGenres, setSelectedGenres] = useState<string[]>(() => {
     if (!initialFavoriteGenres) return []
@@ -108,6 +111,7 @@ export function ProfileEditForm({
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          username: username.trim() || null,
           displayName: displayName.trim(),
           customImageUrl: imageUrl,
           favoriteGenres: selectedGenres.join(", "),
@@ -128,6 +132,26 @@ export function ProfileEditForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Username */}
+      <div>
+        <label className="mb-2 block text-sm font-medium text-amber-900">
+          ユーザー名
+        </label>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-amber-800/60">/u/</span>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="your_name"
+            className="flex-1 rounded-xl border border-amber-200 bg-amber-50/30 px-4 py-3 text-sm text-amber-950 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
+          />
+        </div>
+        <p className="mt-1 text-xs text-amber-800/70">
+          3〜20文字の半角英数字・アンダースコア・ハイフン。公開プロフィールのURLになります。
+        </p>
+      </div>
+
       {/* Display Name */}
       <div>
         <label className="mb-2 block text-sm font-medium text-amber-900">
