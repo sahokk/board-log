@@ -7,7 +7,7 @@ import { Footer } from "@/components/Footer"
 import { Providers } from "@/components/Providers"
 
 export const metadata: Metadata = {
-  title: "BoardLog - ボードゲームの思い出アルバム",
+  title: "Boardory - ボードゲームの思い出アルバム",
   description:
     "遊んだボードゲームを記録して、思い出アルバムのように振り返ろう",
 }

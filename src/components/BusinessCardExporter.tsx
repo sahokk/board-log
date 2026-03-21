@@ -146,7 +146,7 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
     try {
       const dataUrl = await generateImage()
       const link = document.createElement("a")
-      link.download = `boardlog-card-${Date.now()}.png`
+      link.download = `boardory-card-${Date.now()}.png`
       link.href = dataUrl
       link.click()
     } catch {
@@ -157,7 +157,7 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
   }
 
   const handleShareX = () => {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://board-log.pekori.dev"
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://boardory.pekori.dev"
     const profileUrl = user.username ? `${baseUrl}/u/${user.username}` : baseUrl
     const lines = [
       `${boardgameType.icon} ボードゲームタイプ：${boardgameType.name}`,
@@ -165,7 +165,7 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
       "",
       profileUrl,
       "",
-      "#BoardLog #ボードゲーム #ボドゲ",
+      "#Boardory #ボードゲーム #ボドゲ",
     ]
     globalThis.open(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(lines.join("\n"))}`,

@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     select: { game: { select: { name: true, nameJa: true } } },
   })
   if (!entry) return { title: "ゲームが見つかりません" }
-  return { title: (entry.game.nameJa ?? entry.game.name) + " | BoardLog" }
+  return { title: (entry.game.nameJa ?? entry.game.name) + " | Boardory" }
 }
 
 function formatDate(date: Date | null): string {

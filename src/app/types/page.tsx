@@ -9,8 +9,8 @@ const AXIS_LABELS: Record<string, { weight: string; variety: string }> = {
 }
 
 export const metadata = {
-  title: "ボドゲタイプ一覧 | BoardLog",
-  description: "BoardLogのボードゲームタイプ4種類を紹介。あなたはどのタイプ？",
+  title: "ボドゲタイプ一覧 | Boardory",
+  description: "Boardoryのボードゲームタイプ4種類を紹介。あなたはどのタイプ？",
 }
 
 export default function TypesPage() {
@@ -22,7 +22,7 @@ export default function TypesPage() {
           <p className="mb-2 text-4xl">🎲</p>
           <h1 className="text-3xl font-bold tracking-tight text-amber-950">ボドゲタイプ一覧</h1>
           <p className="mt-2 text-sm text-amber-800/70">
-            BoardLogはあなたのプレイ記録からボードゲームタイプを診断します
+            Boardoryはあなたのプレイ記録からボードゲームタイプを診断します
           </p>
         </div>
 

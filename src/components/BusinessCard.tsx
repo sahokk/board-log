@@ -43,7 +43,7 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
   const genres = parseFavoriteGenres(user.favoriteGenres)
   const displayGames = featuredGames.slice(0, 3)
   const unlockedTitles = titles.filter((t) => t.unlocked).slice(0, 6)
-  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL ?? "https://board-log.pekori.dev").replace(/^https?:\/\//, "")
+  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL ?? "https://boardory.pekori.dev").replace(/^https?:\/\//, "")
   const profileUrl = user.username ? `${baseUrl}/u/${user.username}` : baseUrl
   const rightW = CARD_W - LEFT_W
 
@@ -209,7 +209,7 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "0 32px",
       }}>
-        <p style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>🎲 BoardLog</p>
+        <p style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>🎲 Boardory</p>
         <p style={{ fontSize: 10, color: theme.accentMuted }}>{profileUrl}</p>
       </div>
     </div>

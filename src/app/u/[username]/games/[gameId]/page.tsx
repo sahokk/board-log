@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     select: { name: true, nameJa: true },
   })
   if (!game) return { title: "ゲームが見つかりません" }
-  return { title: (game.nameJa ?? game.name) + " | BoardLog" }
+  return { title: (game.nameJa ?? game.name) + " | Boardory" }
 }
 
 export default async function PublicGamePage({ params }: Props) {

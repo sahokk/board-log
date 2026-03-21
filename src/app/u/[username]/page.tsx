@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!user) return { title: "ユーザーが見つかりません" }
   const displayName = getDisplayName(user)
   return {
-    title: `${displayName}のボードゲームプロフィール | BoardLog`,
+    title: `${displayName}のボードゲームプロフィール | Boardory`,
     description: `${displayName}さんのボードゲーム記録`,
   }
 }
