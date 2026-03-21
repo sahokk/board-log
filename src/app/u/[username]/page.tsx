@@ -268,10 +268,10 @@ export default async function PublicProfilePage({ params }: Props) {
           </div>
         )}
 
-        {/* プレイ履歴 */}
+        {/* 遊んだゲームリスト */}
         <div className="mb-12">
           <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">
-            {"プレイ履歴"}<span className="ml-2 text-base font-normal text-amber-800/60">{uniqueGames}タイトル</span>
+            {"遊んだゲームリスト"}<span className="ml-2 text-base font-normal text-amber-800/60">{uniqueGames}タイトル</span>
           </h2>
           {entries.length === 0 ? (
             <div className="wood-card rounded-2xl p-12 text-center shadow-sm">
@@ -281,7 +281,6 @@ export default async function PublicProfilePage({ params }: Props) {
           ) : (
             <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {entries.map((entry) => {
-                const latestSession = entry.sessions[0]
                 return (
                   <Link
                     key={entry.id}
@@ -312,11 +311,6 @@ export default async function PublicProfilePage({ params }: Props) {
                         </div>
                         <span className="text-xs text-amber-700/50">{entry._count.sessions}回</span>
                       </div>
-                      {latestSession?.playedAt && (
-                        <p className="mt-1 text-xs text-amber-700/60">
-                          {new Intl.DateTimeFormat("ja-JP", { year: "numeric", month: "short", day: "numeric" }).format(latestSession.playedAt)}
-                        </p>
-                      )}
                     </div>
                   </Link>
                 )
