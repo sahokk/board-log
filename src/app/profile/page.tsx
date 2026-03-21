@@ -15,6 +15,7 @@ export default async function ProfilePage() {
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: {
+      username: true,
       displayName: true,
       customImageUrl: true,
       favoriteGenres: true,
