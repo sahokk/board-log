@@ -55,18 +55,10 @@ export function BoardgameTypeCard({ type }: Props) {
         <p className="mb-5 text-sm leading-relaxed text-amber-900">{type.description}</p>
 
         <div className="space-y-4">
-          <AxisBar
-            label="重さ"
-            leftLabel="カジュアル派"
-            rightLabel="ストラテジー派"
-            score={type.weightScore}
-          />
-          <AxisBar
-            label="プレイスタイル"
-            leftLabel="極め派"
-            rightLabel="探索派"
-            score={type.varietyScore}
-          />
+          <AxisBar label="重さ" leftLabel="カジュアル派" rightLabel="ストラテジー派" score={type.weightScore} />
+          <AxisBar label="探索性" leftLabel="極め派" rightLabel="探索派" score={type.varietyScore} />
+          <AxisBar label="社交性" leftLabel="競争派" rightLabel="協力/ソーシャル派" score={type.socialScore} />
+          <AxisBar label="テーマ性" leftLabel="システム/ユーロ派" rightLabel="テーマ派" score={type.themeScore} />
         </div>
       </div>
     </div>

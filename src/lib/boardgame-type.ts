@@ -14,11 +14,13 @@ export interface BoardgameType {
   icon: string
   tagline: string
   description: string
-  weightScore: number  // 0-100, higher = heavier / more strategic
-  varietyScore: number // 0-100, higher = more variety / explorer
+  weightScore: number  // 0-100: カジュアル → ストラテジー
+  varietyScore: number // 0-100: 極め派 → 探索派
+  socialScore: number  // 0-100: 競争派 → 協力/ソーシャル派
+  themeScore: number   // 0-100: システム/ユーロ派 → テーマ派
 }
 
-// Category/mechanic keywords that signal heavier, more strategic games
+// Heavy, strategic game signals
 const HEAVY_SIGNALS = new Set([
   "Economic", "Wargames", "Political", "Industry / Manufacturing",
   "Worker Placement", "Engine Building", "Resource Management",
@@ -30,13 +32,44 @@ const HEAVY_SIGNALS = new Set([
   "Abstract Strategy", "Negotiation",
 ])
 
-// Category/mechanic keywords that signal lighter, more casual games
+// Light, casual game signals — weighted less aggressively (see LIGHT_WEIGHT below)
 const LIGHT_SIGNALS = new Set([
   "Party Game", "Children's Game", "Children", "Animals",
   "Dice Rolling", "Push Your Luck", "Bluffing", "Voting",
   "Pattern Recognition", "Memory", "Speed", "Real-time",
   "Trivia", "Word Game", "Racing", "Roll / Spin and Move",
   "Humor", "Deduction", "Social Deduction",
+])
+
+// Light game signals count at 60% to avoid casual frequency of play inflating the "light" bias
+const LIGHT_WEIGHT = 0.6
+
+// Social/cooperative signals
+const SOCIAL_SIGNALS = new Set([
+  "Cooperative Game", "Team-Based Game", "Semi-Cooperative Game",
+  "Social Deduction", "Bluffing", "Voting", "Party Game",
+  "Role Playing", "Storytelling", "Acting",
+])
+
+// Competitive signals
+const COMPETITIVE_SIGNALS = new Set([
+  "Area Control", "Area Majority / Influence", "Auction/Bidding",
+  "Player Elimination", "Elimination", "Negotiation",
+  "Take That", "Trading",
+])
+
+// Thematic game signals (narrative, setting-driven)
+const THEMATIC_SIGNALS = new Set([
+  "Fantasy", "Science Fiction", "Adventure", "Horror", "Mythology",
+  "Medieval", "Pirates", "Exploration", "Humor", "Animals",
+  "Storytelling", "Role Playing", "Miniatures", "Campaign / Battle Card Driven",
+  "Modular Board", "Variable Set-up",
+])
+
+// Abstract/euro game signals (system-driven)
+const ABSTRACT_SIGNALS = new Set([
+  "Abstract Strategy", "Economic", "Industry / Manufacturing",
+  "Math", "Number", "Puzzle", "Pattern Building",
 ])
 
 const TYPE_DEFINITIONS = [
@@ -82,68 +115,74 @@ const TYPE_DEFINITIONS = [
   },
 ]
 
+function scoreFromSignals(
+  games: { categories: string | null; mechanics: string | null }[],
+  positiveSet: Set<string>,
+  negativeSet: Set<string>,
+  negativeWeight = 1,
+): number {
+  let pos = 0
+  let neg = 0
+  let total = 0
+  for (const g of games) {
+    const tokens = [
+      ...(g.categories?.split(",").map((s) => s.trim()) ?? []),
+      ...(g.mechanics?.split(",").map((s) => s.trim()) ?? []),
+    ]
+    for (const t of tokens) {
+      if (positiveSet.has(t)) pos++
+      else if (negativeSet.has(t)) neg++
+      total++
+    }
+  }
+  if (total === 0) return 50
+  const bias = (pos - neg * negativeWeight) / total
+  return Math.round(Math.max(5, Math.min(95, 50 + bias * 150)))
+}
+
 export function calculateBoardgameType(data: BoardgameTypeInput): BoardgameType | null {
   const { entries, games } = data
 
-  // Need enough data to make a meaningful determination
   if (entries.length < 3) return null
   const totalSessions = entries.reduce((sum, e) => sum + e.sessionCount, 0)
   if (totalSessions < 5) return null
 
-  // --- Weight Score (0-100, higher = heavier) ---
-  let weightScore = 50
-
   const gameMap = new Map(games.map((g) => [g.gameId, g]))
+  const gameList = entries.map((e) => gameMap.get(e.gameId)).filter(Boolean) as typeof games
 
-  // Collect entries that have weight data
-  const gamesWithWeight = entries
-    .map((e) => gameMap.get(e.gameId))
-    .filter((g): g is NonNullable<typeof g> => g !== undefined && g.weight !== null)
+  // --- Weight Score ---
+  let weightScore = 50
+  const gamesWithWeight = gameList.filter((g) => g.weight !== null)
 
   if (gamesWithWeight.length >= Math.floor(entries.length * 0.3)) {
-    // Use actual weight data (BGG scale: 1.0 = lightest, 5.0 = heaviest; 3+ is considered heavy)
-    const avgWeight =
-      gamesWithWeight.reduce((sum, g) => sum + (g.weight ?? 0), 0) / gamesWithWeight.length
+    // Use actual BGG weight data (1.0 lightest → 5.0 heaviest)
+    const avgWeight = gamesWithWeight.reduce((sum, g) => sum + (g.weight ?? 0), 0) / gamesWithWeight.length
     weightScore = Math.round(((avgWeight - 1) / 4) * 100)
   } else {
-    // Infer from categories/mechanics
-    let heavyCount = 0
-    let lightCount = 0
-    let signalCount = 0
-    for (const e of entries) {
-      const g = gameMap.get(e.gameId)
-      if (!g) continue
-      const cats = g.categories?.split(",").map((s) => s.trim()) ?? []
-      const mechs = g.mechanics?.split(",").map((s) => s.trim()) ?? []
-      for (const s of [...cats, ...mechs]) {
-        if (HEAVY_SIGNALS.has(s)) heavyCount++
-        else if (LIGHT_SIGNALS.has(s)) lightCount++
-        signalCount++
-      }
-    }
-    if (signalCount > 0) {
-      const bias = (heavyCount - lightCount) / signalCount
-      weightScore = Math.round(Math.max(0, Math.min(100, 50 + bias * 150)))
-    }
+    // Infer from categories/mechanics; light signals count at LIGHT_WEIGHT to reduce casual play bias
+    weightScore = scoreFromSignals(gameList, HEAVY_SIGNALS, LIGHT_SIGNALS, LIGHT_WEIGHT)
   }
 
-  // --- Variety Score (0-100, higher = more variety / explorer) ---
-  // avgSessionsPerGame: low = explorer, high = specialist
+  // --- Variety Score ---
+  // Lower avg sessions/game = explorer; higher = specialist
   const avgSessionsPerGame = totalSessions / entries.length
-  // Score: 1 sess/game → ~95, 3 → ~60, 5 → ~30, 10+ → ~5
   const varietyScore = Math.round(Math.max(5, Math.min(95, 105 - avgSessionsPerGame * 20)))
 
-  // --- Determine type ---
+  // --- Social Score ---
+  // Higher = cooperative/social; lower = competitive
+  const socialScore = scoreFromSignals(gameList, SOCIAL_SIGNALS, COMPETITIVE_SIGNALS)
+
+  // --- Theme Score ---
+  // Higher = thematic/narrative; lower = abstract/euro/system
+  const themeScore = scoreFromSignals(gameList, THEMATIC_SIGNALS, ABSTRACT_SIGNALS)
+
+  // --- Determine type (based on primary axes: weight + variety) ---
   const isHeavy = weightScore >= 50
   const isWide = varietyScore >= 50
 
   const typeId = isHeavy
-    ? isWide
-      ? "strategic-explorer"
-      : "strategic-specialist"
-    : isWide
-      ? "party-explorer"
-      : "party-specialist"
+    ? isWide ? "strategic-explorer" : "strategic-specialist"
+    : isWide ? "party-explorer" : "party-specialist"
 
   const typeDef = TYPE_DEFINITIONS.find((t) => t.id === typeId)!
 
@@ -155,5 +194,7 @@ export function calculateBoardgameType(data: BoardgameTypeInput): BoardgameType 
     description: typeDef.description,
     weightScore,
     varietyScore,
+    socialScore,
+    themeScore,
   }
 }
