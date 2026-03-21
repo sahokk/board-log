@@ -52,6 +52,10 @@ export default async function PublicProfilePage({ params }: Props) {
         },
         orderBy: { updatedAt: "desc" },
       },
+      wishlistItems: {
+        include: { game: true },
+        orderBy: { createdAt: "desc" },
+      },
     },
   })
 
@@ -214,6 +218,41 @@ export default async function PublicProfilePage({ params }: Props) {
                   </span>
                 ))}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* 気になるリスト */}
+        {user.wishlistItems.length > 0 && (
+          <div className="mb-12">
+            <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">
+              {"気になるリスト"}<span className="ml-2 text-base font-normal text-amber-800/60">{user.wishlistItems.length}タイトル</span>
+            </h2>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              {user.wishlistItems.map(({ game }) => (
+                <div key={game.id} className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm">
+                  <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
+                    {game.imageUrl ? (
+                      <Image
+                        src={game.imageUrl}
+                        alt={game.nameJa ?? game.name}
+                        fill
+                        className="object-contain p-3"
+                        sizes="(max-width: 640px) 50vw, 20vw"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-amber-300">
+                        <span className="text-4xl">🎲</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-3">
+                    <p className="line-clamp-2 text-xs font-semibold text-amber-950">
+                      {game.nameJa ?? game.name}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
