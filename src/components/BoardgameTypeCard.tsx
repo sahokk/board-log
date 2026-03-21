@@ -50,8 +50,8 @@ function AxisBar({ label, leftLabel, rightLabel, score }: Readonly<{
             </button>
             {tooltipPos && (
               <div
-                className="pointer-events-none fixed z-50 w-56 -translate-x-1/2 rounded-lg bg-amber-950 px-3 py-2 shadow-lg"
-                style={{ left: tooltipPos.x, top: tooltipPos.y - 8, transform: "translate(-50%, -100%)" }}
+                className="pointer-events-none fixed z-50 w-56 rounded-lg bg-amber-950 px-3 py-2 shadow-lg"
+                style={{ left: `${tooltipPos.x}px`, top: `${tooltipPos.y - 8}px`, transform: "translate(-50%, -100%)" }}
               >
                 <p className="text-xs leading-relaxed text-amber-100">{tooltip}</p>
                 <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-amber-950" />
