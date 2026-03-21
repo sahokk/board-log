@@ -177,7 +177,7 @@ export function SearchClient() {
                       href={`/record?gameId=${game.id}`}
                       className="block w-full rounded-lg bg-amber-900 px-4 py-2 text-center text-xs font-medium text-white transition-colors hover:bg-amber-800"
                     >
-                      記録する
+                      遊んだ！
                     </Link>
                     <WishlistButton
                       gameId={game.id}

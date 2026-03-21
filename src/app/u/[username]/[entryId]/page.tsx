@@ -184,7 +184,7 @@ export default async function PublicGameDetailPage({ params }: Props) {
               href={`/record?gameId=${game.id}`}
               className="block w-full rounded-xl bg-amber-900 py-3 text-center text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md"
             >
-              このゲームを記録する
+              遊んだ！
             </Link>
             <WishlistButton gameId={game.id} initialWishlisted={wishlisted} />
           </div>

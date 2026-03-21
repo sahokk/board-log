@@ -37,7 +37,7 @@ export default async function Home() {
             🎲 Boardory
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-amber-900/80">
-            ボードゲームの思い出を記録して、アルバムのように振り返ろう
+            遊んだボードゲームをアルバムのように振り返ろう
           </p>
           {!session && (
             <div className="mt-8">
@@ -57,7 +57,7 @@ export default async function Home() {
         <section>
           <div className="mb-6">
             <h2 className="text-2xl font-bold tracking-tight text-amber-950">ゲームを探す</h2>
-            <p className="mt-1 text-sm text-amber-800/70">プレイしたゲームを記録しよう</p>
+            <p className="mt-1 text-sm text-amber-800/70">遊んだゲームを登録しよう</p>
           </div>
           <GameSearchSection />
         </section>

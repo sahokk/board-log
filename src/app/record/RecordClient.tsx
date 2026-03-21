@@ -29,7 +29,7 @@ export function RecordClient({ game, existingEntryId, existingRating }: Props) {
   if (!game) {
     return (
       <div className="wood-card rounded-2xl p-8 text-center shadow-sm">
-        <p className="mb-4 text-amber-900">記録するゲームを選んでください</p>
+        <p className="mb-4 text-amber-900">遊んだゲームを選んでください</p>
         <Link
           href="/"
           className="inline-block rounded-xl bg-amber-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md"

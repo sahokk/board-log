@@ -84,7 +84,7 @@ export default function TypesPage() {
             href="/"
             className="inline-block rounded-xl bg-amber-900 px-6 py-3 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800"
           >
-            ゲームを記録して診断する
+            遊んだゲームを登録して診断する
           </Link>
         </div>
       </div>

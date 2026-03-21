@@ -52,7 +52,7 @@ export default async function PlaysPage() {
 					<Link
 						href="/"
 						className="rounded-xl bg-amber-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md">
-						+ 記録する
+						+ 遊んだ
 					</Link>
 				</div>
 
@@ -64,7 +64,7 @@ export default async function PlaysPage() {
 								まだプレイ記録がありません
 							</p>
 							<p className="mb-8 text-sm text-amber-800/70">
-								ゲームを検索してプレイを記録してみましょう
+								遊んだゲームを登録してみましょう
 							</p>
 							<Link
 								href="/"
