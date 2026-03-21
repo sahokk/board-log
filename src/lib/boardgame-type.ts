@@ -51,7 +51,7 @@ export interface BoardgameTypeInput {
 // mechanics → 中間カテゴリ変換テーブル
 // スコアは相対値（1〜3）で管理、1 mechanic = 複数カテゴリへの加算可
 // ============================================================
-const MECHANICS_MAP: Record<string, Partial<Record<IntermediateCategory, number>>> = {
+export const MECHANICS_MAP: Record<string, Partial<Record<IntermediateCategory, number>>> = {
   // --- 戦略・思考系 ---
   "Worker Placement":              { STRATEGY: 3 },
   "Action Points":                 { STRATEGY: 2 },
