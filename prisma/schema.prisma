@@ -21,6 +21,9 @@ model User {
   displayName     String? // Custom display name (overrides OAuth name)
   customImageUrl  String? // Custom profile image URL (overrides OAuth image)
   favoriteGenres  String? // Comma-separated genre tags
+  isProfilePublic  Boolean @default(true)  // Whether public profile URL is accessible
+  featuredEntryIds String?                 // JSON: up to 3 GameEntry IDs shown on business card
+  cardTheme        String  @default("amber") // Business card color theme
 
   accounts      Account[]
   sessions      Session[]

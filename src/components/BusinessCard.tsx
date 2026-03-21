@@ -1,10 +1,8 @@
 import Image from "next/image"
-import {
-  getDisplayName,
-  getProfileImage,
-  parseFavoriteGenres,
-} from "@/lib/profile-utils"
+import { getDisplayName, getProfileImage, parseFavoriteGenres } from "@/lib/profile-utils"
 import type { TitleWithUnlocked } from "@/lib/titles"
+import type { BoardgameType } from "@/lib/boardgame-type"
+import type { CardTheme } from "@/lib/card-themes"
 
 interface Game {
   id: string
@@ -13,6 +11,7 @@ interface Game {
 }
 
 interface UserData {
+  username?: string | null
   displayName?: string | null
   name?: string | null
   customImageUrl?: string | null
@@ -23,156 +22,194 @@ interface UserData {
 interface Stats {
   totalPlays: number
   uniqueGames: number
-  averageRating: string
 }
 
 interface Props {
   user: UserData
   stats: Stats
-  favoriteGames: Game[]
+  featuredGames: Game[]
+  boardgameType: BoardgameType
+  theme: CardTheme
   titles: TitleWithUnlocked[]
 }
 
-export function BusinessCard({ user, stats, favoriteGames, titles }: Props) {
+const LEFT_W = 320
+const CARD_W = 1000
+const CARD_H = 560
+
+export function BusinessCard({ user, stats, featuredGames, boardgameType, theme, titles }: Readonly<Props>) {
   const displayName = getDisplayName(user)
   const profileImage = getProfileImage(user)
   const genres = parseFavoriteGenres(user.favoriteGenres)
-
-  const displayGames = favoriteGames.slice(0, 5)
-  const unlockedTitles = titles.filter((t) => t.unlocked)
+  const displayGames = featuredGames.slice(0, 3)
+  const unlockedTitles = titles.filter((t) => t.unlocked).slice(0, 6)
+  const profileUrl = user.username ? `board-log.pekori.dev/u/${user.username}` : "board-log.pekori.dev"
+  const rightW = CARD_W - LEFT_W
 
   return (
-    <div className="relative mx-auto" style={{ width: "800px", height: "1000px" }}>
-      <div className="wood-card h-full w-full overflow-hidden rounded-3xl shadow-2xl">
-        {/* Top accent bar */}
-        <div
-          style={{
-            height: "6px",
-            background: "linear-gradient(to right, #78350f, #92400e, #b45309, #d97706)",
-          }}
-        />
+    <div
+      style={{ width: CARD_W, height: CARD_H, fontFamily: "sans-serif", display: "flex", flexDirection: "column" }}
+      className="relative overflow-hidden rounded-3xl shadow-2xl"
+    >
+      {/* ── Main area ── */}
+      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
 
-        <div className="flex h-full flex-col px-10 pt-8 pb-6">
-          {/* Header: Avatar + Name (left-aligned) */}
-          <div className="mb-8 flex items-center gap-5">
-            <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-amber-100 shadow-lg ring-4 ring-amber-200/50">
-              {profileImage ? (
-                <Image
-                  src={profileImage}
-                  alt={displayName}
-                  fill
-                  className="object-cover"
-                  sizes="96px"
-                />
-              ) : (
-                <div className="flex h-full items-center justify-center text-4xl text-amber-400">
-                  👤
-                </div>
-              )}
-            </div>
-            <div>
-              <h1 className="text-4xl font-bold tracking-tight text-amber-950">
-                {displayName}
-              </h1>
-              {genres.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {genres.map((genre, idx) => (
-                    <span
-                      key={idx}
-                      className="rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800"
-                    >
-                      {genre}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+        {/* ── Left panel (dark) ── */}
+        <div style={{
+          width: LEFT_W, flexShrink: 0,
+          background: theme.leftBg,
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+          padding: "32px 28px", position: "relative", overflow: "hidden",
+        }}>
+          {/* Decorative circles */}
+          <div style={{
+            position: "absolute", width: 220, height: 220, borderRadius: "50%",
+            background: `radial-gradient(circle, rgba(${theme.decorRgb},0.18) 0%, transparent 70%)`,
+            top: -60, right: -60,
+          }} />
+          <div style={{
+            position: "absolute", width: 160, height: 160, borderRadius: "50%",
+            background: `radial-gradient(circle, rgba(${theme.decorRgb},0.10) 0%, transparent 70%)`,
+            bottom: -40, left: -40,
+          }} />
+          <div style={{ position: "absolute", fontSize: 64, top: 12, right: 16, opacity: 0.1, userSelect: "none" }}>🎲</div>
 
-          {/* Compact stats row */}
-          <div className="mx-auto mb-8 flex w-full max-w-md items-center justify-center gap-12 rounded-2xl bg-amber-50/50 py-5">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-amber-950">{stats.totalPlays}</p>
-              <p className="mt-0.5 text-xs text-amber-700">プレイ</p>
-            </div>
-            <div className="h-8 w-px bg-amber-200" />
-            <div className="text-center">
-              <p className="text-3xl font-bold text-amber-950">{stats.uniqueGames}</p>
-              <p className="mt-0.5 text-xs text-amber-700">ゲーム種類</p>
-            </div>
-            <div className="h-8 w-px bg-amber-200" />
-            <div className="text-center">
-              <p className="text-3xl font-bold text-amber-950">{stats.averageRating}</p>
-              <p className="mt-0.5 text-xs text-amber-700">平均評価</p>
-            </div>
-          </div>
-
-          {/* Favorite Games */}
-          {displayGames.length > 0 && (
-            <div className="mb-8">
-              <h2 className="mb-3 text-base font-bold text-amber-900">
-                お気に入りゲーム
-              </h2>
-              <div className="grid grid-cols-5 gap-3">
-                {displayGames.map((game) => (
-                  <div
-                    key={game.id}
-                    className="overflow-hidden rounded-xl bg-amber-50/30 shadow-sm"
-                  >
-                    <div className="relative aspect-square bg-amber-100/30">
-                      {game.imageUrl ? (
-                        <Image
-                          src={game.imageUrl}
-                          alt={game.name}
-                          fill
-                          className="object-contain p-2"
-                          sizes="120px"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-3xl text-amber-300">
-                          🎲
-                        </div>
-                      )}
-                    </div>
-                    <div className="px-2 py-1.5">
-                      <p className="line-clamp-1 text-[10px] font-semibold text-amber-950">
-                        {game.name}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+          {/* Avatar */}
+          <div style={{
+            position: "relative", width: 76, height: 76, borderRadius: "50%", overflow: "hidden",
+            boxShadow: `0 0 0 3px rgba(${theme.decorRgb},0.5), 0 6px 20px rgba(0,0,0,0.4)`,
+          }}>
+            {profileImage ? (
+              <Image src={profileImage} alt={displayName} fill className="object-cover" sizes="76px" />
+            ) : (
+              <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, background: "rgba(255,255,255,0.1)" }}>
+                👤
               </div>
+            )}
+          </div>
+
+          {/* Name */}
+          <p style={{ marginTop: 12, fontSize: 20, fontWeight: 800, color: "#fff", textAlign: "center", lineHeight: 1.2, textShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
+            {displayName}
+          </p>
+
+          {/* Genre tags */}
+          {genres.length > 0 && (
+            <div style={{ marginTop: 8, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 4 }}>
+              {genres.map((genre) => (
+                <span key={genre} style={{
+                  fontSize: 10, padding: "2px 8px", borderRadius: 9999,
+                  background: "rgba(255,255,255,0.12)", color: theme.accentColor,
+                  border: "1px solid rgba(255,255,255,0.18)",
+                }}>
+                  {genre}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Divider */}
+          <div style={{ width: "100%", height: 1, background: `rgba(${theme.decorRgb},0.3)`, margin: "16px 0" }} />
+
+          {/* Boardgame type */}
+          <div style={{ textAlign: "center" }}>
+            <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: theme.accentMuted, marginBottom: 6 }}>
+              ボードゲームタイプ
+            </p>
+            <span style={{ fontSize: 40, lineHeight: 1, display: "block" }}>{boardgameType.icon}</span>
+            <p style={{ marginTop: 6, fontSize: 17, fontWeight: 800, color: "#fff", lineHeight: 1.1 }}>{boardgameType.name}</p>
+            <p style={{ marginTop: 4, fontSize: 11, color: theme.accentColor, opacity: 0.85 }}>{boardgameType.tagline}</p>
+          </div>
+        </div>
+
+        {/* ── Right panel (cream) ── */}
+        <div style={{
+          width: rightW, background: "#faf7f0",
+          display: "flex", flexDirection: "column",
+          padding: "24px 28px 20px",
+        }}>
+          {/* Stats row */}
+          <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
+            {[
+              { value: stats.totalPlays, label: "総プレイ数" },
+              { value: stats.uniqueGames, label: "ゲーム種類" },
+              { value: unlockedTitles.length, label: "獲得称号" },
+            ].map((s, i) => (
+              <div key={s.label} style={{ display: "flex", alignItems: "center" }}>
+                {i > 0 && <div style={{ width: 1, height: 28, background: "#fde68a", margin: "0 16px" }} />}
+                <div style={{ textAlign: "center" }}>
+                  <p style={{ fontSize: 26, fontWeight: 800, color: "#451a03", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{s.value}</p>
+                  <p style={{ fontSize: 10, color: "#92400e", marginTop: 2 }}>{s.label}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Featured games */}
+          <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#b45309", marginBottom: 10 }}>
+            ★ お気に入りゲーム
+          </p>
+          {displayGames.length > 0 ? (
+            <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+              {displayGames.map((game) => (
+                <div key={game.id} style={{
+                  flex: 1, borderRadius: 12, overflow: "hidden",
+                  background: "#fff", boxShadow: "0 3px 12px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.04)",
+                }}>
+                  <div style={{ position: "relative", aspectRatio: "1", background: "#fdf6e3" }}>
+                    {game.imageUrl ? (
+                      <Image src={game.imageUrl} alt={game.name} fill className="object-contain" style={{ padding: 8 }} sizes="180px" />
+                    ) : (
+                      <div style={{ display: "flex", height: "100%", alignItems: "center", justifyContent: "center", fontSize: 28 }}>🎲</div>
+                    )}
+                  </div>
+                  <div style={{ padding: "6px 6px 8px" }}>
+                    <p style={{
+                      fontSize: 10, fontWeight: 600, color: "#451a03", lineHeight: 1.3, textAlign: "center",
+                      display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+                    }}>{game.name}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ marginBottom: 20 }}>
+              <p style={{ fontSize: 11, color: "#b45309", opacity: 0.5 }}>（ゲームが選択されていません）</p>
             </div>
           )}
 
           {/* Titles */}
           {unlockedTitles.length > 0 && (
-            <div>
-              <h2 className="mb-3 text-base font-bold text-amber-900">称号</h2>
-              <div className="flex flex-wrap gap-2">
+            <>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#b45309", marginBottom: 8 }}>
+                ★ 獲得称号
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                 {unlockedTitles.map((title) => (
-                  <div
-                    key={title.id}
-                    className="flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1.5 shadow-sm"
-                  >
-                    <span className="text-base">{title.icon}</span>
-                    <span className="text-xs font-medium text-amber-950">
-                      {title.name}
-                    </span>
+                  <div key={title.id} style={{
+                    display: "flex", alignItems: "center", gap: 4,
+                    padding: "4px 10px", borderRadius: 9999,
+                    background: "#451a03", color: "#fff",
+                  }}>
+                    <span style={{ fontSize: 12 }}>{title.icon}</span>
+                    <span style={{ fontSize: 10, fontWeight: 600 }}>{title.name}</span>
                   </div>
                 ))}
               </div>
-            </div>
+            </>
           )}
-
-          {/* Footer: BoardLog Branding */}
-          <div className="mt-auto border-t border-amber-200/50 pt-4 text-center">
-            <p className="text-lg font-semibold text-amber-800">🎲 BoardLog</p>
-            <p className="mt-0.5 text-xs text-amber-600/70">
-              ボードゲームの思い出アルバム
-            </p>
-          </div>
         </div>
+      </div>
+
+      {/* ── Footer ── */}
+      <div style={{
+        height: 44, flexShrink: 0,
+        background: theme.footerBg,
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "0 32px",
+      }}>
+        <p style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>🎲 BoardLog</p>
+        <p style={{ fontSize: 10, color: theme.accentMuted }}>{profileUrl}</p>
       </div>
     </div>
   )

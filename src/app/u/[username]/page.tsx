@@ -4,10 +4,11 @@ import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { getDisplayName, getProfileImage, parseFavoriteGenres } from "@/lib/profile-utils"
 import { calculateTitles } from "@/lib/titles"
+import { calculateBoardgameType } from "@/lib/boardgame-type"
 import { translateCategory, translateMechanic } from "@/lib/bgg/translations"
 import { TitleBadges } from "@/components/TitleBadges"
 import { MechanicTag } from "@/components/MechanicTag"
-import { PlayCalendar } from "@/components/PlayCalendar"
+import { BoardgameTypeCard } from "@/components/BoardgameTypeCard"
 import type { Metadata } from "next"
 
 interface Props {
@@ -40,6 +41,7 @@ export default async function PublicProfilePage({ params }: Props) {
   const user = await prisma.user.findUnique({
     where: { username },
     select: {
+      isProfilePublic: true,
       displayName: true,
       name: true,
       customImageUrl: true,
@@ -47,7 +49,17 @@ export default async function PublicProfilePage({ params }: Props) {
       favoriteGenres: true,
       gameEntries: {
         include: {
-          game: true,
+          game: {
+            select: {
+              id: true,
+              name: true,
+              nameJa: true,
+              imageUrl: true,
+              categories: true,
+              mechanics: true,
+              weight: true,
+            },
+          },
           sessions: { orderBy: { playedAt: "desc" }, take: 1 },
           _count: { select: { sessions: true } },
         },
@@ -61,16 +73,15 @@ export default async function PublicProfilePage({ params }: Props) {
   })
 
   if (!user) notFound()
+  if (!user.isProfilePublic) notFound()
 
   const displayName = getDisplayName(user)
   const profileImage = getProfileImage(user)
   const genres = parseFavoriteGenres(user.favoriteGenres)
 
   const entries = user.gameEntries
-  const allSessions = entries.flatMap((e) =>
-    e.sessions.map((s) => ({ ...s, gameId: e.gameId }))
-  )
   const uniqueGames = entries.length
+  const totalSessions = entries.reduce((sum, e) => sum + e._count.sessions, 0)
 
   // カテゴリ統計
   const categoryMap = new Map<string, number>()
@@ -103,6 +114,10 @@ export default async function PublicProfilePage({ params }: Props) {
     .sort((a, b) => b.count - a.count)
     .slice(0, 8)
 
+  // 称号
+  const allSessions = entries.flatMap((e) =>
+    e.sessions.map((s) => ({ ...s, gameId: e.gameId }))
+  )
   const titles = calculateTitles({
     entries: entries.map((e) => ({ gameId: e.gameId, rating: e.rating })),
     sessions: allSessions.flatMap((s) => s.playedAt ? [{ playedAt: s.playedAt, gameId: s.gameId }] : []),
@@ -110,18 +125,16 @@ export default async function PublicProfilePage({ params }: Props) {
     wishlistCount: user.wishlistItems.length,
   })
 
-  // プレイカレンダー用データ
-  const calendarSessions = await prisma.playSession.findMany({
-    where: { gameEntry: { user: { username } }, playedAt: { not: null } },
-    select: { playedAt: true },
+  // ボドゲタイプ
+  const boardgameType = calculateBoardgameType({
+    entries: entries.map((e) => ({ gameId: e.gameId, sessionCount: e._count.sessions })),
+    games: entries.map((e) => ({
+      gameId: e.gameId,
+      weight: e.game.weight,
+      categories: e.game.categories,
+      mechanics: e.game.mechanics,
+    })),
   })
-  const playDateMap = new Map<string, number>()
-  calendarSessions.forEach((s) => {
-    const date = s.playedAt?.toISOString().split("T")[0]
-    if (!date) return
-    playDateMap.set(date, (playDateMap.get(date) ?? 0) + 1)
-  })
-  const calendarDates = Array.from(playDateMap, ([date, count]) => ({ date, count }))
 
   const shareText = encodeURIComponent(displayName + "のボードゲームプロフィール🎲")
   const shareUrl = encodeURIComponent("https://board-log.pekori.dev/u/" + username)
@@ -129,120 +142,134 @@ export default async function PublicProfilePage({ params }: Props) {
   return (
     <div className="wood-texture min-h-screen py-12">
       <div className="mx-auto max-w-4xl px-6">
+
         {/* Profile Header */}
-        <div className="wood-card mb-12 rounded-2xl p-6 sm:p-8 shadow-sm">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
-              {/* Avatar */}
-              <div className="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-full bg-linear-to-br from-amber-100/50 to-amber-200/50 shadow-lg">
-                {profileImage ? (
-                  <Image
-                    src={profileImage}
-                    alt={displayName}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 80px, 96px"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-3xl sm:text-4xl text-amber-400">
-                    👤
+        <div className="wood-card mb-8 overflow-hidden rounded-2xl shadow-sm">
+          {/* Top accent */}
+          <div className="h-1.5 bg-linear-to-r from-amber-700 via-amber-500 to-amber-300" />
+
+          <div className="p-6 sm:p-8">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+              {/* Left: avatar + identity */}
+              <div className="flex items-center gap-4 sm:gap-5">
+                <div className="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-full bg-linear-to-br from-amber-100/50 to-amber-200/50 shadow-lg ring-4 ring-amber-200/60">
+                  {profileImage ? (
+                    <Image
+                      src={profileImage}
+                      alt={displayName}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 80px, 96px"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-3xl sm:text-4xl text-amber-400">
+                      👤
+                    </div>
+                  )}
+                </div>
+
+                <div className="min-w-0">
+                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-amber-950">
+                    {displayName}
+                  </h1>
+                  <p className="mt-0.5 text-sm font-medium text-amber-700/60">@{username}</p>
+                  {genres.length > 0 && (
+                    <div className="mt-2.5 flex flex-wrap gap-1.5">
+                      {genres.map((genre) => (
+                        <span
+                          key={genre}
+                          className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800"
+                        >
+                          {genre}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <div className="mt-3">
+                    <a
+                      href={"https://x.com/intent/tweet?text=" + shareText + "&url=" + shareUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-black px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-800 transition-colors"
+                    >
+                      <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.733-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                      シェア
+                    </a>
                   </div>
-                )}
+                </div>
               </div>
 
-              {/* User Info */}
-              <div className="flex-1 min-w-0">
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-amber-950">
-                  {displayName}
-                </h1>
-                <p className="mt-0.5 text-sm font-medium text-amber-700/70">@{username}</p>
-                <div className="mt-2">
-                  <a
-                    href={"https://x.com/intent/tweet?text=" + shareText + "&url=" + shareUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 rounded-full bg-black px-2.5 py-1 text-xs font-medium text-white hover:bg-neutral-800 transition-colors"
-                  >
-                    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.733-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                    シェア
-                  </a>
+              {/* Right: Stats */}
+              <div className="flex items-center justify-center gap-8 sm:flex-col sm:items-end sm:justify-start sm:gap-5 sm:shrink-0 border-t sm:border-t-0 sm:border-l border-amber-200/60 pt-5 sm:pt-0 sm:pl-8">
+                <div className="text-center sm:text-right">
+                  <p className="text-3xl sm:text-4xl font-bold tabular-nums tracking-tight text-amber-950">
+                    {totalSessions}
+                  </p>
+                  <p className="mt-0.5 text-xs font-medium text-amber-700/70">総プレイ数</p>
                 </div>
-                {genres.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {genres.map((genre) => (
-                      <span
-                        key={genre}
-                        className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800"
-                      >
-                        {genre}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                <div className="h-8 w-px sm:h-px sm:w-12 bg-amber-200/60" />
+                <div className="text-center sm:text-right">
+                  <p className="text-3xl sm:text-4xl font-bold tabular-nums tracking-tight text-amber-950">
+                    {uniqueGames}
+                  </p>
+                  <p className="mt-0.5 text-xs font-medium text-amber-700/70">ゲーム種類</p>
+                </div>
               </div>
             </div>
-
-            <Link
-              href="/"
-              className="shrink-0 text-xs text-amber-700 underline hover:text-amber-950"
-            >
-              BoardLogで記録する
-            </Link>
           </div>
         </div>
 
-        {/* Titles */}
+        {/* Boardgame Type */}
+        <div className="mb-8">
+          <BoardgameTypeCard type={boardgameType} />
+        </div>
+
+        {/* 称号 */}
         <div className="mb-12">
           <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">称号</h2>
           <TitleBadges titles={titles} />
         </div>
 
-        {/* プレイカレンダー */}
-        {calendarDates.length > 0 && (
-          <div className="mb-12">
-            <h2 className="mb-4 text-2xl font-bold tracking-tight text-amber-950">プレイカレンダー</h2>
-            <PlayCalendar playDates={calendarDates} />
-          </div>
-        )}
-
-        {/* カテゴリ統計 */}
-        {topCategories.length > 0 && (
-          <div className="mb-12">
-            <h2 className="mb-4 text-2xl font-bold tracking-tight text-amber-950">よく遊ぶカテゴリ</h2>
-            <div className="wood-card rounded-2xl p-5 shadow-sm">
-              <div className="flex flex-wrap gap-2">
-                {topCategories.map(({ name, count }, i) => (
-                  <span
-                    key={name}
-                    className={"inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium " + tagClass(i)}
-                  >
-                    {name}
-                    <span className={"text-xs " + (i === 0 ? "text-amber-200" : "text-amber-600")}>
-                      {count}
-                    </span>
-                  </span>
-                ))}
+        {/* カテゴリ・メカニクス (side by side on desktop) */}
+        {(topCategories.length > 0 || topMechanics.length > 0) && (
+          <div className="mb-12 grid gap-6 sm:grid-cols-2">
+            {topCategories.length > 0 && (
+              <div>
+                <h2 className="mb-4 text-xl font-bold tracking-tight text-amber-950">よく遊ぶカテゴリ</h2>
+                <div className="wood-card rounded-2xl p-5 shadow-sm">
+                  <div className="flex flex-wrap gap-2">
+                    {topCategories.map(({ name, count }, i) => (
+                      <span
+                        key={name}
+                        className={"inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium " + tagClass(i)}
+                      >
+                        {name}
+                        <span className={"text-xs " + (i === 0 ? "text-amber-200" : "text-amber-600")}>
+                          {count}
+                        </span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* メカニクス統計 */}
-        {topMechanics.length > 0 && (
-          <div className="mb-12">
-            <h2 className="mb-4 text-2xl font-bold tracking-tight text-amber-950">よく遊ぶメカニクス</h2>
-            <div className="wood-card rounded-2xl p-5 shadow-sm">
-              <div className="flex flex-wrap gap-2">
-                {topMechanics.map(({ name, nameEn, count }, i) => (
-                  <span key={name} className={"inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium " + tagClass(i)}>
-                    <MechanicTag name={nameEn ?? name} variant="bare" />
-                    <span className={"text-xs " + (i === 0 ? "text-amber-200" : "text-amber-600")}>
-                      {count}
-                    </span>
-                  </span>
-                ))}
+            )}
+            {topMechanics.length > 0 && (
+              <div>
+                <h2 className="mb-4 text-xl font-bold tracking-tight text-amber-950">よく遊ぶメカニクス</h2>
+                <div className="wood-card rounded-2xl p-5 shadow-sm">
+                  <div className="flex flex-wrap gap-2">
+                    {topMechanics.map(({ name, nameEn, count }, i) => (
+                      <span key={name} className={"inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium " + tagClass(i)}>
+                        <MechanicTag name={nameEn ?? name} variant="bare" />
+                        <span className={"text-xs " + (i === 0 ? "text-amber-200" : "text-amber-600")}>
+                          {count}
+                        </span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
 
@@ -285,7 +312,7 @@ export default async function PublicProfilePage({ params }: Props) {
           </div>
         )}
 
-        {/* All Play History */}
+        {/* プレイ履歴 */}
         <div className="mb-12">
           <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">
             {"プレイ履歴"}<span className="ml-2 text-base font-normal text-amber-800/60">{uniqueGames}タイトル</span>
