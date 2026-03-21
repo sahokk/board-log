@@ -14,6 +14,7 @@ const parser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: "@_",
   isArray: (name) => ["item", "name", "link"].includes(name),
+  htmlEntities: true,
 })
 
 function attrStr(val: unknown): string {

@@ -1,44 +1,36 @@
 // BGG カテゴリ・メカニクスの英語→日本語変換マップ
+// 登録済みのものだけ統計に表示される（未登録は除外）
 
 export const categoryJa: Record<string, string> = {
+  // テーマ・ジャンル
   "Abstract Strategy": "抽象戦略",
   "Action / Dexterity": "アクション",
   "Adventure": "アドベンチャー",
-  "Age of Reason": "理性の時代",
-  "American Civil War": "南北戦争",
-  "American West": "西部開拓",
-  "American Revolutionary War": "独立戦争",
-  "Ancient": "古代",
   "Animals": "動物",
-  "Arabian": "アラビアン",
-  "Aviation / Flight": "航空",
   "Bluffing": "ブラフ",
   "Card Game": "カードゲーム",
   "Children's Game": "子ども向け",
   "City Building": "都市建設",
   "Civilization": "文明",
-  "Collectible Components": "コレクタブル",
-  "Comic Book / Strip": "コミック",
   "Deduction": "推理",
   "Dice": "ダイス",
   "Economic": "経済",
   "Educational": "教育",
   "Exploration": "探索",
   "Fantasy": "ファンタジー",
+  "Farming": "農業",
   "Fighting": "格闘",
   "Horror": "ホラー",
   "Humor": "ユーモア",
-  "Industry / Manufacturing": "産業",
+  "Mafia": "マフィア",
   "Maze": "迷路",
   "Medical": "医療",
-  "Medieval": "中世",
   "Memory": "記憶",
   "Miniatures": "ミニチュア",
   "Movies / TV / Radio theme": "映画・TV",
-  "Murder/Mystery": "ミステリー",
+  "Murder / Mystery": "ミステリー",
   "Music": "音楽",
   "Mythology": "神話",
-  "Napoleonic": "ナポレオン",
   "Nautical": "海洋",
   "Negotiation": "交渉",
   "Novel-based": "小説原作",
@@ -47,16 +39,14 @@ export const categoryJa: Record<string, string> = {
   "Pirates": "海賊",
   "Political": "政治",
   "Prehistoric": "先史時代",
-  "Print & Play": "プリント&プレイ",
   "Puzzle": "パズル",
   "Racing": "レース",
   "Real-time": "リアルタイム",
   "Religious": "宗教",
   "Renaissance": "ルネサンス",
-  "Role Playing": "RPG",
   "Science Fiction": "SF",
   "Space Exploration": "宇宙探索",
-  "Spies/Secret Agents": "スパイ",
+  "Spies / Secret Agents": "スパイ",
   "Sports": "スポーツ",
   "Territory Building": "領土構築",
   "Trains": "鉄道",
@@ -66,104 +56,204 @@ export const categoryJa: Record<string, string> = {
   "Video Game Theme": "ビデオゲーム",
   "Wargame": "ウォーゲーム",
   "Word Game": "ワードゲーム",
+  "Zombies": "ゾンビ",
+
+  // 歴史
+  "Ancient": "古代",
+  "Arabian": "アラビアン",
+  "Aviation / Flight": "航空",
+  "Civil War": "内戦",
+  "American Civil War": "南北戦争",
+  "American Indian Wars": "先住民戦争",
+  "American Revolutionary War": "独立戦争",
+  "American West": "西部開拓",
+  "Medieval": "中世",
+  "Napoleonic": "ナポレオン",
   "World War I": "第一次世界大戦",
   "World War II": "第二次世界大戦",
-  "Zombies": "ゾンビ",
+
+  // コンポーネント
+  "Collectible Components": "コレクタブル",
+  "Comic Book / Strip": "コミック",
 }
 
 export const mechanicJa: Record<string, string> = {
+  // アクション系
   "Action Points": "アクションポイント",
   "Action Queue": "アクションキュー",
   "Action Retrieval": "アクション回収",
-  "Area Control / Area Influence": "エリアコントロール",
+  "Action Drafting": "アクションドラフト",
+  "Action / Event": "アクション/イベント",
+  "Force Commitment": "アクション宣言",
+  "Once-Per-Game Abilities": "1回限り能力",
+  "Variable Player Powers": "特殊能力",
+
+  // エリア・移動系
+  "Area Majority / Influence": "エリアマジョリティ",
+  "Area Control / Area Influence": "エリアコントロール", // BGG旧名称（既存データ対応）
   "Area Enclosure": "エリア囲い込み",
   "Area Movement": "エリア移動",
+  "Enclosure": "囲い込み",
+  "Grid Movement": "グリッド移動",
+  "Grid Coverage": "グリッド埋め",
+  "Hexagon Grid": "六角形グリッド",
+  "Square Grid": "方眼グリッド",
+  "Hex-and-Counter": "ヘックスカウンター",
+  "Hidden Movement": "隠密移動",
+  "Movement Points": "移動ポイント",
+  "Pattern Movement": "パターン移動",
+  "Point to Point Movement": "ポイント移動",
+  "Programmed / Scripted Movement": "プログラム移動",
+  "Roll / Spin and Move": "サイコロ移動",
+  "Track Movement": "トラック移動",
+  "Line of Sight": "視線",
+  "Zone of Control": "支配圏",
+
+  // ネットワーク・ルート
+  "Network and Route Building": "ルート構築",
+  "Route/Network Building": "ルート構築",
+  "Connections": "ルート接続",
+
+  // ドラフト・選択系
+  "Card Drafting": "カードドラフト",
+  "Closed Drafting": "クローズドドラフト",
+  "Drafting": "ドラフト",
+  "Open Drafting": "オープンドラフト",
+
+  // オークション・入札系
   "Auction / Bidding": "オークション",
   "Auction: Dutch": "ダッチオークション",
   "Auction: English": "競り上げ",
+  "Auction: Multiple Lot": "複数出品オークション",
   "Auction: Sealed Bid": "封入入札",
   "Betting and Bluffing": "賭け・ブラフ",
-  "Card Drafting": "カードドラフト",
-  "Closed Drafting": "クローズドドラフト",
-  "Communication Limits": "コミュニケーション制限",
-  "Cooperative Game": "協力ゲーム",
+  "Turn Order: Auction": "ターン順オークション",
+
+  // デッキ・手札管理
   "Deck, Bag, and Pool Building": "デッキ構築",
-  "Deduction": "推理",
+  "Deck Construction": "デッキ構築",
+  "Deck": "デッキ構築", // "Deck, Bag, and Pool Building" の誤分割対応
+  "Hand Management": "手札管理",
+  "Multi-Use Cards": "多用途カード",
+
+  // ダイス系
   "Dice Rolling": "ダイスロール",
   "Die Icon Resolution": "ダイスアイコン",
-  "Drafting": "ドラフト",
-  "Drawing": "お絵描き",
-  "Elapsed Real Time Ending": "時間制限",
-  "Enclosure": "囲い込み",
-  "End Game Bonuses": "終了ボーナス",
-  "Engine Building": "エンジン構築",
-  "Flicking": "フリック",
-  "Follow": "フォロー",
-  "Grid Coverage": "グリッド埋め",
-  "Grid Movement": "グリッド移動",
-  "Hand Management": "手札管理",
-  "Hex-and-Counter": "ヘックスカウンター",
-  "Hidden Movement": "隠密移動",
+  "Push Your Luck": "プッシュユアラック",
+  "Re-rolling and Locking": "振り直し",
+  "Worker Placement with Dice Workers": "ダイスワーカー",
+
+  // 協力・チーム系
+  "Cooperative Game": "協力ゲーム",
+  "Semi-Cooperative Game": "半協力",
+  "Team-Based Game": "チーム戦",
+  "Communication Limits": "コミュニケーション制限",
+
+  // 正体隠蔽・推理系
+  "Deduction": "推理",
   "Hidden Roles": "隠し役職",
   "Hidden Victory Points": "隠し得点",
-  "I Cut, You Choose": "カット&チョーズ",
-  "Income": "収入",
-  "Ladder Climbing": "大富豪系",
-  "Legacy Game": "レガシー",
-  "Matching": "マッチング",
-  "Memory": "記憶",
-  "Modular Board": "モジュラーボード",
-  "Movement Points": "移動ポイント",
-  "Narrative Choice / Paragraph": "ナラティブ",
-  "Network and Route Building": "ルート構築",
-  "Once-Per-Game Abilities": "1回限り能力",
-  "Open Drafting": "オープンドラフト",
-  "Paper-and-Pencil": "ペンシルゲーム",
-  "Pattern Building": "パターン構築",
-  "Pattern Recognition": "パターン認識",
-  "Pick-up and Deliver": "輸送",
-  "Player Elimination": "プレイヤー脱落",
-  "Point to Point Movement": "ポイント移動",
-  "Programmed / Scripted Movement": "プログラム移動",
-  "Push Your Luck": "プッシュユアラック",
-  "Real-Time": "リアルタイム",
-  "Re-rolling and Locking": "振り直し",
-  "Roll / Spin and Move": "サイコロ移動",
-  "Rondel": "ロンデル",
-  "Route/Network Building": "ルート構築",
-  "Semi-Cooperative Game": "半協力",
-  "Set Collection": "セットコレクション",
-  "Simultaneous Action Selection": "同時アクション",
-  "Solo / Solitaire Game": "ソロ",
-  "Stacking and Balancing": "積み上げ",
-  "Stock Holding": "株式",
-  "Storytelling": "ストーリーテリング",
-  "Tableau Building": "タブロー構築",
-  "Take That": "テイクザット",
-  "Team-Based Game": "チーム戦",
-  "Tile Placement": "タイル配置",
-  "Time Track": "タイムトラック",
-  "Trading": "トレード",
   "Traitor Game": "裏切り者",
-  "Trick-taking": "トリックテイキング",
-  "Variable Phase Order": "フェーズ変動",
-  "Variable Player Powers": "特殊能力",
-  "Variable Set-up": "可変セットアップ",
-  "Voting": "投票",
+  "Roles with Asymmetric Information": "非対称情報役職",
+  "Secret Unit Deployment": "秘密配置",
+
+  // エンジン・構築系
+  "Engine Building": "エンジン構築",
+  "Tableau Building": "タブロー構築",
+  "Pattern Building": "パターン構築",
+  "Tech Trees / Tech Tracks": "テックツリー",
+
+  // 収集・セット系
+  "Set Collection": "セットコレクション",
+  "Matching": "マッチング",
+
+  // ワーカープレイスメント系
   "Worker Placement": "ワーカープレイスメント",
-  "Worker Placement with Dice Workers": "ダイスワーカー",
   "Worker Placement, Different Worker Types": "ワーカー種別",
-  "Zone of Control": "支配圏",
+  "Different Worker Types": "ワーカー種別",
+
+  // タイル・ボード系
+  "Tile Placement": "タイル配置",
+  "Modular Board": "モジュラーボード",
+  "Map Addition": "マップ追加",
+  "Legacy Game": "レガシー",
+
+  // 経済・交易系
+  "Trading": "トレード",
+  "Negotiation": "交渉",
+  "Market": "マーケット",
+  "Stock Holding": "株式",
+  "Income": "収入",
+  "Investment": "投資",
+  "Contracts": "契約",
+  "Pick-up and Deliver": "輸送",
+  "Random Production": "ランダム生産",
+
+  // レース・競争系
+  "Race": "レース",
+  "King of the Hill": "山の王",
+  "Tug of War": "綱引き",
+  "Player Elimination": "プレイヤー脱落",
+  "Take That": "テイクザット",
+
+  // リアルタイム・特殊
+  "Real-Time": "リアルタイム",
+  "Simultaneous Action Selection": "同時アクション",
+  "Elapsed Real Time Ending": "時間制限",
+  "Follow": "フォロー",
+
+  // ナラティブ・ロールプレイ系
+  "Narrative Choice / Paragraph": "ナラティブ",
+  "Storytelling": "ストーリーテリング",
+  "Role Playing": "ロールプレイ",
+  "Acting": "演技",
+  "Campaign / Battle Card Driven": "カード駆動キャンペーン",
+  "Scenario / Mission / Campaign Game": "シナリオゲーム",
+  "Events": "イベント",
+
+  // パターン・パズル系
+  "Pattern Recognition": "パターン認識",
+  "Chaining": "チェイン",
+  "Layering": "レイヤリング",
+
+  // 記憶・情報系
+  "Memory": "記憶",
+
+  // ソロ・フォーマット
+  "Solo / Solitaire Game": "ソロ",
+
+  // アナログ
+  "Paper-and-Pencil": "ペンシルゲーム",
+  "Drawing": "お絵描き",
+  "Flicking": "フリック",
+  "Stacking and Balancing": "積み上げ",
+
+  // トリック・カードゲーム系
+  "Trick-taking": "トリックテイキング",
+  "Ladder Climbing": "大富豪系",
+
+  // その他
+  "Variable Phase Order": "フェーズ変動",
+  "Variable Set-up": "可変セットアップ",
+  "End Game Bonuses": "終了ボーナス",
+  "Hidden Victory Points ": "隠し得点",
+  "I Cut, You Choose": "カット&チョーズ",
+  "Rondel": "ロンデル",
+  "Time Track": "タイムトラック",
+  "Voting": "投票",
+  "Victory Points as a Resource": "勝利点リソース化",
+  "Simulation": "シミュレーション",
+  "Player Judge": "プレイヤー判定",
 }
 
-/** BGGカテゴリ名を日本語に変換（未収録の場合はそのまま返す） */
+/** BGGカテゴリ名を日本語に変換（未登録の場合は空文字を返して統計から除外） */
 export function translateCategory(name: string): string {
-  return categoryJa[name] ?? name
+  return categoryJa[name] ?? ""
 }
 
-/** BGGメカニクス名を日本語に変換（未収録の場合はそのまま返す） */
+/** BGGメカニクス名を日本語に変換（未登録の場合は空文字を返して統計から除外） */
 export function translateMechanic(name: string): string {
-  return mechanicJa[name] ?? name
+  return mechanicJa[name] ?? ""
 }
 
 // メカニクスの説明文（日本語）
@@ -171,6 +261,8 @@ export const mechanicDescJa: Record<string, string> = {
   "Action Points": "手番ごとに決まったポイントを消費して行動を選ぶ。何をどれだけやるかを自分で配分できる。",
   "Action Queue": "アクションをあらかじめ登録しておき、順番に実行する。先読みと計画が重要。",
   "Action Retrieval": "使ったアクションを回収してから再使用できる。タイミングの管理が鍵。",
+  "Action Drafting": "アクションをドラフト形式で選び取る。何を選ぶかで戦略が変わる。",
+  "Area Majority / Influence": "盤面のエリアを占領・支配することを競う。陣地争いが中心。",
   "Area Control / Area Influence": "盤面のエリアを占領・支配することを競う。陣地争いが中心。",
   "Area Enclosure": "相手の駒やエリアを囲んで確保する。囲碁的な発想。",
   "Area Movement": "エリア間をユニットが移動する。戦略ゲームに多い。",
@@ -179,11 +271,13 @@ export const mechanicDescJa: Record<string, string> = {
   "Auction: English": "値段を競り上げていく。最高額を出した人が落札。",
   "Auction: Sealed Bid": "全員が同時に入札額を出して公開する。相手の読みが重要。",
   "Betting and Bluffing": "賭けやハッタリで相手を騙したり、読み合いを楽しむ。",
+  "Campaign / Battle Card Driven": "カードを使って戦闘や行動を決めるキャンペーン型ゲーム。",
   "Card Drafting": "複数のカードから好きなものを選び、残りを次の人に回す。選択と読みのゲーム。",
   "Closed Drafting": "手札を見せずに選んでいくドラフト。相手が何を取ったかを推理する。",
   "Communication Limits": "チームメンバーと話せる内容や量が制限される。言葉以外で伝える工夫が必要。",
   "Cooperative Game": "全プレイヤーが協力して共通の目標を目指す。全員で勝つか負けるか。",
   "Deck, Bag, and Pool Building": "ゲーム中にカードや駒を集めてデッキを強化していく。成長感が楽しい。",
+  "Deck Construction": "ゲーム中にカードや駒を集めてデッキを強化していく。成長感が楽しい。",
   "Deduction": "手がかりを集めて答えを論理的に導き出す。推理・謎解き系に多い。",
   "Dice Rolling": "サイコロを振って結果に従う。運の要素が絡む。",
   "Die Icon Resolution": "サイコロの目がアイコンで表され、それに対応したアクションを行う。",
@@ -199,6 +293,7 @@ export const mechanicDescJa: Record<string, string> = {
   "Grid Movement": "升目状のボード上をコマが移動する。チェスや将棋に近い動き方。",
   "Hand Management": "手札の使うタイミングや順番を管理する。温存か即使いかの判断が重要。",
   "Hex-and-Counter": "六角形のマスにユニットを置いて戦う、ウォーゲーム定番のスタイル。",
+  "Hexagon Grid": "六角形グリッドを使ったゲーム。移動や射程の計算に特徴がある。",
   "Hidden Movement": "一部のプレイヤーの位置や行動が他から見えない。追いかけっこや鬼ごっこ的な緊張感。",
   "Hidden Roles": "自分の役職を他プレイヤーに隠す。人狼や正体隠蔽ゲームの核心。",
   "Hidden Victory Points": "得点が終了まで公開されない。誰が勝っているか分からないドキドキ感。",
@@ -210,7 +305,9 @@ export const mechanicDescJa: Record<string, string> = {
   "Memory": "一度見た情報を覚えておいて活用する。記憶力が試される。",
   "Modular Board": "ボードがパーツに分かれており、毎回異なるマップを作れる。リプレイ性が高い。",
   "Movement Points": "移動できる距離や回数がポイントで管理される。効率的なルート選びが重要。",
+  "Multi-Use Cards": "1枚のカードを複数の用途に使い分けられる。選択の幅が広い。",
   "Narrative Choice / Paragraph": "物語の分岐を選んで進める。ゲームブックやアドベンチャー系に多い。",
+  "Negotiation": "プレイヤー間で交渉してリソースや行動を決める。説得力が重要。",
   "Network and Route Building": "道や路線をつないでネットワークを構築する。鉄道ゲームの定番。",
   "Once-Per-Game Abilities": "1回だけ使える強力な特殊能力。使いどころが勝負を分ける。",
   "Open Drafting": "全員に見える選択肢から選ぶドラフト。相手の動きを見ながら戦略を立てられる。",
@@ -226,7 +323,7 @@ export const mechanicDescJa: Record<string, string> = {
   "Re-rolling and Locking": "サイコロの一部をキープして残りを振り直す。ヤッツィーの仕組み。",
   "Roll / Spin and Move": "サイコロを振って出た目の分だけコマを進める。すごろく式移動。",
   "Rondel": "円形のトラックを使って行動を選ぶ。どの行動を取るか、コストも変わる。",
-  "Route/Network Building": "道をつなげてルートやネットワークを作る。",
+  "Scenario / Mission / Campaign Game": "シナリオやミッションをこなしていくキャンペーン型ゲーム。",
   "Semi-Cooperative Game": "基本は協力しつつ、条件によって裏切りや個人勝利もありうる。",
   "Set Collection": "同じ種類や条件のカード・タイルを集めて得点を狙う。コレクション欲を刺激。",
   "Simultaneous Action Selection": "全員が同時に行動を選んで一斉に公開する。読み合いと予測が楽しい。",
@@ -237,6 +334,7 @@ export const mechanicDescJa: Record<string, string> = {
   "Tableau Building": "自分の前にカードを並べ、その効果を組み合わせて強化していく。",
   "Take That": "他のプレイヤーを直接妨害できる。攻撃性が高く、盛り上がりやすい。",
   "Team-Based Game": "チームに分かれて対戦する。協力と連携が重要。",
+  "Tech Trees / Tech Tracks": "技術ツリーを進めることで能力が強化される。発展の達成感がある。",
   "Tile Placement": "タイルを並べてマップや模様を作る。パズル的な要素が強い。",
   "Time Track": "アクションをするたびに時間が進み、最も時間が戻ったプレイヤーが次の手番になる。",
   "Trading": "プレイヤー間でリソースやカードを交換する。交渉と駆け引きが生まれる。",

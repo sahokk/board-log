@@ -102,11 +102,14 @@ export default async function PlayDetailPage({ params }: Props) {
               <div>
                 <p className="mb-2 text-xs font-medium text-amber-800/60">カテゴリ</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {entry.game.categories.split(",").map((cat) => (
-                    <span key={cat} className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">
-                      {translateCategory(cat.trim())}
-                    </span>
-                  ))}
+                  {entry.game.categories.split(",").map((cat) => {
+                    const label = translateCategory(cat.trim()) || cat.trim()
+                    return (
+                      <span key={cat} className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">
+                        {label}
+                      </span>
+                    )
+                  })}
                 </div>
               </div>
             )}
