@@ -48,6 +48,7 @@ export default async function PublicProfilePage({ params }: Props) {
         include: {
           game: true,
           sessions: { orderBy: { playedAt: "desc" }, take: 1 },
+          _count: { select: { sessions: true } },
         },
         orderBy: { updatedAt: "desc" },
       },
@@ -61,11 +62,10 @@ export default async function PublicProfilePage({ params }: Props) {
   const genres = parseFavoriteGenres(user.favoriteGenres)
 
   const entries = user.gameEntries
+  const totalPlays = entries.reduce((sum, e) => sum + e._count.sessions, 0)
   const allSessions = entries.flatMap((e) =>
     e.sessions.map((s) => ({ ...s, gameId: e.gameId }))
   )
-
-  const totalPlays = allSessions.length
   const uniqueGames = entries.length
   const averageRating =
     entries.length > 0
