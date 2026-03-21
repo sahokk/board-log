@@ -89,7 +89,16 @@ export async function PATCH(request: NextRequest) {
   }
 
   if (Array.isArray(body.featuredEntryIds)) {
-    const ids = body.featuredEntryIds.slice(0, 3).filter((id: unknown) => typeof id === "string")
+    const ids = body.featuredEntryIds.slice(0, 3).filter((id: unknown) => typeof id === "string") as string[]
+    // Verify all entry IDs belong to the current user
+    if (ids.length > 0) {
+      const ownedCount = await prisma.gameEntry.count({
+        where: { id: { in: ids }, userId },
+      })
+      if (ownedCount !== ids.length) {
+        return NextResponse.json({ error: "Invalid entry IDs" }, { status: 400 })
+      }
+    }
     await prisma.user.update({
       where: { id: userId },
       data: { featuredEntryIds: JSON.stringify(ids) },
