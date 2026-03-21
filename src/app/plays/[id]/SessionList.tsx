@@ -33,7 +33,12 @@ export function SessionList({ sessions }: Props) {
     try {
       const res = await fetch(`/api/sessions/${sessionId}`, { method: "DELETE" })
       if (!res.ok) throw new Error("削除に失敗しました")
-      router.refresh()
+      const data = await res.json()
+      if (data.entryDeleted) {
+        router.push("/plays")
+      } else {
+        router.refresh()
+      }
     } catch {
       setDeletingId(null)
       setConfirmingId(null)

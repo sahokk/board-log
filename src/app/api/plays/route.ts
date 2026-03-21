@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
   // PlaySession を追加
   const sess = await prisma.playSession.create({
     data: {
-      gameEntryId: entry.id,
+      gameEntry: { connect: { id: entry.id } },
       playedAt: playedAt ? new Date(playedAt) : null,
       memo: memo?.trim() || null,
     },

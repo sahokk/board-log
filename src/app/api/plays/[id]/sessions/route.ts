@@ -27,7 +27,7 @@ export async function POST(
 
   const playSession = await prisma.playSession.create({
     data: {
-      gameEntryId: entry.id,
+      gameEntry: { connect: { id: entry.id } },
       playedAt: playedAt ? new Date(playedAt) : null,
       memo: memo?.trim() || null,
     },
