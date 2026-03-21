@@ -92,6 +92,7 @@ export default async function PublicProfilePage({ params }: Props) {
       e.game.mechanics.split(",").forEach((mech) => {
         const en = mech.trim()
         const ja = translateMechanic(en)
+        if (!ja) return
         const existing = mechanicMap.get(ja)
         mechanicMap.set(ja, { count: (existing?.count ?? 0) + 1, nameEn: en })
       })

@@ -15,8 +15,7 @@ const PILL_CLASS: Record<string, string> = {
 }
 
 export function MechanicTag({ name, variant = "default" }: Readonly<Props>) {
-  const label = translateMechanic(name)
-  if (!label) return null
+  const label = translateMechanic(name) || name
   const desc = getMechanicDesc(name)
 
   // bare: テキスト＋ツールチップのみ、pill スタイルなし（親要素に埋め込む用）
