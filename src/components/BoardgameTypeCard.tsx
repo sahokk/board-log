@@ -13,13 +13,9 @@ function AxisBar({ label, leftLabel, rightLabel, score }: {
   score: number
 }) {
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center justify-between text-xs text-amber-700/70">
-        <span>{leftLabel}</span>
-        <span className="font-medium text-amber-800">{label}</span>
-        <span>{rightLabel}</span>
-      </div>
-      <div className="relative h-2 rounded-full bg-amber-100">
+    <div>
+      <p className="mb-1.5 text-xs font-semibold text-amber-800">{label}</p>
+      <div className="relative mx-2 h-2 rounded-full bg-amber-100">
         <div
           className="absolute top-0 left-0 h-full rounded-full bg-linear-to-r from-amber-400 to-amber-700"
           style={{ width: `${score}%` }}
@@ -28,6 +24,10 @@ function AxisBar({ label, leftLabel, rightLabel, score }: {
           className="absolute top-1/2 h-4 w-4 -translate-y-1/2 -translate-x-1/2 rounded-full border-2 border-white bg-amber-700 shadow"
           style={{ left: `${score}%` }}
         />
+      </div>
+      <div className="mt-1 flex justify-between text-[11px] text-amber-700/60">
+        <span>{leftLabel}</span>
+        <span>{rightLabel}</span>
       </div>
     </div>
   )
