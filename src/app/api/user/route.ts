@@ -101,6 +101,14 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ success: true })
   }
 
+  if (typeof body.cardTheme === "string") {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { cardTheme: body.cardTheme },
+    })
+    return NextResponse.json({ success: true })
+  }
+
   return NextResponse.json({ error: "Invalid request" }, { status: 400 })
 }
 

@@ -6,6 +6,7 @@ import { toPng } from "html-to-image"
 import { BusinessCard } from "./BusinessCard"
 import type { TitleWithUnlocked } from "@/lib/titles"
 import type { BoardgameType } from "@/lib/boardgame-type"
+import { getTheme, CARD_THEMES } from "@/lib/card-themes"
 
 interface Game {
   id: string
@@ -37,10 +38,11 @@ interface Props {
   featuredGames: Game[]
   savedFeaturedIds: string[]
   boardgameType: BoardgameType
+  savedCardTheme: string
   titles: TitleWithUnlocked[]
 }
 
-export function BusinessCardExporter({ user, stats, allGames, featuredGames, savedFeaturedIds, boardgameType, titles }: Readonly<Props>) {
+export function BusinessCardExporter({ user, stats, allGames, featuredGames, savedFeaturedIds, boardgameType, savedCardTheme, titles }: Readonly<Props>) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [exporting, setExporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -48,6 +50,7 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
   const [showPicker, setShowPicker] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>(savedFeaturedIds)
   const [saving, setSaving] = useState(false)
+  const [themeId, setThemeId] = useState(savedCardTheme)
 
   let exportLabel = "準備中..."
   if (isReady) exportLabel = "画像DL"
@@ -58,7 +61,8 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
     return () => clearTimeout(timer)
   }, [])
 
-  // Derive the 3 games to show on the card
+  const theme = getTheme(themeId)
+
   const displayGames = selectedIds.length > 0
     ? selectedIds.map((id) => allGames.find((g) => g.entryId === id)).filter(Boolean) as Game[]
     : featuredGames
@@ -85,13 +89,22 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
     }
   }
 
+  const handleThemeChange = async (id: string) => {
+    setThemeId(id)
+    await fetch("/api/user", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cardTheme: id }),
+    })
+  }
+
   const generateImage = async (): Promise<string> => {
     if (!cardRef.current) throw new Error("Card ref not found")
     await new Promise((resolve) => setTimeout(resolve, 500))
     return toPng(cardRef.current, {
       cacheBust: true,
       pixelRatio: 2,
-      backgroundColor: "#faf7f2",
+      backgroundColor: "#faf7f0",
     })
   }
 
@@ -121,7 +134,6 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
     )
   }
 
-  // scale: 1000px → fit within the profile card width (~580px on desktop) ≈ 0.52
   const SCALE = 0.52
   const previewW = Math.round(1000 * SCALE)
   const previewH = Math.round(560 * SCALE)
@@ -131,29 +143,36 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
       {/* Hidden card for export */}
       <div style={{ position: "absolute", left: "-9999px", top: 0, width: "1000px", height: "560px" }}>
         <div ref={cardRef}>
-          <BusinessCard
-            user={user}
-            stats={stats}
-            featuredGames={displayGames}
-            boardgameType={boardgameType}
-            titles={titles}
-          />
+          <BusinessCard user={user} stats={stats} featuredGames={displayGames} boardgameType={boardgameType} theme={theme} titles={titles} />
         </div>
       </div>
 
       {/* Card preview */}
-      <div
-        className="overflow-hidden rounded-2xl shadow-md"
-        style={{ width: previewW, height: previewH }}
-      >
-        <div style={{ transform: `scale(${SCALE})`, transformOrigin: "top left", width: 800, height: 1000 }}>
-          <BusinessCard
-            user={user}
-            stats={stats}
-            featuredGames={displayGames}
-            boardgameType={boardgameType}
-            titles={titles}
-          />
+      <div className="overflow-hidden rounded-2xl shadow-md" style={{ width: previewW, height: previewH }}>
+        <div style={{ transform: `scale(${SCALE})`, transformOrigin: "top left", width: 1000, height: 560 }}>
+          <BusinessCard user={user} stats={stats} featuredGames={displayGames} boardgameType={boardgameType} theme={theme} titles={titles} />
+        </div>
+      </div>
+
+      {/* Theme swatches */}
+      <div className="flex items-center gap-2">
+        <p className="text-xs font-medium text-amber-800/70 shrink-0">カラー</p>
+        <div className="flex gap-2">
+          {CARD_THEMES.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => handleThemeChange(t.id)}
+              title={t.name}
+              className="h-6 w-6 rounded-full transition-all focus:outline-none"
+              style={{
+                background: t.leftBg,
+                boxShadow: themeId === t.id
+                  ? `0 0 0 2px white, 0 0 0 4px ${t.swatch}`
+                  : "0 1px 3px rgba(0,0,0,0.3)",
+              }}
+            />
+          ))}
         </div>
       </div>
 
@@ -170,7 +189,7 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
           onClick={() => setShowPicker((v) => !v)}
           className="flex-1 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-100 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:outline-none"
         >
-          ゲームを選ぶ {selectedIds.length > 0 ? `(${selectedIds.length}/3)` : ""}
+          {"ゲームを選ぶ"}{selectedIds.length > 0 ? ` (${selectedIds.length}/3)` : ""}
         </button>
         <button
           onClick={handleShare}
@@ -198,9 +217,7 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
                   onClick={() => toggleGame(game.entryId)}
                   disabled={disabled}
                   className={`relative flex flex-col items-center rounded-lg border-2 p-1.5 text-center transition-all ${
-                    selected
-                      ? "border-amber-600 bg-amber-100 shadow-sm"
-                      : "border-transparent bg-white hover:border-amber-300"
+                    selected ? "border-amber-600 bg-amber-100 shadow-sm" : "border-transparent bg-white hover:border-amber-300"
                   } ${disabled ? "opacity-40" : ""}`}
                 >
                   <div className="relative mb-1 h-14 w-full overflow-hidden rounded bg-amber-50">

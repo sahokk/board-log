@@ -23,6 +23,7 @@ model User {
   favoriteGenres  String? // Comma-separated genre tags
   isProfilePublic  Boolean @default(true)  // Whether public profile URL is accessible
   featuredEntryIds String?                 // JSON: up to 3 GameEntry IDs shown on business card
+  cardTheme        String  @default("amber") // Business card color theme
 
   accounts      Account[]
   sessions      Session[]

@@ -2,6 +2,7 @@ import Image from "next/image"
 import { getDisplayName, getProfileImage, parseFavoriteGenres } from "@/lib/profile-utils"
 import type { TitleWithUnlocked } from "@/lib/titles"
 import type { BoardgameType } from "@/lib/boardgame-type"
+import type { CardTheme } from "@/lib/card-themes"
 
 interface Game {
   id: string
@@ -28,6 +29,7 @@ interface Props {
   stats: Stats
   featuredGames: Game[]
   boardgameType: BoardgameType
+  theme: CardTheme
   titles: TitleWithUnlocked[]
 }
 
@@ -35,7 +37,7 @@ const LEFT_W = 320
 const CARD_W = 1000
 const CARD_H = 560
 
-export function BusinessCard({ user, stats, featuredGames, boardgameType, titles }: Readonly<Props>) {
+export function BusinessCard({ user, stats, featuredGames, boardgameType, theme, titles }: Readonly<Props>) {
   const displayName = getDisplayName(user)
   const profileImage = getProfileImage(user)
   const genres = parseFavoriteGenres(user.favoriteGenres)
@@ -55,19 +57,19 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, titles
         {/* ── Left panel (dark) ── */}
         <div style={{
           width: LEFT_W, flexShrink: 0,
-          background: "linear-gradient(160deg, #451a03 0%, #78350f 55%, #92400e 100%)",
+          background: theme.leftBg,
           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
           padding: "32px 28px", position: "relative", overflow: "hidden",
         }}>
           {/* Decorative circles */}
           <div style={{
             position: "absolute", width: 220, height: 220, borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(217,119,6,0.18) 0%, transparent 70%)",
+            background: `radial-gradient(circle, rgba(${theme.decorRgb},0.18) 0%, transparent 70%)`,
             top: -60, right: -60,
           }} />
           <div style={{
             position: "absolute", width: 160, height: 160, borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(217,119,6,0.1) 0%, transparent 70%)",
+            background: `radial-gradient(circle, rgba(${theme.decorRgb},0.10) 0%, transparent 70%)`,
             bottom: -40, left: -40,
           }} />
           <div style={{ position: "absolute", fontSize: 64, top: 12, right: 16, opacity: 0.1, userSelect: "none" }}>🎲</div>
@@ -75,7 +77,7 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, titles
           {/* Avatar */}
           <div style={{
             position: "relative", width: 76, height: 76, borderRadius: "50%", overflow: "hidden",
-            boxShadow: "0 0 0 3px rgba(217,119,6,0.5), 0 6px 20px rgba(0,0,0,0.4)",
+            boxShadow: `0 0 0 3px rgba(${theme.decorRgb},0.5), 0 6px 20px rgba(0,0,0,0.4)`,
           }}>
             {profileImage ? (
               <Image src={profileImage} alt={displayName} fill className="object-cover" sizes="76px" />
@@ -97,7 +99,7 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, titles
               {genres.map((genre) => (
                 <span key={genre} style={{
                   fontSize: 10, padding: "2px 8px", borderRadius: 9999,
-                  background: "rgba(255,255,255,0.12)", color: "#fde68a",
+                  background: "rgba(255,255,255,0.12)", color: theme.accentColor,
                   border: "1px solid rgba(255,255,255,0.18)",
                 }}>
                   {genre}
@@ -107,16 +109,16 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, titles
           )}
 
           {/* Divider */}
-          <div style={{ width: "100%", height: 1, background: "rgba(253,230,138,0.2)", margin: "16px 0" }} />
+          <div style={{ width: "100%", height: 1, background: `rgba(${theme.decorRgb},0.3)`, margin: "16px 0" }} />
 
           {/* Boardgame type */}
           <div style={{ textAlign: "center" }}>
-            <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(253,230,138,0.6)", marginBottom: 6 }}>
+            <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: theme.accentMuted, marginBottom: 6 }}>
               ボードゲームタイプ
             </p>
             <span style={{ fontSize: 40, lineHeight: 1, display: "block" }}>{boardgameType.icon}</span>
             <p style={{ marginTop: 6, fontSize: 17, fontWeight: 800, color: "#fff", lineHeight: 1.1 }}>{boardgameType.name}</p>
-            <p style={{ marginTop: 4, fontSize: 11, color: "#fde68a", opacity: 0.85 }}>{boardgameType.tagline}</p>
+            <p style={{ marginTop: 4, fontSize: 11, color: theme.accentColor, opacity: 0.85 }}>{boardgameType.tagline}</p>
           </div>
         </div>
 
@@ -202,12 +204,12 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, titles
       {/* ── Footer ── */}
       <div style={{
         height: 44, flexShrink: 0,
-        background: "linear-gradient(135deg, #451a03 0%, #78350f 100%)",
+        background: theme.footerBg,
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "0 32px",
       }}>
         <p style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>🎲 BoardLog</p>
-        <p style={{ fontSize: 10, color: "rgba(253,230,138,0.7)" }}>{profileUrl}</p>
+        <p style={{ fontSize: 10, color: theme.accentMuted }}>{profileUrl}</p>
       </div>
     </div>
   )

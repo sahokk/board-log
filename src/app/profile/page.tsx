@@ -23,6 +23,7 @@ export default async function ProfilePage() {
       email: true,
       isProfilePublic: true,
       featuredEntryIds: true,
+      cardTheme: true,
     },
   })
 
@@ -93,6 +94,7 @@ export default async function ProfilePage() {
           featuredGames={featuredGames}
           savedFeaturedIds={savedIds}
           boardgameType={boardgameType}
+          savedCardTheme={user.cardTheme}
           titles={titles}
         />
       </div>

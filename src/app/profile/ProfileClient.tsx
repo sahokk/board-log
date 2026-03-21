@@ -42,10 +42,11 @@ interface Props {
   featuredGames: Game[]
   savedFeaturedIds: string[]
   boardgameType: BoardgameType
+  savedCardTheme: string
   titles: TitleWithUnlocked[]
 }
 
-export function ProfileClient({ user, stats, allGames, featuredGames, savedFeaturedIds, boardgameType, titles }: Readonly<Props>) {
+export function ProfileClient({ user, stats, allGames, featuredGames, savedFeaturedIds, boardgameType, savedCardTheme, titles }: Readonly<Props>) {
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
   const [isPublic, setIsPublic] = useState(user.isProfilePublic)
@@ -185,6 +186,7 @@ export function ProfileClient({ user, stats, allGames, featuredGames, savedFeatu
             featuredGames={featuredGames}
             savedFeaturedIds={savedFeaturedIds}
             boardgameType={boardgameType}
+            savedCardTheme={savedCardTheme}
             titles={titles}
           />
         </div>
