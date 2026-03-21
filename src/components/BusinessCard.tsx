@@ -23,7 +23,8 @@ interface UserData {
 interface Stats {
   totalPlays: number
   uniqueGames: number
-  averageRating: string
+  averageRating?: string
+  wishlistCount?: number
 }
 
 interface Props {
@@ -93,18 +94,22 @@ export function BusinessCard({ user, stats, favoriteGames, titles }: Props) {
           <div className="mx-auto mb-8 flex w-full max-w-md items-center justify-center gap-12 rounded-2xl bg-amber-50/50 py-5">
             <div className="text-center">
               <p className="text-3xl font-bold text-amber-950">{stats.totalPlays}</p>
-              <p className="mt-0.5 text-xs text-amber-700">プレイ</p>
+              <p className="mt-0.5 text-xs text-amber-700">総プレイ数</p>
             </div>
             <div className="h-8 w-px bg-amber-200" />
             <div className="text-center">
               <p className="text-3xl font-bold text-amber-950">{stats.uniqueGames}</p>
               <p className="mt-0.5 text-xs text-amber-700">ゲーム種類</p>
             </div>
-            <div className="h-8 w-px bg-amber-200" />
-            <div className="text-center">
-              <p className="text-3xl font-bold text-amber-950">{stats.averageRating}</p>
-              <p className="mt-0.5 text-xs text-amber-700">平均評価</p>
-            </div>
+            {stats.wishlistCount !== undefined && (
+              <>
+                <div className="h-8 w-px bg-amber-200" />
+                <div className="text-center">
+                  <p className="text-3xl font-bold text-amber-950">{stats.wishlistCount}</p>
+                  <p className="mt-0.5 text-xs text-amber-700">気になる</p>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Favorite Games */}
