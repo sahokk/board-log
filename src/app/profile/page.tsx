@@ -107,6 +107,7 @@ export default async function ProfilePage() {
   // プレイカレンダー用（セッション日付）
   const playDateMap = new Map<string, number>()
   allSessions.forEach((s) => {
+    if (!s.playedAt) return
     const date = s.playedAt.toISOString().split("T")[0]
     playDateMap.set(date, (playDateMap.get(date) ?? 0) + 1)
   })
@@ -133,6 +134,7 @@ export default async function ProfilePage() {
       e.game.mechanics.split(",").forEach((mech) => {
         const en = mech.trim()
         const ja = translateMechanic(en)
+        if (!ja) return
         const existing = mechanicMap.get(ja)
         mechanicMap.set(ja, { count: (existing?.count ?? 0) + 1, nameEn: en })
       })
@@ -166,7 +168,7 @@ export default async function ProfilePage() {
   // 称号
   const titles = calculateTitles({
     entries: entries.map((e) => ({ gameId: e.gameId, rating: e.rating })),
-    sessions: allSessions.map((s) => ({ playedAt: s.playedAt, gameId: s.gameId })),
+    sessions: allSessions.flatMap((s) => s.playedAt ? [{ playedAt: s.playedAt, gameId: s.gameId }] : []),
     games: entries.map((e) => ({ categories: e.game.categories, mechanics: e.game.mechanics })),
     wishlistCount,
   })

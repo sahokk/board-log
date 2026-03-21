@@ -25,14 +25,10 @@ export async function POST(
   const body = await request.json()
   const { playedAt, memo } = body
 
-  if (!playedAt) {
-    return NextResponse.json({ error: "playedAt is required" }, { status: 400 })
-  }
-
   const playSession = await prisma.playSession.create({
     data: {
-      gameEntryId: entry.id,
-      playedAt: new Date(playedAt),
+      gameEntry: { connect: { id: entry.id } },
+      playedAt: playedAt ? new Date(playedAt) : null,
       memo: memo?.trim() || null,
     },
   })

@@ -92,6 +92,7 @@ export default async function PublicProfilePage({ params }: Props) {
       e.game.mechanics.split(",").forEach((mech) => {
         const en = mech.trim()
         const ja = translateMechanic(en)
+        if (!ja) return
         const existing = mechanicMap.get(ja)
         mechanicMap.set(ja, { count: (existing?.count ?? 0) + 1, nameEn: en })
       })
@@ -103,7 +104,7 @@ export default async function PublicProfilePage({ params }: Props) {
 
   const titles = calculateTitles({
     entries: entries.map((e) => ({ gameId: e.gameId, rating: e.rating })),
-    sessions: allSessions.map((s) => ({ playedAt: s.playedAt, gameId: s.gameId })),
+    sessions: allSessions.flatMap((s) => s.playedAt ? [{ playedAt: s.playedAt, gameId: s.gameId }] : []),
     games: entries.map((e) => ({ categories: e.game.categories, mechanics: e.game.mechanics })),
     wishlistCount: user.wishlistItems.length,
   })
@@ -231,7 +232,11 @@ export default async function PublicProfilePage({ params }: Props) {
             </h2>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {user.wishlistItems.map(({ game }) => (
-                <div key={game.id} className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm">
+                <Link
+                  key={game.id}
+                  href={`/u/${username}/games/${game.id}`}
+                  className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+                >
                   <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
                     {game.imageUrl ? (
                       <Image
@@ -252,7 +257,7 @@ export default async function PublicProfilePage({ params }: Props) {
                       {game.nameJa ?? game.name}
                     </p>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -307,7 +312,7 @@ export default async function PublicProfilePage({ params }: Props) {
                           </span>
                         ))}
                       </div>
-                      {latestSession && (
+                      {latestSession?.playedAt && (
                         <p className="mt-1 text-xs text-amber-700/60">
                           {new Intl.DateTimeFormat("ja-JP", { year: "numeric", month: "short", day: "numeric" }).format(latestSession.playedAt)}
                         </p>

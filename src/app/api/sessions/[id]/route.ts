@@ -28,5 +28,13 @@ export async function DELETE(
 
   await prisma.playSession.delete({ where: { id } })
 
-  return NextResponse.json({ success: true })
+  // セッションがなくなったらGameEntryも削除
+  const remaining = await prisma.playSession.count({
+    where: { gameEntryId: playSession.gameEntryId },
+  })
+  if (remaining === 0) {
+    await prisma.gameEntry.delete({ where: { id: playSession.gameEntryId } })
+  }
+
+  return NextResponse.json({ success: true, entryDeleted: remaining === 0 })
 }

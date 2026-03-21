@@ -11,11 +11,17 @@ export default async function WishlistPage() {
     redirect("/api/auth/signin?callbackUrl=/wishlist")
   }
 
-  const items = await prisma.wishlistItem.findMany({
-    where: { userId: session.user.id },
-    include: { game: true },
-    orderBy: { createdAt: "desc" },
-  })
+  const [items, me] = await Promise.all([
+    prisma.wishlistItem.findMany({
+      where: { userId: session.user.id },
+      include: { game: true },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { username: true },
+    }),
+  ])
 
   return (
     <div className="wood-texture min-h-screen py-12">
@@ -44,7 +50,11 @@ export default async function WishlistPage() {
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {items.map(({ game }) => (
-              <div key={game.id} className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm">
+              <Link
+                key={game.id}
+                href={me?.username ? `/u/${me.username}/games/${game.id}` : `/record?gameId=${game.id}`}
+                className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+              >
                 <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
                   {game.imageUrl ? (
                     <Image
@@ -63,20 +73,12 @@ export default async function WishlistPage() {
                     <WishlistButton gameId={game.id} initialWishlisted={true} size="icon" />
                   </div>
                 </div>
-                <div className="flex flex-1 flex-col p-3">
-                  <p className="mb-2 line-clamp-2 text-xs font-semibold text-amber-950">
+                <div className="p-3">
+                  <p className="line-clamp-2 text-xs font-semibold text-amber-950">
                     {game.nameJa ?? game.name}
                   </p>
-                  <div className="mt-auto">
-                    <Link
-                      href={`/record?gameId=${game.id}`}
-                      className="block w-full rounded-lg bg-amber-900 px-3 py-1.5 text-center text-xs font-medium text-white transition-colors hover:bg-amber-800"
-                    >
-                      記録する
-                    </Link>
-                  </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
