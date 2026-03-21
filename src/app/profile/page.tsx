@@ -100,7 +100,7 @@ export default async function ProfilePage() {
   const favoriteGames = entries
     .filter((e) => e.rating === 5)
     .slice(0, 5)
-    .map((e) => e.game)
+    .map((e) => ({ ...e.game, entryId: e.id }))
 
   const stats = { totalPlays, uniqueGames, averageRating }
 
