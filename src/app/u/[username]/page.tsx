@@ -47,8 +47,9 @@ export default async function PublicProfilePage({ params }: Props) {
       gameEntries: {
         include: {
           game: true,
-          sessions: { orderBy: { playedAt: "desc" } },
+          sessions: { orderBy: { playedAt: "desc" }, take: 1 },
         },
+        orderBy: { updatedAt: "desc" },
       },
     },
   })
@@ -143,6 +144,7 @@ export default async function PublicProfilePage({ params }: Props) {
                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-amber-950">
                   {displayName}
                 </h1>
+                <p className="mt-0.5 text-sm font-medium text-amber-700/70">@{username}</p>
                 <div className="mt-2">
                   <a
                     href={"https://x.com/intent/tweet?text=" + shareText + "&url=" + shareUrl}
@@ -285,13 +287,66 @@ export default async function PublicProfilePage({ params }: Props) {
           </div>
         )}
 
-        {/* Empty state */}
-        {totalPlays === 0 && (
-          <div className="wood-card rounded-2xl p-12 text-center shadow-sm">
-            <div className="mb-4 text-5xl">🎲</div>
-            <p className="text-lg font-medium text-amber-900">まだプレイ記録がありません</p>
-          </div>
-        )}
+        {/* All Play History */}
+        <div className="mb-12">
+          <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">
+            {"プレイ履歴"}<span className="ml-2 text-base font-normal text-amber-800/60">{uniqueGames}タイトル</span>
+          </h2>
+          {entries.length === 0 ? (
+            <div className="wood-card rounded-2xl p-12 text-center shadow-sm">
+              <div className="mb-4 text-5xl">🎲</div>
+              <p className="text-lg font-medium text-amber-900">まだプレイ記録がありません</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              {entries.map((entry) => {
+                const latestSession = entry.sessions[0]
+                return (
+                  <div
+                    key={entry.id}
+                    className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm"
+                  >
+                    <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
+                      {entry.game.imageUrl ? (
+                        <Image
+                          src={entry.game.imageUrl}
+                          alt={entry.game.nameJa ?? entry.game.name}
+                          fill
+                          className="object-contain p-3"
+                          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-amber-300">
+                          <span className="text-4xl">🎲</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <p className="mb-1.5 line-clamp-2 text-xs font-semibold text-amber-950">
+                        {entry.game.nameJa ?? entry.game.name}
+                      </p>
+                      <div className="flex items-center gap-0.5">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span
+                            key={star}
+                            className={star <= entry.rating ? "text-amber-500 text-xs" : "text-amber-200/40 text-xs"}
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      {latestSession && (
+                        <p className="mt-1 text-xs text-amber-700/60">
+                          {new Intl.DateTimeFormat("ja-JP", { year: "numeric", month: "short", day: "numeric" }).format(latestSession.playedAt)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

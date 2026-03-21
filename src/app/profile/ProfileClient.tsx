@@ -142,6 +142,9 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-amber-950">
                 {displayName}
               </h1>
+              {user.username && (
+                <p className="mt-0.5 text-sm font-medium text-amber-700/70">@{user.username}</p>
+              )}
               <p className="mt-1 text-sm text-amber-800/70 truncate">{user.email}</p>
               {user.username && (
                 <div className="mt-2 flex items-center gap-2 flex-wrap">
