@@ -22,9 +22,10 @@ model User {
   customImageUrl  String? // Custom profile image URL (overrides OAuth image)
   favoriteGenres  String? // Comma-separated genre tags
 
-  accounts    Account[]
-  sessions    Session[]
-  gameEntries GameEntry[]
+  accounts      Account[]
+  sessions      Session[]
+  gameEntries   GameEntry[]
+  wishlistItems WishlistItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -87,10 +88,26 @@ model Game {
   minPlayers  Int?
   maxPlayers  Int?
 
-  gameEntries GameEntry[]
+  gameEntries   GameEntry[]
+  wishlistItems WishlistItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// 気になるリスト
+model WishlistItem {
+  id     String @id @default(cuid())
+  userId String
+  gameId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, gameId])
+  @@index([userId])
 }
 
 // ユーザーとゲームの関係（評価は1ゲームにつき1つ）
