@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma"
+import { translateCategory, translateMechanic } from "@/lib/bgg/translations"
 
-interface RecommendedGame {
+export interface RecommendedGame {
   id: string
   name: string
   nameJa: string | null
@@ -8,10 +9,10 @@ interface RecommendedGame {
   categories: string | null
   playingTime: number | null
   wishlisted: boolean
+  reason: string // おすすめ理由（日本語）
 }
 
 export async function getRecommendations(userId: string): Promise<RecommendedGame[]> {
-  // ユーザーのプレイ済みゲームとウィッシュリストを取得
   const [entries, wishlistItems] = await Promise.all([
     prisma.gameEntry.findMany({
       where: { userId },
@@ -27,7 +28,6 @@ export async function getRecommendations(userId: string): Promise<RecommendedGam
   const wishlistedGameIds = new Set(wishlistItems.map((w) => w.gameId))
   const excludedIds = [...playedGameIds, ...wishlistedGameIds]
 
-  // ユーザーのトップカテゴリ・メカニクスを集計（英語のまま）
   const categoryCount = new Map<string, number>()
   const mechanicCount = new Map<string, number>()
   for (const entry of entries) {
@@ -53,7 +53,6 @@ export async function getRecommendations(userId: string): Promise<RecommendedGam
 
   if (topCategories.length === 0 && topMechanics.length === 0) return []
 
-  // DBから一致するゲームを検索
   const candidates = await prisma.game.findMany({
     where: {
       id: { notIn: excludedIds },
@@ -66,18 +65,35 @@ export async function getRecommendations(userId: string): Promise<RecommendedGam
     take: 20,
   })
 
-  // スコアリング（カテゴリ・メカニクス一致数）
   const scored = candidates.map((game) => {
     let score = 0
     topCategories.forEach((c) => { if (game.categories?.includes(c)) score += 2 })
     topMechanics.forEach((m) => { if (game.mechanics?.includes(m)) score += 1 })
-    return { game, score }
+
+    // おすすめ理由：最初に一致したカテゴリ or メカニクス
+    let reason = ""
+    for (const cat of topCategories) {
+      if (game.categories?.includes(cat)) {
+        reason = `「${translateCategory(cat)}」をよく遊ぶあなたに`
+        break
+      }
+    }
+    if (!reason) {
+      for (const mech of topMechanics) {
+        if (game.mechanics?.includes(mech)) {
+          reason = `「${translateMechanic(mech)}」好きにおすすめ`
+          break
+        }
+      }
+    }
+
+    return { game, score, reason }
   })
 
   return scored
     .sort((a, b) => b.score - a.score)
     .slice(0, 8)
-    .map(({ game }) => ({
+    .map(({ game, reason }) => ({
       id: game.id,
       name: game.name,
       nameJa: game.nameJa,
@@ -85,5 +101,6 @@ export async function getRecommendations(userId: string): Promise<RecommendedGam
       categories: game.categories,
       playingTime: game.playingTime,
       wishlisted: false,
+      reason,
     }))
 }
