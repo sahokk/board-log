@@ -39,6 +39,7 @@ export default async function PlaysPage() {
 		include: {
 			game: true,
 			sessions: {orderBy: {playedAt: "desc"}, take: 1},
+			_count: {select: {sessions: true}},
 		},
 		orderBy: {updatedAt: "desc"},
 	});
@@ -114,9 +115,12 @@ export default async function PlaysPage() {
 											{entry.game.nameJa ??
 												entry.game.name}
 										</p>
-										<StarDisplay rating={entry.rating} />
+										<div className="flex items-center justify-between">
+											<StarDisplay rating={entry.rating} />
+											<span className="text-xs text-amber-700/50">{entry._count.sessions}回</span>
+										</div>
 										{latestSession?.playedAt && (
-											<p className="mt-2 text-xs font-medium text-amber-700/60">
+											<p className="mt-1 text-xs font-medium text-amber-700/60">
 												{formatDate(latestSession.playedAt)}
 											</p>
 										)}

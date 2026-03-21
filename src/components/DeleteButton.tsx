@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useToast } from "@/components/Toast"
 
 interface Props {
   readonly playId: string
@@ -11,6 +12,7 @@ interface Props {
 
 export function DeleteButton({ playId, label = "削除", redirectTo = "/plays" }: Props) {
   const router = useRouter()
+  const { showToast } = useToast()
   const [confirming, setConfirming] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
@@ -20,8 +22,8 @@ export function DeleteButton({ playId, label = "削除", redirectTo = "/plays" }
       const res = await fetch(`/api/plays/${playId}`, { method: "DELETE" })
       if (!res.ok) throw new Error("削除に失敗しました")
       router.push(redirectTo)
-      router.refresh()
     } catch {
+      showToast("削除に失敗しました", "error")
       setDeleting(false)
       setConfirming(false)
     }

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useToast } from "@/components/Toast"
 
 interface Session {
   id: string
@@ -31,6 +32,7 @@ function toDateInputValue(isoStr: string | null): string {
 
 export function SessionList({ sessions, emptyRedirectPath = "/plays" }: Props) {
   const router = useRouter()
+  const { showToast } = useToast()
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [confirmingId, setConfirmingId] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -60,6 +62,9 @@ export function SessionList({ sessions, emptyRedirectPath = "/plays" }: Props) {
       if (!res.ok) throw new Error("保存に失敗しました")
       setEditingId(null)
       router.refresh()
+      showToast("記録を更新しました")
+    } catch {
+      showToast("保存に失敗しました", "error")
     } finally {
       setSavingId(null)
     }
@@ -75,8 +80,10 @@ export function SessionList({ sessions, emptyRedirectPath = "/plays" }: Props) {
         router.push(emptyRedirectPath)
       } else {
         router.refresh()
+        showToast("記録を削除しました")
       }
     } catch {
+      showToast("削除に失敗しました", "error")
       setDeletingId(null)
       setConfirmingId(null)
     }

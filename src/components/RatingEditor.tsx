@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useToast } from "@/components/Toast"
 
 interface Props {
   readonly entryId: string
@@ -10,6 +11,7 @@ interface Props {
 
 export function RatingEditor({ entryId, initialRating }: Props) {
   const router = useRouter()
+  const { showToast } = useToast()
   const [editing, setEditing] = useState(false)
   const [rating, setRating] = useState(initialRating)
   const [hoverRating, setHoverRating] = useState(0)
@@ -26,6 +28,9 @@ export function RatingEditor({ entryId, initialRating }: Props) {
       if (!res.ok) throw new Error()
       setEditing(false)
       router.refresh()
+      showToast("評価を更新しました")
+    } catch {
+      showToast("更新に失敗しました", "error")
     } finally {
       setSaving(false)
     }
