@@ -8,13 +8,14 @@ import { getDisplayName, getProfileImage } from "@/lib/profile-utils"
 import { ProfileEditForm } from "@/components/ProfileEditForm"
 import { BusinessCardExporter } from "@/components/BusinessCardExporter"
 import type { TitleWithUnlocked } from "@/lib/titles"
+import type { BoardgameType } from "@/lib/boardgame-type"
 
 interface Game {
   id: string
   entryId: string
   name: string
-  nameJa?: string | null
   imageUrl: string | null
+  sessionCount: number
 }
 
 interface UserData {
@@ -36,11 +37,14 @@ interface Stats {
 interface Props {
   user: UserData
   stats: Stats
-  favoriteGames: Game[]
+  allGames: Game[]
+  featuredGames: Game[]
+  savedFeaturedIds: string[]
+  boardgameType: BoardgameType | null
   titles: TitleWithUnlocked[]
 }
 
-export function ProfileClient({ user, stats, favoriteGames, titles }: Readonly<Props>) {
+export function ProfileClient({ user, stats, allGames, featuredGames, savedFeaturedIds, boardgameType, titles }: Readonly<Props>) {
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
   const [isPublic, setIsPublic] = useState(user.isProfilePublic)
@@ -176,7 +180,10 @@ export function ProfileClient({ user, stats, favoriteGames, titles }: Readonly<P
           <BusinessCardExporter
             user={user}
             stats={stats}
-            favoriteGames={favoriteGames}
+            allGames={allGames}
+            featuredGames={featuredGames}
+            savedFeaturedIds={savedFeaturedIds}
+            boardgameType={boardgameType}
             titles={titles}
           />
         </div>

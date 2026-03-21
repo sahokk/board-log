@@ -83,14 +83,25 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
   const body = await request.json()
-  if (typeof body.isProfilePublic !== "boolean") {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 })
+
+  if (typeof body.isProfilePublic === "boolean") {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { isProfilePublic: body.isProfilePublic },
+    })
+    return NextResponse.json({ success: true })
   }
-  await prisma.user.update({
-    where: { id: session.user.id },
-    data: { isProfilePublic: body.isProfilePublic },
-  })
-  return NextResponse.json({ success: true })
+
+  if (Array.isArray(body.featuredEntryIds)) {
+    const ids = body.featuredEntryIds.slice(0, 3).filter((id: unknown) => typeof id === "string")
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { featuredEntryIds: JSON.stringify(ids) },
+    })
+    return NextResponse.json({ success: true })
+  }
+
+  return NextResponse.json({ error: "Invalid request" }, { status: 400 })
 }
 
 export async function GET() {
