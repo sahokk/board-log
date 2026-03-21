@@ -41,3 +41,18 @@ body {
   background: linear-gradient(to right, #f9f3ed 0%, #f5ede4 50%, #f9f3ed 100%);
   border-bottom: 1px solid rgba(139, 115, 85, 0.15);
 }
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.2s ease-out;
+}

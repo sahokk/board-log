@@ -5,7 +5,11 @@ import { useSession, signIn, signOut } from "next-auth/react"
 import Link from "next/link"
 import Image from "next/image"
 
-export function AuthButton() {
+interface Props {
+  readonly username?: string | null
+}
+
+export function AuthButton({ username }: Props) {
   const { data: session, status } = useSession()
   const [isOpen, setIsOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -65,8 +69,17 @@ export function AuthButton() {
                 onClick={() => setIsOpen(false)}
                 className="block px-4 py-2 text-sm text-amber-900 transition-colors hover:bg-amber-100/30"
               >
-                プロフィール
+                プロフィール設定
               </Link>
+              {username && (
+                <Link
+                  href={`/u/${username}`}
+                  onClick={() => setIsOpen(false)}
+                  className="block px-4 py-2 text-sm text-amber-900 transition-colors hover:bg-amber-100/30"
+                >
+                  公開プロフィール
+                </Link>
+              )}
               <button
                 onClick={() => {
                   setIsOpen(false)

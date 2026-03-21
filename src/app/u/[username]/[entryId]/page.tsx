@@ -6,6 +6,9 @@ import { prisma } from "@/lib/prisma"
 import { translateCategory } from "@/lib/bgg/translations"
 import { MechanicTag } from "@/components/MechanicTag"
 import { WishlistButton } from "@/components/WishlistButton"
+import { RatingEditor } from "@/components/RatingEditor"
+import { SessionList } from "@/components/SessionList"
+import { DeleteButton } from "@/components/DeleteButton"
 import type { Metadata } from "next"
 
 interface Props {
@@ -41,7 +44,10 @@ export default async function PublicGameDetailPage({ params }: Props) {
     },
     include: {
       game: true,
-      sessions: { orderBy: { playedAt: "desc" }, select: { id: true, playedAt: true } },
+      sessions: {
+        orderBy: { playedAt: "desc" },
+        select: { id: true, playedAt: true, memo: true, imageUrl: true },
+      },
     },
   })
 
@@ -49,9 +55,9 @@ export default async function PublicGameDetailPage({ params }: Props) {
 
   const { game } = entry
 
-  // ログイン中ならウィッシュリスト状態を確認
   const session = await auth()
-  const wishlisted = session?.user?.id
+  const isOwner = session?.user?.id === entry.userId
+  const wishlisted = !isOwner && session?.user?.id
     ? (await prisma.wishlistItem.findUnique({
         where: { userId_gameId: { userId: session.user.id, gameId: game.id } },
       })) !== null
@@ -154,21 +160,25 @@ export default async function PublicGameDetailPage({ params }: Props) {
         <div className="wood-card mb-6 rounded-2xl p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-amber-800/70">評価</span>
-            <div className="flex gap-0.5">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span
-                  key={star}
-                  className={star <= entry.rating ? "text-amber-500" : "text-amber-200/40"}
-                >
-                  ★
-                </span>
-              ))}
-            </div>
+            {isOwner ? (
+              <RatingEditor entryId={entry.id} initialRating={entry.rating} />
+            ) : (
+              <div className="flex gap-0.5">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    className={star <= entry.rating ? "text-amber-500" : "text-amber-200/40"}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* アクション */}
-        {session?.user?.id && (
+        {/* オーナー以外のアクション */}
+        {!isOwner && session?.user?.id && (
           <div className="mb-6 flex flex-col gap-3">
             <Link
               href={`/record?gameId=${game.id}`}
@@ -182,28 +192,67 @@ export default async function PublicGameDetailPage({ params }: Props) {
 
         {/* プレイ記録一覧 */}
         <div className="mb-6">
-          <h2 className="mb-3 text-lg font-bold text-amber-950">
-            プレイ記録{" "}
-            <span className="text-sm font-normal text-amber-800/60">
-              {entry.sessions.length}回
-            </span>
-          </h2>
-          {entry.sessions.length === 0 ? (
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-amber-950">
+              プレイ記録{" "}
+              <span className="text-sm font-normal text-amber-800/60">
+                {entry.sessions.length}回
+              </span>
+            </h2>
+            {isOwner && (
+              <Link
+                href={`/record?gameId=${game.id}`}
+                className="rounded-lg bg-amber-900 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-amber-800"
+              >
+                + 追加
+              </Link>
+            )}
+          </div>
+
+          {entry.sessions.length === 0 && (
             <div className="wood-card rounded-2xl p-8 text-center shadow-sm">
               <p className="text-sm text-amber-800/70">まだプレイ記録がありません</p>
             </div>
-          ) : (
+          )}
+          {entry.sessions.length > 0 && isOwner && (
+            <SessionList
+              sessions={entry.sessions.map((s) => ({
+                id: s.id,
+                playedAt: s.playedAt?.toISOString() ?? null,
+                memo: s.memo,
+                imageUrl: s.imageUrl,
+              }))}
+              emptyRedirectPath={`/u/${username}`}
+            />
+          )}
+          {entry.sessions.length > 0 && !isOwner && (
             <div className="space-y-3">
-              {entry.sessions.map((session) => (
-                <div key={session.id} className="wood-card rounded-2xl p-4 shadow-sm">
+              {entry.sessions.map((s) => (
+                <div key={s.id} className="wood-card rounded-2xl p-4 shadow-sm">
                   <p className="text-sm font-semibold text-amber-950">
-                    {formatDate(session.playedAt)}
+                    {formatDate(s.playedAt)}
                   </p>
+                  {s.memo && (
+                    <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-amber-900/80">
+                      {s.memo}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
           )}
         </div>
+
+        {/* オーナーのみ：記録全削除 */}
+        {isOwner && (
+          <div className="mt-8">
+            <DeleteButton
+              playId={entry.id}
+              label="このゲームの記録をすべて削除"
+              redirectTo={`/u/${username}`}
+            />
+          </div>
+        )}
       </div>
     </div>
   )

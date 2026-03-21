@@ -7,6 +7,7 @@ import { translateCategory } from "@/lib/bgg/translations"
 import { MechanicTag } from "@/components/MechanicTag"
 import { DeleteButton } from "./DeleteButton"
 import { SessionList } from "./SessionList"
+import { RatingEditor } from "./RatingEditor"
 
 interface Props {
   readonly params: Promise<{ id: string }>
@@ -131,24 +132,7 @@ export default async function PlayDetailPage({ params }: Props) {
         <div className="wood-card mb-6 rounded-2xl p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-amber-800/70">評価</span>
-            <div className="flex items-center gap-3">
-              <div className="flex gap-0.5">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <span
-                    key={star}
-                    className={star <= entry.rating ? "text-amber-500" : "text-amber-200/40"}
-                  >
-                    ★
-                  </span>
-                ))}
-              </div>
-              <Link
-                href={`/plays/${entry.id}/edit`}
-                className="text-xs font-medium text-amber-800/70 underline hover:text-amber-950"
-              >
-                変更
-              </Link>
-            </div>
+            <RatingEditor entryId={entry.id} initialRating={entry.rating} />
           </div>
         </div>
 

@@ -7,6 +7,7 @@ import { calculateTitles } from "@/lib/titles"
 import { translateCategory, translateMechanic } from "@/lib/bgg/translations"
 import { TitleBadges } from "@/components/TitleBadges"
 import { MechanicTag } from "@/components/MechanicTag"
+import { PlayCalendar } from "@/components/PlayCalendar"
 import type { Metadata } from "next"
 
 interface Props {
@@ -109,6 +110,19 @@ export default async function PublicProfilePage({ params }: Props) {
     wishlistCount: user.wishlistItems.length,
   })
 
+  // プレイカレンダー用データ
+  const calendarSessions = await prisma.playSession.findMany({
+    where: { gameEntry: { user: { username } }, playedAt: { not: null } },
+    select: { playedAt: true },
+  })
+  const playDateMap = new Map<string, number>()
+  calendarSessions.forEach((s) => {
+    const date = s.playedAt?.toISOString().split("T")[0]
+    if (!date) return
+    playDateMap.set(date, (playDateMap.get(date) ?? 0) + 1)
+  })
+  const calendarDates = Array.from(playDateMap, ([date, count]) => ({ date, count }))
+
   const shareText = encodeURIComponent(displayName + "のボードゲームプロフィール🎲")
   const shareUrl = encodeURIComponent("https://board-log.pekori.dev/u/" + username)
 
@@ -182,6 +196,14 @@ export default async function PublicProfilePage({ params }: Props) {
           <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">称号</h2>
           <TitleBadges titles={titles} />
         </div>
+
+        {/* プレイカレンダー */}
+        {calendarDates.length > 0 && (
+          <div className="mb-12">
+            <h2 className="mb-4 text-2xl font-bold tracking-tight text-amber-950">プレイカレンダー</h2>
+            <PlayCalendar playDates={calendarDates} />
+          </div>
+        )}
 
         {/* カテゴリ統計 */}
         {topCategories.length > 0 && (
@@ -302,15 +324,18 @@ export default async function PublicProfilePage({ params }: Props) {
                       <p className="mb-1.5 line-clamp-2 text-xs font-semibold text-amber-950">
                         {entry.game.nameJa ?? entry.game.name}
                       </p>
-                      <div className="flex items-center gap-0.5">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <span
-                            key={star}
-                            className={star <= entry.rating ? "text-amber-500 text-xs" : "text-amber-200/40 text-xs"}
-                          >
-                            ★
-                          </span>
-                        ))}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-0.5">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <span
+                              key={star}
+                              className={star <= entry.rating ? "text-amber-500 text-xs" : "text-amber-200/40 text-xs"}
+                            >
+                              ★
+                            </span>
+                          ))}
+                        </div>
+                        <span className="text-xs text-amber-700/50">{entry._count.sessions}回</span>
                       </div>
                       {latestSession?.playedAt && (
                         <p className="mt-1 text-xs text-amber-700/60">
