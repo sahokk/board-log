@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useRef, useState } from "react"
 import type { BoardgameType } from "@/lib/boardgame-type"
 
@@ -104,6 +105,11 @@ export function BoardgameTypeCard({ type }: Readonly<Props>) {
           <AxisBar label="探索性" leftLabel="極め派" rightLabel="探索派" score={type.varietyScore} />
           <AxisBar label="社交性" leftLabel="競争派" rightLabel="協力/ソーシャル派" score={type.socialScore} />
           <AxisBar label="テーマ性" leftLabel="システム/ユーロ派" rightLabel="テーマ派" score={type.themeScore} />
+        </div>
+        <div className="mt-4 text-right">
+          <Link href="/types" className="text-xs text-amber-700 underline hover:text-amber-950">
+            すべてのタイプを見る →
+          </Link>
         </div>
       </div>
     </div>

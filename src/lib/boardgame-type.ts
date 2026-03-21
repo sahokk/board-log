@@ -72,7 +72,7 @@ const ABSTRACT_SIGNALS = new Set([
   "Math", "Number", "Puzzle", "Pattern Building",
 ])
 
-const TYPE_DEFINITIONS = [
+export const TYPE_DEFINITIONS = [
   {
     id: "strategic-explorer",
     name: "戦略探検家",
