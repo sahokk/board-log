@@ -117,8 +117,14 @@ export async function getRecommendations(userId: string): Promise<RecommendedGam
     return { game, score, reason }
   })
 
-  return scored
-    .sort((a, b) => b.score - a.score)
+  // 上位16件から8件をランダムに選ぶ（リロードのたびに結果が変わる）
+  const top16 = scored.sort((a, b) => b.score - a.score).slice(0, 16)
+  for (let i = top16.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [top16[i], top16[j]] = [top16[j], top16[i]]
+  }
+
+  return top16
     .slice(0, 8)
     .map(({ game, reason }) => ({
       id: game.id,
