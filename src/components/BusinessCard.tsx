@@ -27,281 +27,187 @@ interface Props {
   user: UserData
   stats: Stats
   featuredGames: Game[]
-  boardgameType: BoardgameType | null
+  boardgameType: BoardgameType
   titles: TitleWithUnlocked[]
 }
+
+const LEFT_W = 320
+const CARD_W = 1000
+const CARD_H = 560
 
 export function BusinessCard({ user, stats, featuredGames, boardgameType, titles }: Readonly<Props>) {
   const displayName = getDisplayName(user)
   const profileImage = getProfileImage(user)
   const genres = parseFavoriteGenres(user.favoriteGenres)
-
   const displayGames = featuredGames.slice(0, 3)
   const unlockedTitles = titles.filter((t) => t.unlocked).slice(0, 6)
   const profileUrl = user.username ? `board-log.pekori.dev/u/${user.username}` : "board-log.pekori.dev"
+  const rightW = CARD_W - LEFT_W
 
   return (
     <div
-      style={{ width: "800px", height: "1000px", fontFamily: "sans-serif" }}
+      style={{ width: CARD_W, height: CARD_H, fontFamily: "sans-serif", display: "flex", flexDirection: "column" }}
       className="relative overflow-hidden rounded-3xl shadow-2xl"
     >
-      {/* ── Background ── */}
-      <div className="absolute inset-0 bg-[#faf7f0]" />
+      {/* ── Main area ── */}
+      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
 
-      {/* ── Header (dark panel) ── */}
-      <div
-        className="relative overflow-hidden"
-        style={{
-          height: "260px",
-          background: "linear-gradient(135deg, #451a03 0%, #78350f 50%, #92400e 100%)",
-        }}
-      >
-        {/* Decorative circles */}
-        <div
-          className="absolute rounded-full"
-          style={{
-            width: 320, height: 320,
-            background: "radial-gradient(circle, rgba(217,119,6,0.15) 0%, transparent 70%)",
-            top: -80, right: -60,
-          }}
-        />
-        <div
-          className="absolute rounded-full"
-          style={{
-            width: 200, height: 200,
+        {/* ── Left panel (dark) ── */}
+        <div style={{
+          width: LEFT_W, flexShrink: 0,
+          background: "linear-gradient(160deg, #451a03 0%, #78350f 55%, #92400e 100%)",
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+          padding: "32px 28px", position: "relative", overflow: "hidden",
+        }}>
+          {/* Decorative circles */}
+          <div style={{
+            position: "absolute", width: 220, height: 220, borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(217,119,6,0.18) 0%, transparent 70%)",
+            top: -60, right: -60,
+          }} />
+          <div style={{
+            position: "absolute", width: 160, height: 160, borderRadius: "50%",
             background: "radial-gradient(circle, rgba(217,119,6,0.1) 0%, transparent 70%)",
             bottom: -40, left: -40,
-          }}
-        />
-        <div className="absolute text-7xl select-none" style={{ top: 20, right: 32, opacity: 0.12 }}>🎲</div>
-        <div className="absolute text-5xl select-none" style={{ bottom: 16, left: 28, opacity: 0.08 }}>♟</div>
+          }} />
+          <div style={{ position: "absolute", fontSize: 64, top: 12, right: 16, opacity: 0.1, userSelect: "none" }}>🎲</div>
 
-        {/* User content */}
-        <div className="relative flex h-full flex-col items-center justify-center px-10 pt-4">
           {/* Avatar */}
-          <div
-            className="relative overflow-hidden rounded-full"
-            style={{
-              width: 80, height: 80,
-              boxShadow: "0 0 0 3px rgba(217,119,6,0.5), 0 8px 24px rgba(0,0,0,0.4)",
-            }}
-          >
+          <div style={{
+            position: "relative", width: 76, height: 76, borderRadius: "50%", overflow: "hidden",
+            boxShadow: "0 0 0 3px rgba(217,119,6,0.5), 0 6px 20px rgba(0,0,0,0.4)",
+          }}>
             {profileImage ? (
-              <Image src={profileImage} alt={displayName} fill className="object-cover" sizes="80px" />
+              <Image src={profileImage} alt={displayName} fill className="object-cover" sizes="76px" />
             ) : (
-              <div
-                className="flex h-full w-full items-center justify-center text-4xl"
-                style={{ background: "rgba(255,255,255,0.1)" }}
-              >
+              <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, background: "rgba(255,255,255,0.1)" }}>
                 👤
               </div>
             )}
           </div>
 
           {/* Name */}
-          <h1
-            className="mt-3 font-bold text-white tracking-tight"
-            style={{ fontSize: 30, lineHeight: 1.1, textShadow: "0 2px 8px rgba(0,0,0,0.3)" }}
-          >
+          <p style={{ marginTop: 12, fontSize: 20, fontWeight: 800, color: "#fff", textAlign: "center", lineHeight: 1.2, textShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
             {displayName}
-          </h1>
+          </p>
 
           {/* Genre tags */}
           {genres.length > 0 && (
-            <div className="mt-2 flex flex-wrap justify-center gap-2">
+            <div style={{ marginTop: 8, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 4 }}>
               {genres.map((genre) => (
-                <span
-                  key={genre}
-                  className="rounded-full font-medium"
-                  style={{
-                    fontSize: 11,
-                    padding: "2px 10px",
-                    background: "rgba(255,255,255,0.15)",
-                    color: "#fde68a",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                  }}
-                >
+                <span key={genre} style={{
+                  fontSize: 10, padding: "2px 8px", borderRadius: 9999,
+                  background: "rgba(255,255,255,0.12)", color: "#fde68a",
+                  border: "1px solid rgba(255,255,255,0.18)",
+                }}>
                   {genre}
                 </span>
               ))}
             </div>
           )}
-        </div>
-      </div>
 
-      {/* ── Stats strip ── */}
-      <div
-        className="flex items-center justify-around"
-        style={{
-          height: 72,
-          background: "#fffbf0",
-          borderBottom: "1px solid #fde68a",
-          borderTop: "1px solid rgba(0,0,0,0.06)",
-        }}
-      >
-        <div className="text-center">
-          <p style={{ fontSize: 28, fontWeight: 800, color: "#451a03", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
-            {stats.totalPlays}
-          </p>
-          <p style={{ fontSize: 10, color: "#92400e", marginTop: 2 }}>総プレイ数</p>
-        </div>
-        <div style={{ width: 1, height: 32, background: "#fde68a" }} />
-        <div className="text-center">
-          <p style={{ fontSize: 28, fontWeight: 800, color: "#451a03", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
-            {stats.uniqueGames}
-          </p>
-          <p style={{ fontSize: 10, color: "#92400e", marginTop: 2 }}>ゲーム種類</p>
-        </div>
-        <div style={{ width: 1, height: 32, background: "#fde68a" }} />
-        <div className="text-center">
-          <p style={{ fontSize: 28, fontWeight: 800, color: "#451a03", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
-            {unlockedTitles.length}
-          </p>
-          <p style={{ fontSize: 10, color: "#92400e", marginTop: 2 }}>獲得称号</p>
-        </div>
-      </div>
+          {/* Divider */}
+          <div style={{ width: "100%", height: 1, background: "rgba(253,230,138,0.2)", margin: "16px 0" }} />
 
-      {/* ── Boardgame Type ── */}
-      {boardgameType && (
-        <div
-          style={{
-            margin: "20px 40px 0",
-            padding: "14px 20px",
-            borderRadius: 16,
-            background: "linear-gradient(135deg, #451a03 0%, #78350f 100%)",
-            display: "flex",
-            alignItems: "center",
-            gap: 16,
-          }}
-        >
-          <span style={{ fontSize: 36, lineHeight: 1 }}>{boardgameType.icon}</span>
-          <div>
-            <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(253,230,138,0.7)", marginBottom: 2 }}>
+          {/* Boardgame type */}
+          <div style={{ textAlign: "center" }}>
+            <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(253,230,138,0.6)", marginBottom: 6 }}>
               ボードゲームタイプ
             </p>
-            <p style={{ fontSize: 18, fontWeight: 800, color: "#fff", lineHeight: 1.1 }}>{boardgameType.name}</p>
-            <p style={{ fontSize: 12, color: "#fde68a", marginTop: 2 }}>{boardgameType.tagline}</p>
+            <span style={{ fontSize: 40, lineHeight: 1, display: "block" }}>{boardgameType.icon}</span>
+            <p style={{ marginTop: 6, fontSize: 17, fontWeight: 800, color: "#fff", lineHeight: 1.1 }}>{boardgameType.name}</p>
+            <p style={{ marginTop: 4, fontSize: 11, color: "#fde68a", opacity: 0.85 }}>{boardgameType.tagline}</p>
           </div>
         </div>
-      )}
 
-      {/* ── Featured Games ── */}
-      <div style={{ padding: `${boardgameType ? 16 : 24}px 40px 0` }}>
-        <p
-          style={{
-            fontSize: 10,
-            fontWeight: 700,
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            color: "#b45309",
-            marginBottom: 12,
-          }}
-        >
-          ★ お気に入りゲーム
-        </p>
-        {displayGames.length > 0 ? (
-          <div style={{ display: "flex", gap: 16 }}>
-            {displayGames.map((game) => (
-              <div
-                key={game.id}
-                style={{
-                  flex: 1,
-                  borderRadius: 14,
-                  overflow: "hidden",
-                  background: "#fff",
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)",
-                }}
-              >
-                <div style={{ position: "relative", aspectRatio: "1", background: "#fdf6e3" }}>
-                  {game.imageUrl ? (
-                    <Image
-                      src={game.imageUrl}
-                      alt={game.name}
-                      fill
-                      className="object-contain"
-                      style={{ padding: 10 }}
-                      sizes="200px"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-4xl">🎲</div>
-                  )}
-                </div>
-                <div style={{ padding: "8px 8px 10px" }}>
-                  <p
-                    style={{
-                      fontSize: 11,
-                      fontWeight: 600,
-                      color: "#451a03",
-                      lineHeight: 1.3,
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                      textAlign: "center",
-                    }}
-                  >
-                    {game.name}
-                  </p>
+        {/* ── Right panel (cream) ── */}
+        <div style={{
+          width: rightW, background: "#faf7f0",
+          display: "flex", flexDirection: "column",
+          padding: "24px 28px 20px",
+        }}>
+          {/* Stats row */}
+          <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
+            {[
+              { value: stats.totalPlays, label: "総プレイ数" },
+              { value: stats.uniqueGames, label: "ゲーム種類" },
+              { value: unlockedTitles.length, label: "獲得称号" },
+            ].map((s, i) => (
+              <div key={s.label} style={{ display: "flex", alignItems: "center" }}>
+                {i > 0 && <div style={{ width: 1, height: 28, background: "#fde68a", margin: "0 16px" }} />}
+                <div style={{ textAlign: "center" }}>
+                  <p style={{ fontSize: 26, fontWeight: 800, color: "#451a03", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{s.value}</p>
+                  <p style={{ fontSize: 10, color: "#92400e", marginTop: 2 }}>{s.label}</p>
                 </div>
               </div>
             ))}
           </div>
-        ) : (
-          <p style={{ fontSize: 12, color: "#b45309", opacity: 0.5 }}>（ゲームが選択されていません）</p>
-        )}
+
+          {/* Featured games */}
+          <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#b45309", marginBottom: 10 }}>
+            ★ お気に入りゲーム
+          </p>
+          {displayGames.length > 0 ? (
+            <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+              {displayGames.map((game) => (
+                <div key={game.id} style={{
+                  flex: 1, borderRadius: 12, overflow: "hidden",
+                  background: "#fff", boxShadow: "0 3px 12px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.04)",
+                }}>
+                  <div style={{ position: "relative", aspectRatio: "1", background: "#fdf6e3" }}>
+                    {game.imageUrl ? (
+                      <Image src={game.imageUrl} alt={game.name} fill className="object-contain" style={{ padding: 8 }} sizes="180px" />
+                    ) : (
+                      <div style={{ display: "flex", height: "100%", alignItems: "center", justifyContent: "center", fontSize: 28 }}>🎲</div>
+                    )}
+                  </div>
+                  <div style={{ padding: "6px 6px 8px" }}>
+                    <p style={{
+                      fontSize: 10, fontWeight: 600, color: "#451a03", lineHeight: 1.3, textAlign: "center",
+                      display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+                    }}>{game.name}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ marginBottom: 20 }}>
+              <p style={{ fontSize: 11, color: "#b45309", opacity: 0.5 }}>（ゲームが選択されていません）</p>
+            </div>
+          )}
+
+          {/* Titles */}
+          {unlockedTitles.length > 0 && (
+            <>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#b45309", marginBottom: 8 }}>
+                ★ 獲得称号
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {unlockedTitles.map((title) => (
+                  <div key={title.id} style={{
+                    display: "flex", alignItems: "center", gap: 4,
+                    padding: "4px 10px", borderRadius: 9999,
+                    background: "#451a03", color: "#fff",
+                  }}>
+                    <span style={{ fontSize: 12 }}>{title.icon}</span>
+                    <span style={{ fontSize: 10, fontWeight: 600 }}>{title.name}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
-      {/* Divider */}
-      <div style={{ margin: "20px 40px 0", height: 1, background: "#fde68a" }} />
-
-      {/* ── Titles ── */}
-      {unlockedTitles.length > 0 && (
-        <div style={{ padding: "16px 40px 0" }}>
-          <p
-            style={{
-              fontSize: 10,
-              fontWeight: 700,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: "#b45309",
-              marginBottom: 10,
-            }}
-          >
-            ★ 獲得称号
-          </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {unlockedTitles.map((title) => (
-              <div
-                key={title.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 5,
-                  padding: "5px 12px",
-                  borderRadius: 9999,
-                  background: "#451a03",
-                  color: "#fff",
-                }}
-              >
-                <span style={{ fontSize: 13 }}>{title.icon}</span>
-                <span style={{ fontSize: 11, fontWeight: 600 }}>{title.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* ── Footer ── */}
-      <div
-        className="absolute bottom-0 left-0 right-0 flex items-center justify-between"
-        style={{
-          height: 52,
-          padding: "0 40px",
-          background: "linear-gradient(135deg, #451a03 0%, #78350f 100%)",
-        }}
-      >
-        <p style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>🎲 BoardLog</p>
-        <p style={{ fontSize: 11, color: "rgba(253,230,138,0.7)" }}>{profileUrl}</p>
+      <div style={{
+        height: 44, flexShrink: 0,
+        background: "linear-gradient(135deg, #451a03 0%, #78350f 100%)",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "0 32px",
+      }}>
+        <p style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>🎲 BoardLog</p>
+        <p style={{ fontSize: 10, color: "rgba(253,230,138,0.7)" }}>{profileUrl}</p>
       </div>
     </div>
   )

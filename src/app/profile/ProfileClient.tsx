@@ -41,7 +41,7 @@ interface Props {
   allGames: Game[]
   featuredGames: Game[]
   savedFeaturedIds: string[]
-  boardgameType: BoardgameType | null
+  boardgameType: BoardgameType
   titles: TitleWithUnlocked[]
 }
 

@@ -140,12 +140,12 @@ function scoreFromSignals(
   return Math.round(Math.max(5, Math.min(95, 50 + bias * 150)))
 }
 
-export function calculateBoardgameType(data: BoardgameTypeInput): BoardgameType | null {
+export function calculateBoardgameType(data: BoardgameTypeInput): BoardgameType {
   const { entries, games } = data
 
-  if (entries.length < 1) return null
-  const totalSessions = entries.reduce((sum, e) => sum + e.sessionCount, 0)
-  if (totalSessions < 1) return null
+  const totalSessions = entries.length > 0
+    ? entries.reduce((sum, e) => sum + e.sessionCount, 0)
+    : 0
 
   const gameMap = new Map(games.map((g) => [g.gameId, g]))
   const gameList = entries.map((e) => gameMap.get(e.gameId)).filter(Boolean) as typeof games
@@ -165,7 +165,7 @@ export function calculateBoardgameType(data: BoardgameTypeInput): BoardgameType 
 
   // --- Variety Score ---
   // Lower avg sessions/game = explorer; higher = specialist
-  const avgSessionsPerGame = totalSessions / entries.length
+  const avgSessionsPerGame = entries.length > 0 ? totalSessions / entries.length : 1
   const varietyScore = Math.round(Math.max(5, Math.min(95, 105 - avgSessionsPerGame * 20)))
 
   // --- Social Score ---

@@ -220,11 +220,9 @@ export default async function PublicProfilePage({ params }: Props) {
         </div>
 
         {/* Boardgame Type */}
-        {boardgameType && (
-          <div className="mb-8">
-            <BoardgameTypeCard type={boardgameType} />
-          </div>
-        )}
+        <div className="mb-8">
+          <BoardgameTypeCard type={boardgameType} />
+        </div>
 
         {/* 称号 */}
         <div className="mb-12">

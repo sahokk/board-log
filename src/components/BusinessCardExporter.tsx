@@ -36,7 +36,7 @@ interface Props {
   allGames: Game[]
   featuredGames: Game[]
   savedFeaturedIds: string[]
-  boardgameType: BoardgameType | null
+  boardgameType: BoardgameType
   titles: TitleWithUnlocked[]
 }
 
@@ -121,15 +121,15 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
     )
   }
 
-  // scale: 800px → fit within the profile card width (~580px on desktop) ≈ 0.45
-  const SCALE = 0.45
-  const previewW = Math.round(800 * SCALE)
-  const previewH = Math.round(1000 * SCALE)
+  // scale: 1000px → fit within the profile card width (~580px on desktop) ≈ 0.52
+  const SCALE = 0.52
+  const previewW = Math.round(1000 * SCALE)
+  const previewH = Math.round(560 * SCALE)
 
   return (
     <div className="space-y-4">
       {/* Hidden card for export */}
-      <div style={{ position: "absolute", left: "-9999px", top: 0, width: "800px", height: "1000px" }}>
+      <div style={{ position: "absolute", left: "-9999px", top: 0, width: "1000px", height: "560px" }}>
         <div ref={cardRef}>
           <BusinessCard
             user={user}
@@ -184,7 +184,7 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
       {showPicker && (
         <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4">
           <p className="mb-3 text-sm font-medium text-amber-900">
-            名刺に載せるゲームを3つまで選んでください
+            {"名刺に載せるゲームを3つまで選んでください"}
             <span className="ml-2 text-xs font-normal text-amber-700/70">({selectedIds.length}/3)</span>
           </p>
           <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 max-h-72 overflow-y-auto pr-1">
