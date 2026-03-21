@@ -21,6 +21,7 @@ model User {
   displayName     String? // Custom display name (overrides OAuth name)
   customImageUrl  String? // Custom profile image URL (overrides OAuth image)
   favoriteGenres  String? // Comma-separated genre tags
+  isProfilePublic Boolean @default(true) // Whether public profile URL is accessible
 
   accounts      Account[]
   sessions      Session[]

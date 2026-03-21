@@ -22,7 +22,8 @@ interface UserData {
 interface Stats {
   totalPlays: number
   uniqueGames: number
-  averageRating: string
+  averageRating?: string
+  wishlistCount?: number
 }
 
 interface Props {

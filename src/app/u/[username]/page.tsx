@@ -8,7 +8,6 @@ import { calculateBoardgameType } from "@/lib/boardgame-type"
 import { translateCategory, translateMechanic } from "@/lib/bgg/translations"
 import { TitleBadges } from "@/components/TitleBadges"
 import { MechanicTag } from "@/components/MechanicTag"
-import { PlayCalendar } from "@/components/PlayCalendar"
 import { BoardgameTypeCard } from "@/components/BoardgameTypeCard"
 import type { Metadata } from "next"
 
@@ -39,52 +38,42 @@ function tagClass(i: number): string {
 export default async function PublicProfilePage({ params }: Props) {
   const { username } = await params
 
-  const now = new Date()
-  const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000)
-
-  const [user, calendarSessions] = await Promise.all([
-    prisma.user.findUnique({
-      where: { username },
-      select: {
-        displayName: true,
-        name: true,
-        customImageUrl: true,
-        image: true,
-        favoriteGenres: true,
-        gameEntries: {
-          include: {
-            game: {
-              select: {
-                id: true,
-                name: true,
-                nameJa: true,
-                imageUrl: true,
-                categories: true,
-                mechanics: true,
-                weight: true,
-              },
+  const user = await prisma.user.findUnique({
+    where: { username },
+    select: {
+      isProfilePublic: true,
+      displayName: true,
+      name: true,
+      customImageUrl: true,
+      image: true,
+      favoriteGenres: true,
+      gameEntries: {
+        include: {
+          game: {
+            select: {
+              id: true,
+              name: true,
+              nameJa: true,
+              imageUrl: true,
+              categories: true,
+              mechanics: true,
+              weight: true,
             },
-            sessions: { orderBy: { playedAt: "desc" }, take: 1 },
-            _count: { select: { sessions: true } },
           },
-          orderBy: { updatedAt: "desc" },
+          sessions: { orderBy: { playedAt: "desc" }, take: 1 },
+          _count: { select: { sessions: true } },
         },
-        wishlistItems: {
-          include: { game: true },
-          orderBy: { createdAt: "desc" },
-        },
+        orderBy: { updatedAt: "desc" },
       },
-    }),
-    prisma.playSession.findMany({
-      where: {
-        gameEntry: { user: { username } },
-        playedAt: { gte: yearAgo },
+      wishlistItems: {
+        include: { game: true },
+        orderBy: { createdAt: "desc" },
       },
-      select: { playedAt: true },
-    }),
-  ])
+    },
+  })
 
   if (!user) notFound()
+  if (!user.isProfilePublic) notFound()
 
   const displayName = getDisplayName(user)
   const profileImage = getProfileImage(user)
@@ -93,16 +82,6 @@ export default async function PublicProfilePage({ params }: Props) {
   const entries = user.gameEntries
   const uniqueGames = entries.length
   const totalSessions = entries.reduce((sum, e) => sum + e._count.sessions, 0)
-
-  // プレイカレンダーデータ集計
-  const dateCountMap = new Map<string, number>()
-  for (const s of calendarSessions) {
-    if (!s.playedAt) continue
-    const d = s.playedAt
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
-    dateCountMap.set(key, (dateCountMap.get(key) ?? 0) + 1)
-  }
-  const calendarDates = Array.from(dateCountMap, ([date, count]) => ({ date, count }))
 
   // カテゴリ統計
   const categoryMap = new Map<string, number>()
@@ -244,14 +223,6 @@ export default async function PublicProfilePage({ params }: Props) {
         {boardgameType && (
           <div className="mb-8">
             <BoardgameTypeCard type={boardgameType} />
-          </div>
-        )}
-
-        {/* Play Calendar */}
-        {calendarDates.length > 0 && (
-          <div className="mb-12">
-            <h2 className="mb-4 text-2xl font-bold tracking-tight text-amber-950">プレイカレンダー</h2>
-            <PlayCalendar playDates={calendarDates} />
           </div>
         )}
 
