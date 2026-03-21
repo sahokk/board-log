@@ -329,7 +329,7 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
       {/* 複雑度分布 */}
       {weightDistribution.some((b) => b.count > 0) && (
         <div className="mb-12">
-          <h2 className="mb-4 text-2xl font-bold tracking-tight text-amber-950">複雑度の傾向</h2>
+          <h2 className="mb-4 text-2xl font-bold tracking-tight text-amber-950">ゲームの重量傾向</h2>
           <div className="wood-card rounded-2xl p-5 shadow-sm">
             {/* 積み上げ横棒 */}
             {(() => {
@@ -351,8 +351,8 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
                     })}
                   </div>
                   <div className="flex justify-between text-xs text-amber-800/70 mb-4">
-                    <span>軽め</span>
-                    <span>重め</span>
+                    <span>軽量級</span>
+                    <span>重量級</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                     {weightDistribution.map(({ label, count }, i) => (
