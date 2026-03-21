@@ -221,14 +221,13 @@ export default async function PublicProfilePage({ params }: Props) {
               </div>
 
               {/* Right: Stats */}
-              <div className="flex sm:flex-col items-center sm:items-end gap-6 sm:gap-4 sm:shrink-0 border-t sm:border-t-0 sm:border-l border-amber-200/60 pt-4 sm:pt-0 sm:pl-8">
+              <div className="grid grid-cols-2 sm:grid-cols-1 gap-6 sm:gap-5 sm:shrink-0 border-t sm:border-t-0 sm:border-l border-amber-200/60 pt-5 sm:pt-0 sm:pl-8">
                 <div className="text-center sm:text-right">
                   <p className="text-3xl sm:text-4xl font-bold tracking-tight text-amber-950">
                     {totalSessions}
                   </p>
                   <p className="mt-0.5 text-xs font-medium text-amber-700/70">総プレイ数</p>
                 </div>
-                <div className="h-8 w-px sm:h-px sm:w-full bg-amber-200/60" />
                 <div className="text-center sm:text-right">
                   <p className="text-3xl sm:text-4xl font-bold tracking-tight text-amber-950">
                     {uniqueGames}
