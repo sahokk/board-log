@@ -38,7 +38,7 @@ export default async function PublicGameDetailPage({ params }: Props) {
     },
     include: {
       game: true,
-      sessions: { orderBy: { playedAt: "desc" } },
+      sessions: { orderBy: { playedAt: "desc" }, select: { id: true, playedAt: true } },
     },
   })
 
@@ -171,11 +171,6 @@ export default async function PublicGameDetailPage({ params }: Props) {
                   <p className="text-sm font-semibold text-amber-950">
                     {formatDate(session.playedAt)}
                   </p>
-                  {session.memo && (
-                    <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-amber-900/80">
-                      {session.memo}
-                    </p>
-                  )}
                 </div>
               ))}
             </div>
