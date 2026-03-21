@@ -43,7 +43,7 @@ export default async function PlaysPage() {
 				<div className="mb-10 flex items-center justify-between">
 					<div>
 						<h1 className="text-3xl font-bold tracking-tight text-amber-950">
-							プレイ履歴
+							遊んだゲームリスト
 						</h1>
 						<p className="mt-1 text-sm text-amber-800/70">
 							あなたのボードゲームの思い出
@@ -64,7 +64,7 @@ export default async function PlaysPage() {
 								まだプレイ記録がありません
 							</p>
 							<p className="mb-8 text-sm text-amber-800/70">
-								ゲームを検索してプレイを記録してみましょう
+								遊んだゲームを登録してみましょう
 							</p>
 							<Link
 								href="/"

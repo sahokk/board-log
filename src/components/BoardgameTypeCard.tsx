@@ -2,33 +2,80 @@
 
 import Link from "next/link"
 import { useRef, useState } from "react"
-import type { BoardgameType } from "@/lib/boardgame-type"
+import type { BoardgameType, BoardoryAxis } from "@/lib/boardgame-type"
 
 interface Props {
   type: BoardgameType
 }
 
-const AXIS_TOOLTIPS: Record<string, string> = {
-  重さ: "BGGのweight値やカテゴリ・メカニクスから算出。重めの戦略ゲームをよく遊ぶほど右に、軽めのカジュアルゲーム寄りだと左になります。",
-  探索性: "1ゲームあたりのプレイ回数から算出。多くのゲームを幅広く遊ぶ探索型ほど右に、少数のゲームを深く遊び込む専門型ほど左になります。",
-  社交性: "協力ゲームや社会的推理などのメカニクスから算出。協力・パーティ志向ほど右に、競争・勝負志向ほど左になります。",
-  テーマ性: "カテゴリから算出。ファンタジー・SF・冒険などの世界観重視ほど右に、経済・抽象戦略などのシステム重視ほど左になります。",
-}
+const AXIS_CONFIG: {
+  key: BoardoryAxis
+  label: string
+  leftLabel: string
+  rightLabel: string
+  tooltip: string
+}[] = [
+  {
+    key: "strategy",
+    label: "戦略性",
+    leftLabel: "直感派",
+    rightLabel: "思考派",
+    tooltip:
+      "ゲームのメカニクス（ワーカープレイスメント・エンジン構築など）とBGGのweight値から算出。思考を要するゲームをよく遊ぶほど高くなります。",
+  },
+  {
+    key: "interaction",
+    label: "対人性",
+    leftLabel: "マイペース",
+    rightLabel: "バチバチ派",
+    tooltip:
+      "エリアコントロール・交渉・ブラフなど他プレイヤーへの干渉度から算出。駆け引きや対決を楽しむゲームほど高くなります。",
+  },
+  {
+    key: "party",
+    label: "盛り上がり",
+    leftLabel: "静か派",
+    rightLabel: "パーティ派",
+    tooltip:
+      "パーティゲームやロールプレイ・ストーリーテリングなどのメカニクスから算出。場を盛り上げるゲームほど高くなります。",
+  },
+  {
+    key: "luck",
+    label: "運要素",
+    leftLabel: "実力主義",
+    rightLabel: "運ゲー好き",
+    tooltip:
+      "ダイスロール・プッシュユアラック・ランダム生産などのメカニクスから算出。運が勝敗に影響するゲームほど高くなります。",
+  },
+  {
+    key: "speed",
+    label: "テンポ",
+    leftLabel: "じっくり派",
+    rightLabel: "スピード派",
+    tooltip:
+      "リアルタイム系やスピードマッチングなどから算出。テンポよく進むゲームほど高く、重い戦略ゲームは低くなります。",
+  },
+]
 
-function AxisBar({ label, leftLabel, rightLabel, score }: Readonly<{
+function AxisBar({
+  label,
+  leftLabel,
+  rightLabel,
+  score,
+  tooltip,
+}: Readonly<{
   label: string
   leftLabel: string
   rightLabel: string
   score: number
+  tooltip: string
 }>) {
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null)
   const btnRef = useRef<HTMLButtonElement>(null)
-  const tooltip = AXIS_TOOLTIPS[label]
 
   const showTooltip = () => {
     if (!btnRef.current) return
     const rect = btnRef.current.getBoundingClientRect()
-    // w-56 = 224px, half = 112px — clamp so tooltip stays within viewport
     const x = Math.min(Math.max(rect.left + rect.width / 2, 112), window.innerWidth - 112)
     setTooltipPos({ x, y: rect.top })
   }
@@ -37,30 +84,26 @@ function AxisBar({ label, leftLabel, rightLabel, score }: Readonly<{
     <div>
       <div className="mb-1.5 flex items-center gap-1">
         <p className="text-xs font-semibold text-amber-800">{label}</p>
-        {tooltip && (
-          <>
-            <button
-              ref={btnRef}
-              type="button"
-              className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-200/60 text-[10px] font-bold text-amber-700 hover:bg-amber-300/60 transition-colors"
-              onMouseEnter={showTooltip}
-              onMouseLeave={() => setTooltipPos(null)}
-              onFocus={showTooltip}
-              onBlur={() => setTooltipPos(null)}
-              aria-label={`${label}の説明`}
-            >
-              ?
-            </button>
-            {tooltipPos && (
-              <div
-                className="pointer-events-none fixed z-50 w-56 rounded-lg bg-amber-950 px-3 py-2 shadow-lg"
-                style={{ left: `${tooltipPos.x}px`, top: `${tooltipPos.y - 8}px`, transform: "translate(-50%, -100%)" }}
-              >
-                <p className="text-xs leading-relaxed text-amber-100">{tooltip}</p>
-                <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-amber-950" />
-              </div>
-            )}
-          </>
+        <button
+          ref={btnRef}
+          type="button"
+          className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-200/60 text-[10px] font-bold text-amber-700 hover:bg-amber-300/60 transition-colors"
+          onMouseEnter={showTooltip}
+          onMouseLeave={() => setTooltipPos(null)}
+          onFocus={showTooltip}
+          onBlur={() => setTooltipPos(null)}
+          aria-label={`${label}の説明`}
+        >
+          ?
+        </button>
+        {tooltipPos && (
+          <div
+            className="pointer-events-none fixed z-50 w-56 rounded-lg bg-amber-950 px-3 py-2 shadow-lg"
+            style={{ left: `${tooltipPos.x}px`, top: `${tooltipPos.y - 8}px`, transform: "translate(-50%, -100%)" }}
+          >
+            <p className="text-xs leading-relaxed text-amber-100">{tooltip}</p>
+            <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-amber-950" />
+          </div>
         )}
       </div>
       <div className="relative mx-2 h-2 rounded-full bg-amber-100">
@@ -96,6 +139,8 @@ export function BoardgameTypeCard({ type }: Readonly<Props>) {
             <p className="text-sm text-amber-300">{type.tagline}</p>
           </div>
         </div>
+        {/* サブタイプ */}
+        <p className="mt-2 text-xs text-amber-400/80">― {type.subType}</p>
       </div>
 
       {/* Body */}
@@ -103,10 +148,16 @@ export function BoardgameTypeCard({ type }: Readonly<Props>) {
         <p className="mb-5 text-sm leading-relaxed text-amber-900">{type.description}</p>
 
         <div className="space-y-4">
-          <AxisBar label="重さ" leftLabel="カジュアル派" rightLabel="ストラテジー派" score={type.weightScore} />
-          <AxisBar label="探索性" leftLabel="極め派" rightLabel="探索派" score={type.varietyScore} />
-          <AxisBar label="社交性" leftLabel="競争派" rightLabel="協力/ソーシャル派" score={type.socialScore} />
-          <AxisBar label="テーマ性" leftLabel="システム/ユーロ派" rightLabel="テーマ派" score={type.themeScore} />
+          {AXIS_CONFIG.map(({ key, label, leftLabel, rightLabel, tooltip }) => (
+            <AxisBar
+              key={key}
+              label={label}
+              leftLabel={leftLabel}
+              rightLabel={rightLabel}
+              score={type.scores[key]}
+              tooltip={tooltip}
+            />
+          ))}
         </div>
         <div className="mt-4 text-right">
           <Link href="/types" className="text-xs text-amber-700 underline hover:text-amber-950">

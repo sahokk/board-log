@@ -168,7 +168,7 @@ export function ManualGameForm({ onCancel, initialName = "" }: Props) {
           disabled={submitting || !name.trim()}
           className="flex-1 rounded-xl bg-amber-900 px-6 py-3 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md disabled:opacity-50"
         >
-          {submitting ? "登録中..." : "登録して記録する"}
+          {submitting ? "登録中..." : "登録して遊んだ！"}
         </button>
       </div>
     </form>
