@@ -9,15 +9,19 @@ import { getRecommendations } from "@/lib/recommendations"
 export default async function Home() {
   const session = await auth()
 
-  const [recommendations, wishlistItems] = session?.user?.id
+  const [recommendations, wishlistItems, me] = session?.user?.id
     ? await Promise.all([
         getRecommendations(session.user.id),
         prisma.wishlistItem.findMany({
           where: { userId: session.user.id },
           select: { gameId: true },
         }),
+        prisma.user.findUnique({
+          where: { id: session.user.id },
+          select: { username: true },
+        }),
       ])
-    : [[], []]
+    : [[], [], null]
 
   const wishlistedIds = new Set(wishlistItems.map((w) => w.gameId))
   const recommendedGames = recommendations.map((g) => ({
@@ -68,7 +72,11 @@ export default async function Home() {
             </div>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
               {recommendedGames.map((game) => (
-                <div key={game.id} className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm">
+                <Link
+                  key={game.id}
+                  href={me?.username ? `/u/${me.username}/games/${game.id}` : `/record?gameId=${game.id}`}
+                  className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+                >
                   <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
                     {game.imageUrl ? (
                       <Image
@@ -87,25 +95,17 @@ export default async function Home() {
                       <WishlistButton gameId={game.id} initialWishlisted={game.wishlisted} size="icon" />
                     </div>
                   </div>
-                  <div className="flex flex-1 flex-col p-3">
+                  <div className="p-3">
                     <p className="mb-1 line-clamp-2 text-xs font-semibold text-amber-950">
                       {game.nameJa ?? game.name}
                     </p>
                     {game.reason && (
-                      <p className="mb-2 line-clamp-1 text-xs text-amber-600/80">
+                      <p className="line-clamp-1 text-xs text-amber-600/80">
                         {game.reason}
                       </p>
                     )}
-                    <div className="mt-auto">
-                      <Link
-                        href={`/record?gameId=${game.id}`}
-                        className="block w-full rounded-lg bg-amber-900 px-3 py-1.5 text-center text-xs font-medium text-white transition-colors hover:bg-amber-800"
-                      >
-                        記録する
-                      </Link>
-                    </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </section>
