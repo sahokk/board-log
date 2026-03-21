@@ -8,12 +8,18 @@ export function Header() {
         <Link href="/" className="text-xl font-semibold tracking-tight text-amber-950">
           🎲 BoardLog
         </Link>
-        <nav className="flex items-center gap-8">
+        <nav className="flex items-center gap-6">
           <Link
             href="/plays"
             className="text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
           >
             プレイ履歴
+          </Link>
+          <Link
+            href="/wishlist"
+            className="text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
+          >
+            ♡ 気になる
           </Link>
           <AuthButton />
         </nav>

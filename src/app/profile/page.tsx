@@ -160,10 +160,15 @@ export default async function ProfilePage() {
     }
   })
 
+  // ウィッシュリスト数
+  const wishlistCount = await prisma.wishlistItem.count({ where: { userId: session.user.id } })
+
   // 称号
   const titles = calculateTitles({
     entries: entries.map((e) => ({ gameId: e.gameId, rating: e.rating })),
     sessions: allSessions.map((s) => ({ playedAt: s.playedAt, gameId: s.gameId })),
+    games: entries.map((e) => ({ categories: e.game.categories, mechanics: e.game.mechanics })),
+    wishlistCount,
   })
 
   return (
