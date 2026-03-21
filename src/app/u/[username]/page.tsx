@@ -47,8 +47,10 @@ export default async function PublicProfilePage({ params }: Props) {
       gameEntries: {
         include: {
           game: true,
-          sessions: { orderBy: { playedAt: "desc" } },
+          sessions: { orderBy: { playedAt: "desc" }, take: 1 },
+          _count: { select: { sessions: true } },
         },
+        orderBy: { updatedAt: "desc" },
       },
     },
   })
@@ -63,18 +65,7 @@ export default async function PublicProfilePage({ params }: Props) {
   const allSessions = entries.flatMap((e) =>
     e.sessions.map((s) => ({ ...s, gameId: e.gameId }))
   )
-
-  const totalPlays = allSessions.length
   const uniqueGames = entries.length
-  const averageRating =
-    entries.length > 0
-      ? (entries.reduce((sum, e) => sum + e.rating, 0) / entries.length).toFixed(1)
-      : "0"
-
-  const favoriteGames = entries
-    .filter((e) => e.rating === 5)
-    .slice(0, 5)
-    .map((e) => e.game)
 
   // カテゴリ統計
   const categoryMap = new Map<string, number>()
@@ -112,7 +103,7 @@ export default async function PublicProfilePage({ params }: Props) {
   })
 
   const shareText = encodeURIComponent(displayName + "のボードゲームプロフィール🎲")
-  const shareUrl = encodeURIComponent("https://boardlog.app/u/" + username)
+  const shareUrl = encodeURIComponent("https://board-log.pekori.dev/u/" + username)
 
   return (
     <div className="wood-texture min-h-screen py-12">
@@ -143,6 +134,7 @@ export default async function PublicProfilePage({ params }: Props) {
                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-amber-950">
                   {displayName}
                 </h1>
+                <p className="mt-0.5 text-sm font-medium text-amber-700/70">@{username}</p>
                 <div className="mt-2">
                   <a
                     href={"https://x.com/intent/tweet?text=" + shareText + "&url=" + shareUrl}
@@ -178,71 +170,11 @@ export default async function PublicProfilePage({ params }: Props) {
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="mb-12">
-          <div className="wood-card rounded-2xl p-5 shadow-sm">
-            <div className="flex items-center justify-around">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-amber-950">{totalPlays}</p>
-                <p className="text-xs text-amber-700">プレイ</p>
-              </div>
-              <div className="h-8 w-px bg-amber-200/40" />
-              <div className="text-center">
-                <p className="text-2xl font-bold text-amber-950">{uniqueGames}</p>
-                <p className="text-xs text-amber-700">ゲーム種類</p>
-              </div>
-              <div className="h-8 w-px bg-amber-200/40" />
-              <div className="text-center">
-                <p className="text-2xl font-bold text-amber-950">{averageRating}</p>
-                <p className="text-xs text-amber-700">平均評価</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Titles */}
         <div className="mb-12">
           <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">称号</h2>
           <TitleBadges titles={titles} />
         </div>
-
-        {/* Favorite Games */}
-        {favoriteGames.length > 0 && (
-          <div className="mb-12">
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-2xl font-bold tracking-tight text-amber-950">
-                お気に入りゲーム
-              </h2>
-              <p className="text-sm text-amber-800">評価5のゲーム</p>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {favoriteGames.map((game) => (
-                <div key={game.id} className="wood-card overflow-hidden rounded-2xl shadow-sm">
-                  <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
-                    {game.imageUrl ? (
-                      <Image
-                        src={game.imageUrl}
-                        alt={game.nameJa ?? game.name}
-                        fill
-                        className="object-contain p-3"
-                        sizes="200px"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-amber-300">
-                        <span className="text-4xl">🎲</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <p className="line-clamp-2 text-xs font-semibold text-amber-950">
-                      {game.nameJa ?? game.name}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* カテゴリ統計 */}
         {topCategories.length > 0 && (
@@ -285,13 +217,67 @@ export default async function PublicProfilePage({ params }: Props) {
           </div>
         )}
 
-        {/* Empty state */}
-        {totalPlays === 0 && (
-          <div className="wood-card rounded-2xl p-12 text-center shadow-sm">
-            <div className="mb-4 text-5xl">🎲</div>
-            <p className="text-lg font-medium text-amber-900">まだプレイ記録がありません</p>
-          </div>
-        )}
+        {/* All Play History */}
+        <div className="mb-12">
+          <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">
+            {"プレイ履歴"}<span className="ml-2 text-base font-normal text-amber-800/60">{uniqueGames}タイトル</span>
+          </h2>
+          {entries.length === 0 ? (
+            <div className="wood-card rounded-2xl p-12 text-center shadow-sm">
+              <div className="mb-4 text-5xl">🎲</div>
+              <p className="text-lg font-medium text-amber-900">まだプレイ記録がありません</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              {entries.map((entry) => {
+                const latestSession = entry.sessions[0]
+                return (
+                  <Link
+                    key={entry.id}
+                    href={`/u/${username}/${entry.id}`}
+                    className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+                  >
+                    <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
+                      {entry.game.imageUrl ? (
+                        <Image
+                          src={entry.game.imageUrl}
+                          alt={entry.game.nameJa ?? entry.game.name}
+                          fill
+                          className="object-contain p-3"
+                          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-amber-300">
+                          <span className="text-4xl">🎲</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <p className="mb-1.5 line-clamp-2 text-xs font-semibold text-amber-950">
+                        {entry.game.nameJa ?? entry.game.name}
+                      </p>
+                      <div className="flex items-center gap-0.5">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span
+                            key={star}
+                            className={star <= entry.rating ? "text-amber-500 text-xs" : "text-amber-200/40 text-xs"}
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      {latestSession && (
+                        <p className="mt-1 text-xs text-amber-700/60">
+                          {new Intl.DateTimeFormat("ja-JP", { year: "numeric", month: "short", day: "numeric" }).format(latestSession.playedAt)}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

@@ -100,7 +100,7 @@ export default async function ProfilePage() {
   const favoriteGames = entries
     .filter((e) => e.rating === 5)
     .slice(0, 5)
-    .map((e) => e.game)
+    .map((e) => ({ ...e.game, entryId: e.id }))
 
   const stats = { totalPlays, uniqueGames, averageRating }
 
@@ -142,20 +142,23 @@ export default async function ProfilePage() {
     .sort((a, b) => b.count - a.count)
     .slice(0, 8)
 
-  // 複雑度分布
-  const weightBuckets = [
-    { label: "軽め (〜2)", min: 0, max: 2 },
-    { label: "普通 (2〜3)", min: 2, max: 3 },
-    { label: "やや重め (3〜4)", min: 3, max: 4 },
-    { label: "重め (4〜)", min: 4, max: 6 },
+  // プレイ時間による重量分布
+  const playTimeBuckets = [
+    { label: "軽量級 (〜30分)", max: 30 },
+    { label: "中軽量 (30〜60分)", max: 60 },
+    { label: "中重量 (60〜120分)", max: 120 },
+    { label: "重量級 (120分〜)", max: Infinity },
   ]
-  const weightDistribution = weightBuckets.map(({ label, min, max }) => ({
-    label,
-    count: entries.filter((e) => {
-      const w = e.game.weight
-      return w != null && w >= min && w < max
-    }).length,
-  }))
+  const weightDistribution = playTimeBuckets.map(({ label, max }, i) => {
+    const min = i === 0 ? 0 : playTimeBuckets[i - 1].max
+    return {
+      label,
+      count: entries.filter((e) => {
+        const t = e.game.playingTime
+        return t != null && t > min && t <= max
+      }).length,
+    }
+  })
 
   // 称号
   const titles = calculateTitles({

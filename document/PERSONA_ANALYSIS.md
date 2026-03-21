@@ -570,7 +570,7 @@ model PlayRecord {
 **5. プロフィール公開URL**
 - **工数:** 2週間
 - **機能:**
-  - ユニークURL発行（boardlog.app/@username）
+  - ユニークURL発行（board-log.pekori.dev/@username）
   - 公開/非公開設定
   - OGP対応（SNSシェア時のプレビュー）
   - 閲覧数表示

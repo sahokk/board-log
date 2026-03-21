@@ -18,7 +18,9 @@ import type { TitleWithUnlocked } from "@/lib/titles"
 
 interface Game {
   id: string
+  entryId: string
   name: string
+  nameJa?: string | null
   imageUrl: string | null
 }
 
@@ -140,6 +142,9 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-amber-950">
                 {displayName}
               </h1>
+              {user.username && (
+                <p className="mt-0.5 text-sm font-medium text-amber-700/70">@{user.username}</p>
+              )}
               <p className="mt-1 text-sm text-amber-800/70 truncate">{user.email}</p>
               {user.username && (
                 <div className="mt-2 flex items-center gap-2 flex-wrap">
@@ -149,10 +154,10 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
                     rel="noopener noreferrer"
                     className="text-xs font-medium text-amber-700 underline hover:text-amber-950"
                   >
-                    boardlog.app/u/{user.username}
+                    board-log.pekori.dev/u/{user.username}
                   </a>
                   <a
-                    href={"https://x.com/intent/tweet?text=" + encodeURIComponent(displayName + "のボードゲームプロフィール🎲") + "&url=" + encodeURIComponent("https://boardlog.app/u/" + user.username)}
+                    href={"https://x.com/intent/tweet?text=" + encodeURIComponent(displayName + "のボードゲームプロフィール🎲") + "&url=" + encodeURIComponent("https://board-log.pekori.dev/u/" + user.username)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 rounded-full bg-black px-2.5 py-1 text-xs font-medium text-white hover:bg-neutral-800 transition-colors"
@@ -252,15 +257,16 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {favoriteGames.map((game) => (
-              <div
+              <Link
                 key={game.id}
-                className="wood-card overflow-hidden rounded-2xl shadow-sm"
+                href={`/plays/${game.entryId}`}
+                className="wood-card overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
               >
                 <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
                   {game.imageUrl ? (
                     <Image
                       src={game.imageUrl}
-                      alt={game.name}
+                      alt={game.nameJa ?? game.name}
                       fill
                       className="object-contain p-3"
                       sizes="200px"
@@ -273,10 +279,10 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
                 </div>
                 <div className="p-3">
                   <p className="line-clamp-2 text-xs font-semibold text-amber-950">
-                    {game.name}
+                    {game.nameJa ?? game.name}
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -326,7 +332,7 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
       {/* 複雑度分布 */}
       {weightDistribution.some((b) => b.count > 0) && (
         <div className="mb-12">
-          <h2 className="mb-4 text-2xl font-bold tracking-tight text-amber-950">複雑度の傾向</h2>
+          <h2 className="mb-4 text-2xl font-bold tracking-tight text-amber-950">ゲームの重量傾向</h2>
           <div className="wood-card rounded-2xl p-5 shadow-sm">
             {/* 積み上げ横棒 */}
             {(() => {
@@ -348,8 +354,8 @@ export function ProfileClient({ user, stats, ratingCounts, favoriteGames, playDa
                     })}
                   </div>
                   <div className="flex justify-between text-xs text-amber-800/70 mb-4">
-                    <span>軽め</span>
-                    <span>重め</span>
+                    <span>軽量級</span>
+                    <span>重量級</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                     {weightDistribution.map(({ label, count }, i) => (

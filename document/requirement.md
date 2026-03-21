@@ -267,7 +267,7 @@ UI
 URL
 
 ```
-boardlog.app/username
+board-log.pekori.dev/username
 ```
 
 ---
