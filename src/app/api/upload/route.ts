@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { supabaseAdmin } from "@/lib/supabase/server"
+import { requireAuth } from "@/lib/api-utils"
 
 // Maximum file size: 5MB
 const MAX_FILE_SIZE = 5 * 1024 * 1024
@@ -9,13 +9,10 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]
 
 export async function POST(request: NextRequest) {
-  try {
-    // Check authentication
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+  const { userId, error: authError } = await requireAuth()
+  if (authError) return authError
 
+  try {
     // Parse form data
     const formData = await request.formData()
     const file = formData.get("file") as File
@@ -45,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     // Generate unique filename
     const fileExt = file.name.split(".").pop()
-    const fileName = `${session.user.id}-${Date.now()}.${fileExt}`
+    const fileName = `${userId}-${Date.now()}.${fileExt}`
     const filePath = `${bucket}/${fileName}`
 
     // Convert File to ArrayBuffer
@@ -78,8 +75,8 @@ export async function POST(request: NextRequest) {
       url: publicUrl,
       path: data.path,
     })
-  } catch (error) {
-    console.error("Upload error:", error)
+  } catch (err) {
+    console.error("Upload error:", err)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { requireAuth } from "@/lib/api-utils"
 
 export async function POST(request: NextRequest) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+  const { error } = await requireAuth()
+  if (error) return error
 
   const body = await request.json()
   const { name, imageUrl } = body
@@ -18,6 +16,17 @@ export async function POST(request: NextRequest) {
     )
   }
 
+  if (imageUrl?.trim()) {
+    try {
+      new URL(imageUrl)
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid image URL format" },
+        { status: 400 }
+      )
+    }
+  }
+
   try {
     const game = await prisma.game.create({
       data: {
@@ -27,8 +36,8 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({ game }, { status: 201 })
-  } catch (error) {
-    console.error("Game creation error:", error)
+  } catch (err) {
+    console.error("Game creation error:", err)
     return NextResponse.json(
       { error: "Failed to create game" },
       { status: 500 }

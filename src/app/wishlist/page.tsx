@@ -35,10 +35,10 @@ export default async function WishlistPage() {
 
         {items.length === 0 ? (
           <div className="wood-card rounded-2xl p-16 text-center shadow-sm">
-            <div className="mb-4 text-5xl">♡</div>
+            <div className="mb-4 text-5xl">🤍</div>
             <p className="mb-2 text-lg font-medium text-amber-900">気になるゲームを追加しよう</p>
             <p className="mb-8 text-sm text-amber-800/70">
-              ゲーム検索やおすすめから ♡ をタップすると追加されます
+              ゲーム検索やおすすめから 🤍 をタップすると追加されます
             </p>
             <Link
               href="/"

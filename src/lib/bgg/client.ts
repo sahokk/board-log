@@ -5,7 +5,7 @@ const BGG_API_BASE = "https://boardgamegeek.com/xmlapi2"
 const BGG_TOKEN = process.env.BGG_TOKEN
 
 const BGG_HEADERS: Record<string, string> = {
-  "User-Agent": "BoardLog/1.0 (https://github.com/sahokk/board-log)",
+  "User-Agent": "Boardory/1.0 (https://github.com/sahokk/board-log)",
   Accept: "application/xml",
   ...(BGG_TOKEN ? { Authorization: `Bearer ${BGG_TOKEN}` } : {}),
 }

@@ -1,8 +1,8 @@
 import {redirect} from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import {auth} from "@/lib/auth";
-import {prisma} from "@/lib/prisma";
+import { getUserGameEntriesWithLatest } from "@/lib/queries";
+import { GameImage } from "@/components/GameImage";
 
 function formatDate(date: Date): string {
 	return new Intl.DateTimeFormat("ja-JP", {
@@ -34,14 +34,7 @@ export default async function PlaysPage() {
 		redirect("/api/auth/signin?callbackUrl=/plays");
 	}
 
-	const entries = await prisma.gameEntry.findMany({
-		where: {userId: session.user.id},
-		include: {
-			game: true,
-			sessions: {orderBy: {playedAt: "desc"}, take: 1},
-		},
-		orderBy: {updatedAt: "desc"},
-	});
+	const entries = await getUserGameEntriesWithLatest(session.user.id);
 
 	return (
 		<div className="wood-texture min-h-screen py-12">
@@ -91,21 +84,11 @@ export default async function PlaysPage() {
 									className="wood-card group flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
 									{/* 箱画像 */}
 									<div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
-										{entry.game.imageUrl ? (
-											<Image
-												src={entry.game.imageUrl}
-												alt={entry.game.name}
-												fill
-												className="object-contain p-3"
-												sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
-											/>
-										) : (
-											<div className="flex h-full items-center justify-center text-amber-300">
-												<span className="text-4xl">
-													🎲
-												</span>
-											</div>
-										)}
+																		<GameImage
+											src={entry.game.imageUrl}
+											alt={entry.game.name}
+											sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
+										/>
 									</div>
 
 									{/* 情報 */}
@@ -114,9 +97,12 @@ export default async function PlaysPage() {
 											{entry.game.nameJa ??
 												entry.game.name}
 										</p>
-										<StarDisplay rating={entry.rating} />
+										<div className="flex items-center justify-between">
+											<StarDisplay rating={entry.rating} />
+											<span className="text-xs text-amber-700/50">{entry._count.sessions}回</span>
+										</div>
 										{latestSession?.playedAt && (
-											<p className="mt-2 text-xs font-medium text-amber-700/60">
+											<p className="mt-1 text-xs font-medium text-amber-700/60">
 												{formatDate(latestSession.playedAt)}
 											</p>
 										)}

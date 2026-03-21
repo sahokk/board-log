@@ -34,7 +34,7 @@ export default async function RecordPage({ searchParams }: Props) {
           プレイを記録
         </h1>
         <RecordClient
-          game={game ? { id: game.id, name: game.name, imageUrl: game.imageUrl } : null}
+          game={game ? { id: game.id, name: game.nameJa ?? game.name, imageUrl: game.imageUrl } : null}
           existingEntryId={existingEntry?.id ?? null}
           existingRating={existingEntry?.rating ?? null}
         />

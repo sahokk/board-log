@@ -35,7 +35,7 @@ export default async function Home() {
       <section className="border-b border-amber-200/50">
         <div className="mx-auto max-w-6xl px-6 py-16 text-center">
           <h1 className="mb-4 text-5xl font-bold tracking-tight text-amber-950">
-            🎲 BoardLog
+            🎲 Boardory
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-amber-900/80">
             ボードゲームの思い出を記録して、アルバムのように振り返ろう

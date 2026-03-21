@@ -1,4 +1,4 @@
-# BoardLog
+# Boardory
 
 ## プロジェクト概要
 
