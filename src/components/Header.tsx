@@ -24,7 +24,7 @@ export async function Header() {
             className="flex items-center gap-1 text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
           >
             <span className="text-base">📋</span>
-            <span className="hidden sm:inline">プレイ履歴</span>
+            <span className="hidden sm:inline">遊んだゲーム</span>
           </Link>
           <Link
             href="/wishlist"

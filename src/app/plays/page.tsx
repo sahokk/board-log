@@ -52,7 +52,7 @@ export default async function PlaysPage() {
 					<Link
 						href="/"
 						className="rounded-xl bg-amber-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md">
-						+ 遊んだ
+						+ 記録する
 					</Link>
 				</div>
 

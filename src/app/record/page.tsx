@@ -31,7 +31,7 @@ export default async function RecordPage({ searchParams }: Props) {
     <div className="wood-texture min-h-screen py-12">
       <div className="mx-auto max-w-lg px-6">
         <h1 className="mb-8 text-3xl font-bold tracking-tight text-amber-950">
-          遊んだ！
+          プレイを記録
         </h1>
         <RecordClient
           game={game ? { id: game.id, name: game.nameJa ?? game.name, imageUrl: game.imageUrl } : null}
