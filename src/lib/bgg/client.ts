@@ -97,6 +97,34 @@ export async function searchBggGames(query: string): Promise<BggSearchItem[]> {
   })
 }
 
+export interface BggHotItem {
+  id: string
+  name: string
+  yearPublished?: number
+  thumbnailUrl?: string
+}
+
+// BGGホットゲーム取得（上位50件）
+export async function getBggHotGames(): Promise<BggHotItem[]> {
+  const url = `${BGG_API_BASE}/hot?type=boardgame`
+  const res = await fetch(url, { headers: BGG_HEADERS, next: { revalidate: 86400 } })
+  if (!res.ok) throw new Error(`BGG hot failed: ${res.status}`)
+
+  const xml = await res.text()
+  const parsed = parser.parse(xml)
+  const items: unknown[] = parsed.items?.item ?? []
+
+  return items.map((item: unknown) => {
+    const i = item as Record<string, unknown>
+    return {
+      id: String(i["@_id"]),
+      name: attrStr(i.name),
+      yearPublished: attrNum(i.yearpublished),
+      thumbnailUrl: normalizeImageUrl(attrStr(i.thumbnail) || undefined),
+    }
+  })
+}
+
 // ゲーム詳細取得（stats=1でweight取得）
 export async function getBggGameDetails(ids: string[]): Promise<BggGameDetail[]> {
   if (ids.length === 0) return []

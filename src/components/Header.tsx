@@ -15,6 +15,12 @@ export function Header() {
           >
             プレイ履歴
           </Link>
+          <Link
+            href="/wishlist"
+            className="text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
+          >
+            気になる
+          </Link>
           <AuthButton />
         </nav>
       </div>

@@ -1,9 +1,10 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ManualGameForm } from "@/components/ManualGameForm"
+import { WishlistButton } from "@/components/WishlistButton"
 
 interface GameResult {
   id: string
@@ -15,9 +16,13 @@ interface GameResult {
   thumbnailUrl?: string
 }
 
+interface SearchClientProps {
+  isLoggedIn?: boolean
+}
+
 const PAGE_SIZE = 5
 
-export function SearchClient() {
+export function SearchClient({ isLoggedIn = false }: SearchClientProps) {
   const [query, setQuery] = useState("")
   const [results, setResults] = useState<GameResult[]>([])
   const [page, setPage] = useState(0)
@@ -25,6 +30,20 @@ export function SearchClient() {
   const [searched, setSearched] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showManualForm, setShowManualForm] = useState(false)
+  const [wishlistedIds, setWishlistedIds] = useState<Set<string>>(new Set())
+
+  // ログイン済みの場合、気になるリストを取得
+  useEffect(() => {
+    if (!isLoggedIn) return
+    fetch("/api/wishlist")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.entries) {
+          setWishlistedIds(new Set(data.entries.map((e: { gameId: string }) => e.gameId)))
+        }
+      })
+      .catch(() => {})
+  }, [isLoggedIn])
 
   const handleSearch = useCallback(async (e: { preventDefault(): void }) => {
     e.preventDefault()
@@ -166,6 +185,12 @@ export function SearchClient() {
                     >
                       記録する
                     </Link>
+                    {isLoggedIn && (
+                      <WishlistButton
+                        gameId={game.id}
+                        initialWishlisted={wishlistedIds.has(game.id)}
+                      />
+                    )}
                     {game.bggId && (
                       <a
                         href={`https://boardgamegeek.com/boardgame/${game.bggId}`}
