@@ -1,0 +1,1 @@
+ALTER TABLE "PlaySession" ALTER COLUMN "playedAt" DROP NOT NULL;

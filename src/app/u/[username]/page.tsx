@@ -104,7 +104,7 @@ export default async function PublicProfilePage({ params }: Props) {
 
   const titles = calculateTitles({
     entries: entries.map((e) => ({ gameId: e.gameId, rating: e.rating })),
-    sessions: allSessions.map((s) => ({ playedAt: s.playedAt, gameId: s.gameId })),
+    sessions: allSessions.flatMap((s) => s.playedAt ? [{ playedAt: s.playedAt, gameId: s.gameId }] : []),
     games: entries.map((e) => ({ categories: e.game.categories, mechanics: e.game.mechanics })),
     wishlistCount: user.wishlistItems.length,
   })
@@ -312,7 +312,7 @@ export default async function PublicProfilePage({ params }: Props) {
                           </span>
                         ))}
                       </div>
-                      {latestSession && (
+                      {latestSession?.playedAt && (
                         <p className="mt-1 text-xs text-amber-700/60">
                           {new Intl.DateTimeFormat("ja-JP", { year: "numeric", month: "short", day: "numeric" }).format(latestSession.playedAt)}
                         </p>

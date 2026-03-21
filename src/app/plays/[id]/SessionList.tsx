@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 
 interface Session {
   id: string
-  playedAt: string
+  playedAt: string | null
   memo: string | null
   imageUrl: string | null
 }
@@ -14,7 +14,8 @@ interface Props {
   readonly sessions: Session[]
 }
 
-function formatDate(dateStr: string): string {
+function formatDate(dateStr: string | null): string {
+  if (!dateStr) return "日付未設定"
   return new Intl.DateTimeFormat("ja-JP", {
     year: "numeric",
     month: "long",

@@ -132,7 +132,7 @@ model GameEntry {
 model PlaySession {
   id          String   @id @default(cuid())
   gameEntryId String
-  playedAt    DateTime
+  playedAt    DateTime?
   memo        String?  @db.Text
   imageUrl    String?
 

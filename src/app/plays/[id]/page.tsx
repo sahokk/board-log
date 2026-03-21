@@ -177,7 +177,7 @@ export default async function PlayDetailPage({ params }: Props) {
             <SessionList
               sessions={entry.sessions.map((s) => ({
                 id: s.id,
-                playedAt: s.playedAt.toISOString(),
+                playedAt: s.playedAt?.toISOString() ?? null,
                 memo: s.memo,
                 imageUrl: s.imageUrl,
               }))}

@@ -22,7 +22,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: (entry.game.nameJa ?? entry.game.name) + " | BoardLog" }
 }
 
-function formatDate(date: Date): string {
+function formatDate(date: Date | null): string {
+  if (!date) return "日付未設定"
   return new Intl.DateTimeFormat("ja-JP", {
     year: "numeric",
     month: "long",
