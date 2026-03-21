@@ -50,6 +50,8 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
   const [showPicker, setShowPicker] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>(savedFeaturedIds)
   const [saving, setSaving] = useState(false)
+  const [sharing, setSharing] = useState(false)
+  const [shareHint, setShareHint] = useState(false)
   const [themeId, setThemeId] = useState(savedCardTheme)
 
   let exportLabel = "準備中..."
@@ -124,14 +126,42 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
     }
   }
 
-  const handleShare = () => {
-    const siteUrl = globalThis.location.origin
-    const shareText = `ボードゲームの記録をBoardLogで管理しています！ 🎲\n総プレイ数: ${stats.totalPlays}回 | ゲーム種類: ${stats.uniqueGames}個\n\n${siteUrl}\n\n#BoardLog #ボードゲーム #ボドゲ`
-    globalThis.open(
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`,
-      "_blank",
-      "width=550,height=420"
-    )
+  const handleShareX = async () => {
+    setSharing(true)
+    setShareHint(false)
+    setError(null)
+    try {
+      const dataUrl = await generateImage()
+      const blob = await fetch(dataUrl).then((r) => r.blob())
+      const file = new File([blob], "boardlog-card.png", { type: "image/png" })
+
+      const tweetText = `ボードゲームの記録をBoardLogで管理しています！ 🎲\n総プレイ数: ${stats.totalPlays}回 | ゲーム種類: ${stats.uniqueGames}個\n\n#BoardLog #ボードゲーム #ボドゲ`
+
+      // Mobile: Web Share API with image file
+      if (typeof navigator !== "undefined" && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], text: tweetText })
+        return
+      }
+
+      // Desktop fallback: download image + open X
+      const link = document.createElement("a")
+      link.href = dataUrl
+      link.download = "boardlog-card.png"
+      link.click()
+      globalThis.open(
+        `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`,
+        "_blank",
+        "width=550,height=420"
+      )
+      setShareHint(true)
+    } catch (err) {
+      // User cancelled Web Share — not an error
+      if (err instanceof Error && err.name !== "AbortError") {
+        setError("シェアに失敗しました")
+      }
+    } finally {
+      setSharing(false)
+    }
   }
 
   const SCALE = 0.52
@@ -192,12 +222,21 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
           {"ゲームを選ぶ"}{selectedIds.length > 0 ? ` (${selectedIds.length}/3)` : ""}
         </button>
         <button
-          onClick={handleShare}
-          className="flex-1 rounded-lg bg-blue-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+          onClick={handleShareX}
+          disabled={sharing || !isReady}
+          className="flex-1 rounded-lg bg-black px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800 disabled:opacity-50 focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 focus:outline-none"
         >
-          Xでシェア
+          {sharing ? "準備中..." : "𝕏 でシェア"}
         </button>
       </div>
+
+      {shareHint && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+          <p className="text-xs text-amber-800">
+            📎 画像をDLしました。XのツイートにDLした画像を添付してシェアしてください。
+          </p>
+        </div>
+      )}
 
       {/* Game Picker */}
       {showPicker && (
