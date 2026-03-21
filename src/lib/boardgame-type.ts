@@ -162,19 +162,6 @@ const INTERMEDIATE_TO_BOARDORY: Record<IntermediateCategory, Partial<Record<Boar
 }
 
 // ============================================================
-// BGG カテゴリ補正（設計書 7）
-// フレーバー系（Fantasy等）は除外、性格に影響するものだけ使用
-// ============================================================
-const CATEGORY_CORRECTION_MAP: Record<string, Partial<Record<BoardoryAxis, number>>> = {
-  "Party Game":       { party: 1.5 },
-  "Economic":         { strategy: 1.0 },
-  "Wargames":         { strategy: 0.8, interaction: 0.5 },
-  "Abstract Strategy":{ strategy: 1.0 },
-  "Children's Game":  { luck: 0.5, speed: 0.5 },
-  "Cooperative":      { interaction: 0.5 },
-}
-
-// ============================================================
 // タイプ定義（設計書 9）
 // ============================================================
 export const TYPE_DEFINITIONS = [
@@ -276,27 +263,15 @@ function clamp100(v: number): number {
   return Math.round(Math.min(100, Math.max(0, v)))
 }
 
-export function calculateBoardgameType(data: BoardgameTypeInput): BoardgameType {
-  const { entries, games } = data
-
-  // データなし → バランス型デフォルト
-  if (entries.length === 0) {
-    return buildResult("balanced", { strategy: 20, luck: 20, interaction: 20, party: 20, speed: 20 })
-  }
-
-  const gameMap = new Map(games.map((g) => [g.gameId, g]))
-
-  // 中間カテゴリの加重合計（セッション数で重み付け）
+// エントリ群から中間カテゴリの加重合計とweight情報を集計する
+function accumulateIntermediates(
+  entries: BoardgameTypeInput["entries"],
+  gameMap: Map<string, BoardgameTypeInput["games"][number]>,
+) {
   const intermediateSum: Record<IntermediateCategory, number> = {
     STRATEGY: 0, LUCK: 0, INTERACTION: 0, PARTY: 0,
     SPEED: 0, ENGINE: 0, SOCIAL: 0, CONTROL: 0,
   }
-
-  // カテゴリ補正の加重合計
-  const categoryCorr: Record<BoardoryAxis, number> = {
-    strategy: 0, luck: 0, interaction: 0, party: 0, speed: 0,
-  }
-
   let totalSessions = 0
   let totalWeightedWeight = 0
   let totalWeightSessions = 0
@@ -308,13 +283,11 @@ export function calculateBoardgameType(data: BoardgameTypeInput): BoardgameType 
     const { sessionCount } = entry
     totalSessions += sessionCount
 
-    // BGG weight 集計（weight補正用）
     if (game.weight !== null) {
       totalWeightedWeight += game.weight * sessionCount
       totalWeightSessions += sessionCount
     }
 
-    // mechanics → 中間カテゴリ変換
     const mechanics = game.mechanics?.split(",").map((s) => s.trim()).filter(Boolean) ?? []
     for (const mechanic of mechanics) {
       const mapping = MECHANICS_MAP[mechanic]
@@ -323,55 +296,53 @@ export function calculateBoardgameType(data: BoardgameTypeInput): BoardgameType 
         intermediateSum[cat] += w * sessionCount
       }
     }
-
-    // カテゴリ補正
-    const categories = game.categories?.split(",").map((s) => s.trim()).filter(Boolean) ?? []
-    for (const cat of categories) {
-      const corr = CATEGORY_CORRECTION_MAP[cat]
-      if (!corr) continue
-      for (const [axis, v] of Object.entries(corr) as [BoardoryAxis, number][]) {
-        categoryCorr[axis] += v * sessionCount
-      }
-    }
   }
 
-  // セッション平均の中間カテゴリスコア
-  const avgIntermediate: Record<IntermediateCategory, number> = {
-    STRATEGY: 0, LUCK: 0, INTERACTION: 0, PARTY: 0,
-    SPEED: 0, ENGINE: 0, SOCIAL: 0, CONTROL: 0,
-  }
-  for (const cat of Object.keys(intermediateSum) as IntermediateCategory[]) {
-    avgIntermediate[cat] = totalSessions > 0 ? intermediateSum[cat] / totalSessions : 0
-  }
+  return { intermediateSum, totalSessions, totalWeightedWeight, totalWeightSessions }
+}
 
-  // 中間カテゴリ → Boardoryスコア変換（設計書 5）
+// 中間カテゴリ → Boardory 5軸スコア（rawスコア）に変換する
+function toRawScores(
+  intermediateSum: Record<IntermediateCategory, number>,
+  totalSessions: number,
+  totalWeightedWeight: number,
+  totalWeightSessions: number,
+): Record<BoardoryAxis, number> {
   const rawScores: Record<BoardoryAxis, number> = {
     strategy: 0, luck: 0, interaction: 0, party: 0, speed: 0,
   }
+
+  // セッション平均の中間カテゴリスコアを各軸に加算
   for (const [cat, axisMap] of Object.entries(INTERMEDIATE_TO_BOARDORY) as [IntermediateCategory, Partial<Record<BoardoryAxis, number>>][]) {
-    const catScore = avgIntermediate[cat]
+    const avg = totalSessions > 0 ? intermediateSum[cat] / totalSessions : 0
     for (const [axis, w] of Object.entries(axisMap) as [BoardoryAxis, number][]) {
-      rawScores[axis] += catScore * w
+      rawScores[axis] += avg * w
     }
   }
 
   // weight補正（設計書 6）: strategy += weight×2, speed -= weight×2
-  // weight は 1〜5 → 正規化して ±2 の範囲で補正
-  const avgWeight = totalWeightSessions > 0
-    ? totalWeightedWeight / totalWeightSessions
-    : 3.0  // データなし時は中央値
+  const avgWeight = totalWeightSessions > 0 ? totalWeightedWeight / totalWeightSessions : 3
   const weightNorm = (avgWeight - 1) / 4  // 0.0(最軽) 〜 1.0(最重)
   rawScores.strategy += weightNorm * 2
   rawScores.speed    -= weightNorm * 2
 
-  // カテゴリ補正（設計書 7）
-  for (const axis of Object.keys(categoryCorr) as BoardoryAxis[]) {
-    rawScores[axis] += totalSessions > 0 ? categoryCorr[axis] / totalSessions : 0
+  return rawScores
+}
+
+export function calculateBoardgameType(data: BoardgameTypeInput): BoardgameType {
+  const { entries, games } = data
+
+  if (entries.length === 0) {
+    return buildResult("balanced", { strategy: 20, luck: 20, interaction: 20, party: 20, speed: 20 })
   }
 
-  // 0-100 スケールへ変換
-  // rawScore の最大値を基準に比率を保ちつつスケール
-  // 最大値が低すぎる場合は固定スケール(×7)を使用
+  const gameMap = new Map(games.map((g) => [g.gameId, g]))
+  const { intermediateSum, totalSessions, totalWeightedWeight, totalWeightSessions } =
+    accumulateIntermediates(entries, gameMap)
+
+  const rawScores = toRawScores(intermediateSum, totalSessions, totalWeightedWeight, totalWeightSessions)
+
+  // rawScoreの最大値を基準にスケール。最大値が低すぎる場合は固定スケール(×7)を使用
   const maxRaw = Math.max(...Object.values(rawScores), 0)
   const scale = maxRaw > 14 ? 100 / maxRaw : 7
 
