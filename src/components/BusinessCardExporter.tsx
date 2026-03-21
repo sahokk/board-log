@@ -4,6 +4,7 @@ import { useRef, useState, useEffect, useLayoutEffect } from "react"
 import Image from "next/image"
 import { toPng } from "html-to-image"
 import { BusinessCard } from "./BusinessCard"
+import { useToast } from "./Toast"
 import type { TitleWithUnlocked } from "@/lib/titles"
 import type { BoardgameType } from "@/lib/boardgame-type"
 import { getTheme, CARD_THEMES } from "@/lib/card-themes"
@@ -43,6 +44,7 @@ interface Props {
 }
 
 export function BusinessCardExporter({ user, stats, allGames, featuredGames, savedFeaturedIds, boardgameType, savedCardTheme, titles }: Readonly<Props>) {
+  const { showToast } = useToast()
   const cardRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [exporting, setExporting] = useState(false)
@@ -98,24 +100,34 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
   const handleSavePicker = async () => {
     setSaving(true)
     try {
-      await fetch("/api/user", {
+      const res = await fetch("/api/user", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ featuredEntryIds: selectedIds }),
       })
+      if (!res.ok) throw new Error("save failed")
       setShowPicker(false)
+    } catch {
+      showToast("保存に失敗しました", "error")
     } finally {
       setSaving(false)
     }
   }
 
   const handleThemeChange = async (id: string) => {
+    const prev = themeId
     setThemeId(id)
-    await fetch("/api/user", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cardTheme: id }),
-    })
+    try {
+      const res = await fetch("/api/user", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cardTheme: id }),
+      })
+      if (!res.ok) throw new Error("save failed")
+    } catch {
+      setThemeId(prev)
+      showToast("テーマの保存に失敗しました", "error")
+    }
   }
 
   const generateImage = async (): Promise<string> => {
@@ -145,9 +157,8 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
   }
 
   const handleShareX = () => {
-    const profileUrl = user.username
-      ? `https://board-log.pekori.dev/u/${user.username}`
-      : "https://board-log.pekori.dev"
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://board-log.pekori.dev"
+    const profileUrl = user.username ? `${baseUrl}/u/${user.username}` : baseUrl
     const lines = [
       `${boardgameType.icon} ボードゲームタイプ：${boardgameType.name}`,
       `🎲 総プレイ数 ${stats.totalPlays}回 / ${stats.uniqueGames}種類`,

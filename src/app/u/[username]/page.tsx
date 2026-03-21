@@ -137,7 +137,8 @@ export default async function PublicProfilePage({ params }: Props) {
   })
 
   const shareText = encodeURIComponent(displayName + "のボードゲームプロフィール🎲")
-  const shareUrl = encodeURIComponent("https://board-log.pekori.dev/u/" + username)
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://board-log.pekori.dev"
+  const shareUrl = encodeURIComponent(`${baseUrl}/u/${username}`)
 
   return (
     <div className="wood-texture min-h-screen py-12">

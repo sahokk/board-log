@@ -74,7 +74,15 @@ export default async function ProfilePage() {
   })).sort((a, b) => b.rating - a.rating || b.sessionCount - a.sessionCount)
 
   // Resolve featured games from saved IDs, fallback to top-3 by session count
-  const savedIds: string[] = user.featuredEntryIds ? JSON.parse(user.featuredEntryIds) : []
+  let savedIds: string[] = []
+  if (user.featuredEntryIds) {
+    try {
+      const parsed = JSON.parse(user.featuredEntryIds)
+      if (Array.isArray(parsed)) savedIds = parsed.filter((id): id is string => typeof id === "string")
+    } catch {
+      // Ignore malformed JSON, fall back to empty
+    }
+  }
   let featuredGames: typeof allGames
   if (savedIds.length > 0) {
     featuredGames = savedIds

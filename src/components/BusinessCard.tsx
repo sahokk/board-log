@@ -43,7 +43,8 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
   const genres = parseFavoriteGenres(user.favoriteGenres)
   const displayGames = featuredGames.slice(0, 3)
   const unlockedTitles = titles.filter((t) => t.unlocked).slice(0, 6)
-  const profileUrl = user.username ? `board-log.pekori.dev/u/${user.username}` : "board-log.pekori.dev"
+  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL ?? "https://board-log.pekori.dev").replace(/^https?:\/\//, "")
+  const profileUrl = user.username ? `${baseUrl}/u/${user.username}` : baseUrl
   const rightW = CARD_W - LEFT_W
 
   return (
