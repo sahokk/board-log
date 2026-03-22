@@ -3,6 +3,7 @@ import { GiDiceSixFacesFive } from "react-icons/gi"
 import { MdAccountCircle, MdStar } from "react-icons/md"
 import { getDisplayName, getProfileImage, parseFavoriteGenres } from "@/lib/profile-utils"
 import type { TitleWithUnlocked } from "@/lib/titles"
+import { TYPE_DEFINITIONS } from "@/lib/boardgame-type"
 import type { BoardgameType } from "@/lib/boardgame-type"
 import type { CardTheme } from "@/lib/card-themes"
 
@@ -119,7 +120,7 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
             <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: theme.accentMuted, marginBottom: 6 }}>
               ボードゲームタイプ
             </p>
-            <div style={{ display: "flex", justifyContent: "center" }}><boardgameType.icon size={40} color="white" /></div>
+            <div style={{ display: "flex", justifyContent: "center" }}>{(() => { const Icon = TYPE_DEFINITIONS.find((t) => t.id === boardgameType.id)?.icon; return Icon ? <Icon size={40} color="white" /> : null })()}</div>
             <p style={{ marginTop: 6, fontSize: 17, fontWeight: 800, color: "#fff", lineHeight: 1.1 }}>{boardgameType.name}</p>
             <p style={{ marginTop: 4, fontSize: 11, color: theme.accentColor, opacity: 0.85 }}>{boardgameType.tagline}</p>
           </div>

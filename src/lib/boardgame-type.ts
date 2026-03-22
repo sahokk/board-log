@@ -6,7 +6,6 @@
 //   mechanics → 中間カテゴリ → Boardoryスコア(5軸) → タイプ分類
 // ============================================================
 
-import type { IconType } from "react-icons"
 import { GiChessPawn, GiCrossedSwords, GiScales, GiDiceSixFacesFive } from "react-icons/gi"
 import { MdCelebration } from "react-icons/md"
 
@@ -33,7 +32,6 @@ export interface BoardgameScores {
 export interface BoardgameType {
   id: string
   name: string
-  icon: IconType
   tagline: string
   description: string
   scores: BoardgameScores
@@ -411,7 +409,6 @@ function buildResult(typeId: string, scores: BoardgameScores): BoardgameType {
   return {
     id:          typeDef.id,
     name:        typeDef.name,
-    icon:        typeDef.icon,
     tagline:     typeDef.tagline,
     description: typeDef.description,
     scores,

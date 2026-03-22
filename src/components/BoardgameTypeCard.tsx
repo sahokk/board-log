@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useRef, useState } from "react"
 import type { BoardgameType, BoardoryAxis } from "@/lib/boardgame-type"
+import { TYPE_DEFINITIONS } from "@/lib/boardgame-type"
 
 interface Props {
   type: BoardgameType
@@ -133,7 +134,7 @@ export function BoardgameTypeCard({ type }: Readonly<Props>) {
           ボードゲームタイプ
         </p>
         <div className="flex items-center gap-3">
-          <type.icon size={48} className="text-white" />
+          {(() => { const Icon = TYPE_DEFINITIONS.find((t) => t.id === type.id)?.icon; return Icon ? <Icon size={48} className="text-white" /> : null })()}
           <div>
             <h3 className="text-2xl font-bold tracking-tight">{type.name}</h3>
             <p className="text-sm text-amber-300">{type.tagline}</p>
