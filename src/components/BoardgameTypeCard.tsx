@@ -133,7 +133,7 @@ export function BoardgameTypeCard({ type }: Readonly<Props>) {
           ボードゲームタイプ
         </p>
         <div className="flex items-center gap-3">
-          <span className="text-4xl">{type.icon}</span>
+          <type.icon size={48} className="text-white" />
           <div>
             <h3 className="text-2xl font-bold tracking-tight">{type.name}</h3>
             <p className="text-sm text-amber-300">{type.tagline}</p>

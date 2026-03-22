@@ -6,6 +6,10 @@
 //   mechanics → 中間カテゴリ → Boardoryスコア(5軸) → タイプ分類
 // ============================================================
 
+import type { IconType } from "react-icons"
+import { GiChessPawn, GiCrossedSwords, GiScales, GiDiceSixFacesFive } from "react-icons/gi"
+import { MdCelebration } from "react-icons/md"
+
 export type BoardoryAxis = "strategy" | "luck" | "interaction" | "party" | "speed"
 
 type IntermediateCategory =
@@ -29,7 +33,7 @@ export interface BoardgameScores {
 export interface BoardgameType {
   id: string
   name: string
-  icon: string
+  icon: IconType
   tagline: string
   description: string
   scores: BoardgameScores
@@ -168,7 +172,7 @@ export const TYPE_DEFINITIONS = [
   {
     id: "strategist",
     name: "ストラテジスト",
-    icon: "♟️",
+    icon: GiChessPawn,
     tagline: "思考の果てに勝利をつかむ",
     description:
       "複雑なルールと長期戦略を楽しむタイプ。ゲームを深く分析し、最適解を追い求める。重量級ゲームをこよなく愛す本格派ゲーマー。",
@@ -177,7 +181,7 @@ export const TYPE_DEFINITIONS = [
   {
     id: "interactor",
     name: "インタラクター",
-    icon: "⚔️",
+    icon: GiCrossedSwords,
     tagline: "対人戦の醍醐味を知る者",
     description:
       "他プレイヤーとの駆け引きや交渉を楽しむタイプ。エリアコントロールや交渉ゲームで本領を発揮し、対戦相手との読み合いに興奮する。",
@@ -186,7 +190,7 @@ export const TYPE_DEFINITIONS = [
   {
     id: "party-maker",
     name: "パーティメーカー",
-    icon: "🎉",
+    icon: MdCelebration,
     tagline: "みんなを笑顔にする天才",
     description:
       "盛り上がりと楽しい雰囲気を最優先するタイプ。パーティゲームや大人数ゲームが大好きで、場の空気を最高にする才能がある。",
@@ -195,7 +199,7 @@ export const TYPE_DEFINITIONS = [
   {
     id: "casual",
     name: "カジュアル",
-    icon: "🎲",
+    icon: GiDiceSixFacesFive,
     tagline: "気軽にサクッと楽しみたい",
     description:
       "ルールが簡単でテンポのよいゲームを好むタイプ。運要素やスピード感のあるゲームで楽しさを見つける。気軽に誰とでも遊べる親しみやすさが魅力。",
@@ -204,7 +208,7 @@ export const TYPE_DEFINITIONS = [
   {
     id: "balanced",
     name: "バランス型",
-    icon: "⚖️",
+    icon: GiScales,
     tagline: "オールラウンドなゲーマー",
     description:
       "特定のスタイルにこだわらず、あらゆるゲームを楽しめるタイプ。戦略もパーティも協力ゲームも全部こなせる万能プレイヤー。",

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { useSession, signIn, signOut } from "next-auth/react"
 import Link from "next/link"
 import Image from "next/image"
+import { MdAccountCircle } from "react-icons/md"
 
 interface Props {
   readonly username?: string | null
@@ -49,8 +50,8 @@ export function AuthButton({ username }: Props) {
               />
             </div>
           ) : (
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm">
-              👤
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200">
+              <MdAccountCircle size={22} className="text-gray-500" />
             </div>
           )}
         </button>

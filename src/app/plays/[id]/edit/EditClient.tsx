@@ -4,6 +4,8 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
+import { GiDiceSixFacesFive } from "react-icons/gi"
+import { MdStar, MdStarBorder } from "react-icons/md"
 
 interface Game {
   id: string
@@ -67,7 +69,7 @@ export function EditClient({ entryId, game, initialRating }: Props) {
             />
           ) : (
             <div className="flex h-full items-center justify-center text-amber-300">
-              <span className="text-3xl">🎲</span>
+              <GiDiceSixFacesFive size={32} />
             </div>
           )}
         </div>
@@ -87,16 +89,12 @@ export function EditClient({ entryId, game, initialRating }: Props) {
               onClick={() => setRating(star)}
               onMouseEnter={() => setHoverRating(star)}
               onMouseLeave={() => setHoverRating(0)}
-              className="text-4xl transition-transform hover:scale-110 focus:outline-none"
+              className="transition-transform hover:scale-110 focus:outline-none"
               aria-label={`${star}点`}
             >
-              <span
-                className={
-                  star <= (hoverRating || rating) ? "text-amber-500" : "text-amber-200/40"
-                }
-              >
-                ★
-              </span>
+              {star <= (hoverRating || rating)
+                ? <MdStar size={36} className="text-amber-500" />
+                : <MdStarBorder size={36} className="text-amber-200/40" />}
             </button>
           ))}
         </div>

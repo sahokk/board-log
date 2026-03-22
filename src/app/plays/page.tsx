@@ -1,6 +1,8 @@
 import {redirect} from "next/navigation";
 import Link from "next/link";
 import {auth} from "@/lib/auth";
+import { GiDiceSixFacesFive } from "react-icons/gi";
+import { MdStar, MdStarBorder } from "react-icons/md";
 import { getUserGameEntriesWithLatest } from "@/lib/queries";
 import { GameImage } from "@/components/GameImage";
 
@@ -16,13 +18,9 @@ function StarDisplay({rating}: {readonly rating: number}) {
 	return (
 		<div className="flex items-center gap-0.5">
 			{[1, 2, 3, 4, 5].map((star) => (
-				<span
-					key={star}
-					className={
-						star <= rating ? "text-amber-500" : "text-amber-200/40"
-					}>
-					★
-				</span>
+				star <= rating
+					? <MdStar key={star} size={14} className="text-amber-500" />
+					: <MdStarBorder key={star} size={14} className="text-amber-200/40" />
 			))}
 		</div>
 	);
@@ -59,7 +57,7 @@ export default async function PlaysPage() {
 				{entries.length === 0 ? (
 					<div className="wood-card rounded-2xl p-16 text-center shadow-sm">
 						<div className="mx-auto max-w-sm">
-							<div className="mb-4 text-5xl">🎲</div>
+							<div className="mb-4 flex justify-center text-amber-300"><GiDiceSixFacesFive size={52} /></div>
 							<p className="mb-2 text-lg font-medium text-amber-900">
 								まだプレイ記録がありません
 							</p>

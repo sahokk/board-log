@@ -1,8 +1,18 @@
+import type { IconType } from "react-icons"
+import {
+  GiFootprint, GiDiceSixFacesFive, GiWoodenChair, GiMedal, GiCrown,
+  GiTreasureMap, GiCutDiamond, GiCrossedSwords, GiMagnifyingGlass,
+  GiFire, GiTrophy, GiRainbowStar, GiBullseye,
+} from "react-icons/gi"
+import {
+  MdLibraryBooks, MdSchool, MdGrade, MdSettings, MdBuild, MdLightbulb, MdAssignment, MdModeNight,
+} from "react-icons/md"
+
 export interface Title {
   id: string
   name: string
   description: string
-  icon: string
+  icon: IconType
 }
 
 export interface TitleWithUnlocked extends Title {
@@ -40,35 +50,35 @@ const TITLES: TitleDefinition[] = [
     id: "first-step",
     name: "はじめの一歩",
     description: "はじめてプレイを記録した",
-    icon: "👣",
+    icon: GiFootprint,
     check: (s) => s.totalPlays >= 1,
   },
   {
     id: "apprentice",
     name: "ボドゲ見習い",
     description: "10回プレイを記録した",
-    icon: "🎲",
+    icon: GiDiceSixFacesFive,
     check: (s) => s.totalPlays >= 10,
   },
   {
     id: "regular",
     name: "テーブルの常連",
     description: "50回プレイを記録した",
-    icon: "🪑",
+    icon: GiWoodenChair,
     check: (s) => s.totalPlays >= 50,
   },
   {
     id: "veteran",
     name: "ベテランプレイヤー",
     description: "100回プレイを記録した",
-    icon: "🏅",
+    icon: GiMedal,
     check: (s) => s.totalPlays >= 100,
   },
   {
     id: "master",
     name: "ボドゲマスター",
     description: "500回プレイを記録した",
-    icon: "👑",
+    icon: GiCrown,
     check: (s) => s.totalPlays >= 500,
   },
 
@@ -77,21 +87,21 @@ const TITLES: TitleDefinition[] = [
     id: "adventurer",
     name: "冒険者",
     description: "5種類のゲームをプレイした",
-    icon: "🗺️",
+    icon: GiTreasureMap,
     check: (s) => s.uniqueGames >= 5,
   },
   {
     id: "collector",
     name: "コレクター",
     description: "20種類のゲームをプレイした",
-    icon: "📚",
+    icon: MdLibraryBooks,
     check: (s) => s.uniqueGames >= 20,
   },
   {
     id: "professor",
     name: "ゲーム博士",
     description: "50種類のゲームをプレイした",
-    icon: "🎓",
+    icon: MdSchool,
     check: (s) => s.uniqueGames >= 50,
   },
 
@@ -100,14 +110,14 @@ const TITLES: TitleDefinition[] = [
     id: "devoted",
     name: "こだわりの一本",
     description: "同じゲームを10回プレイした",
-    icon: "💎",
+    icon: GiCutDiamond,
     check: (s) => s.maxSameGame >= 10,
   },
   {
     id: "mastered",
     name: "極めし者",
     description: "同じゲームを30回プレイした",
-    icon: "⚔️",
+    icon: GiCrossedSwords,
     check: (s) => s.maxSameGame >= 30,
   },
 
@@ -116,14 +126,14 @@ const TITLES: TitleDefinition[] = [
     id: "connoisseur",
     name: "目利き",
     description: "平均評価4.5以上（10種類以上プレイ）",
-    icon: "🧐",
+    icon: GiMagnifyingGlass,
     check: (s) => s.uniqueGames >= 10 && s.averageRating >= 4.5,
   },
   {
     id: "fan",
     name: "推しが多い",
     description: "星5の評価を10ゲームにつけた",
-    icon: "⭐",
+    icon: MdGrade,
     check: (s) => s.fiveStarCount >= 10,
   },
 
@@ -132,14 +142,14 @@ const TITLES: TitleDefinition[] = [
     id: "weekly",
     name: "週間チャレンジ",
     description: "7日連続でプレイを記録した",
-    icon: "🔥",
+    icon: GiFire,
     check: (s) => s.maxConsecutiveDays >= 7,
   },
   {
     id: "monthly",
     name: "月間マラソン",
     description: "30日連続でプレイを記録した",
-    icon: "🏆",
+    icon: GiTrophy,
     check: (s) => s.maxConsecutiveDays >= 30,
   },
 
@@ -148,21 +158,21 @@ const TITLES: TitleDefinition[] = [
     id: "genre-explorer",
     name: "ジャンル探検家",
     description: "5種類以上のカテゴリのゲームをプレイした",
-    icon: "🗺️",
+    icon: GiTreasureMap,
     check: (s) => s.uniqueCategories >= 5,
   },
   {
     id: "genre-allrounder",
     name: "オールラウンダー",
     description: "10種類以上のカテゴリのゲームをプレイした",
-    icon: "🌈",
+    icon: GiRainbowStar,
     check: (s) => s.uniqueCategories >= 10,
   },
   {
     id: "genre-specialist",
     name: "ジャンルの達人",
     description: "同じカテゴリのゲームを10本以上プレイした",
-    icon: "🎯",
+    icon: GiBullseye,
     check: (s) => s.maxSameCategory >= 10,
   },
 
@@ -171,21 +181,21 @@ const TITLES: TitleDefinition[] = [
     id: "mechanic-hunter",
     name: "メカニクスハンター",
     description: "5種類以上のメカニクスを経験した",
-    icon: "⚙️",
+    icon: MdSettings,
     check: (s) => s.uniqueMechanics >= 5,
   },
   {
     id: "mechanic-expert",
     name: "ゲームシステム通",
     description: "15種類以上のメカニクスを経験した",
-    icon: "🔧",
+    icon: MdBuild,
     check: (s) => s.uniqueMechanics >= 15,
   },
   {
     id: "mechanic-devotee",
     name: "こだわりのスタイル",
     description: "同じメカニクスのゲームを10本以上プレイした",
-    icon: "💡",
+    icon: MdLightbulb,
     check: (s) => s.maxSameMechanic >= 10,
   },
 
@@ -194,14 +204,14 @@ const TITLES: TitleDefinition[] = [
     id: "wishlist-dreamer",
     name: "夢想家",
     description: "気になるリストに3件追加した",
-    icon: "🌙",
+    icon: MdModeNight,
     check: (s) => s.wishlistCount >= 3,
   },
   {
     id: "wishlist-collector",
     name: "欲しいものリスト",
     description: "気になるリストに10件追加した",
-    icon: "📋",
+    icon: MdAssignment,
     check: (s) => s.wishlistCount >= 10,
   },
 ]

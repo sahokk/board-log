@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { GiDiceSixFacesFive } from "react-icons/gi"
 import { ManualGameForm } from "@/components/ManualGameForm"
 import { WishlistButton } from "@/components/WishlistButton"
 
@@ -152,7 +153,7 @@ export function SearchClient() {
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center text-amber-300">
-                      <span className="text-4xl">🎲</span>
+                      <GiDiceSixFacesFive size={40} />
                     </div>
                   )}
                 </div>

@@ -4,6 +4,8 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
+import { GiDiceSixFacesFive, GiCardPlay } from "react-icons/gi"
+import { MdAccountCircle } from "react-icons/md"
 import { getDisplayName, getProfileImage } from "@/lib/profile-utils"
 import { ProfileEditForm } from "@/components/ProfileEditForm"
 import { BusinessCardExporter } from "@/components/BusinessCardExporter"
@@ -106,7 +108,7 @@ export function ProfileClient({ user, stats, allGames, featuredGames, savedFeatu
                 {profileImage ? (
                   <Image src={profileImage} alt={displayName} fill className="object-cover" sizes="80px" />
                 ) : (
-                  <div className="flex h-full items-center justify-center text-3xl text-amber-400">👤</div>
+                  <div className="flex h-full items-center justify-center"><MdAccountCircle size={36} className="text-amber-400" /></div>
                 )}
               </div>
               <div className="min-w-0">
@@ -175,7 +177,7 @@ export function ProfileClient({ user, stats, allGames, featuredGames, savedFeatu
         <div className="wood-card mb-8 rounded-2xl p-6 shadow-sm">
           <div className="mb-4">
             <h2 className="flex items-center gap-2 text-lg font-bold text-amber-950">
-              <span>🎴</span>ボドゲ名刺
+              <GiCardPlay size={20} />ボドゲ名刺
             </h2>
             <p className="mt-0.5 text-sm text-amber-800/70">あなたの記録を1枚の画像にエクスポート</p>
           </div>
@@ -195,7 +197,7 @@ export function ProfileClient({ user, stats, allGames, featuredGames, savedFeatu
       {/* Empty state */}
       {stats.totalPlays === 0 && (
         <div className="wood-card rounded-2xl p-12 text-center shadow-sm">
-          <div className="mb-4 text-5xl">🎲</div>
+          <div className="mb-4 flex justify-center text-amber-400"><GiDiceSixFacesFive size={52} /></div>
           <p className="mb-2 text-lg font-medium text-amber-900">まだプレイ記録がありません</p>
           <p className="mb-6 text-sm text-amber-800/70">遊んだゲームを登録してみましょう</p>
           <Link

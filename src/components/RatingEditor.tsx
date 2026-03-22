@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { MdStar, MdStarBorder } from "react-icons/md"
 import { useToast } from "@/components/Toast"
 
 interface Props {
@@ -46,12 +47,9 @@ export function RatingEditor({ entryId, initialRating }: Props) {
       <div className="flex items-center gap-3">
         <div className="flex gap-0.5">
           {[1, 2, 3, 4, 5].map((star) => (
-            <span
-              key={star}
-              className={star <= rating ? "text-amber-500" : "text-amber-200/40"}
-            >
-              ★
-            </span>
+            star <= rating
+              ? <MdStar key={star} className="text-amber-500" size={20} />
+              : <MdStarBorder key={star} className="text-amber-200/40" size={20} />
           ))}
         </div>
         <button
@@ -74,12 +72,12 @@ export function RatingEditor({ entryId, initialRating }: Props) {
             onClick={() => setRating(star)}
             onMouseEnter={() => setHoverRating(star)}
             onMouseLeave={() => setHoverRating(0)}
-            className="text-3xl transition-transform hover:scale-110 focus:outline-none"
+            className="transition-transform hover:scale-110 focus:outline-none"
             aria-label={`${star}点`}
           >
-            <span className={star <= (hoverRating || rating) ? "text-amber-500" : "text-amber-200/40"}>
-              ★
-            </span>
+            {star <= (hoverRating || rating)
+              ? <MdStar className="text-amber-500" size={32} />
+              : <MdStarBorder className="text-amber-200/40" size={32} />}
           </button>
         ))}
       </div>

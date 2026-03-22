@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
+import { GiDiceSixFacesFive } from "react-icons/gi"
+import { MdAccountCircle, MdStar, MdStarBorder } from "react-icons/md"
 import { prisma } from "@/lib/prisma"
 import { getDisplayName, getProfileImage, parseFavoriteGenres } from "@/lib/profile-utils"
 import { calculateTitles } from "@/lib/titles"
@@ -123,7 +125,7 @@ export default async function PublicProfilePage({ params }: Props) {
     })),
   })
 
-  const shareText = encodeURIComponent(displayName + "のボードゲームプロフィール🎲")
+  const shareText = encodeURIComponent(displayName + "のボードゲームプロフィール")
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://board-log.pekori.dev"
   const shareUrl = encodeURIComponent(`${baseUrl}/u/${username}`)
 
@@ -150,8 +152,8 @@ export default async function PublicProfilePage({ params }: Props) {
                       sizes="(max-width: 640px) 80px, 96px"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-3xl sm:text-4xl text-amber-400">
-                      👤
+                    <div className="flex h-full items-center justify-center text-amber-400">
+                      <MdAccountCircle size={44} />
                     </div>
                   )}
                 </div>
@@ -275,7 +277,7 @@ export default async function PublicProfilePage({ params }: Props) {
           </h2>
           {entries.length === 0 ? (
             <div className="wood-card rounded-2xl p-12 text-center shadow-sm">
-              <div className="mb-4 text-5xl">🎲</div>
+              <div className="mb-4 flex justify-center text-amber-300"><GiDiceSixFacesFive size={52} /></div>
               <p className="text-lg font-medium text-amber-900">まだプレイ記録がありません</p>
             </div>
           ) : (
@@ -301,12 +303,9 @@ export default async function PublicProfilePage({ params }: Props) {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-0.5">
                           {[1, 2, 3, 4, 5].map((star) => (
-                            <span
-                              key={star}
-                              className={star <= entry.rating ? "text-amber-500 text-xs" : "text-amber-200/40 text-xs"}
-                            >
-                              ★
-                            </span>
+                            star <= entry.rating
+                              ? <MdStar key={star} size={12} className="text-amber-500" />
+                              : <MdStarBorder key={star} size={12} className="text-amber-200/40" />
                           ))}
                         </div>
                         <span className="text-xs text-amber-700/50">{entry._count.sessions}回</span>

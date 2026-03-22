@@ -4,6 +4,8 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
+import { GiDiceSixFacesFive } from "react-icons/gi"
+import { MdStar, MdStarBorder } from "react-icons/md"
 
 interface Game {
   id: string
@@ -112,7 +114,7 @@ export function RecordClient({ game, existingEntryId, existingRating }: Props) {
             />
           ) : (
             <div className="flex h-full items-center justify-center text-amber-400">
-              <span className="text-2xl">🎲</span>
+              <GiDiceSixFacesFive size={24} />
             </div>
           )}
         </div>
@@ -134,7 +136,7 @@ export function RecordClient({ game, existingEntryId, existingRating }: Props) {
         </p>
         {existingRating && (
           <p className="mb-2 text-xs text-amber-700/60">
-            現在の評価: {"★".repeat(existingRating)}{"☆".repeat(5 - existingRating)}（変更可）
+            現在の評価: {[1,2,3,4,5].map((i) => i <= existingRating ? <MdStar key={i} size={12} className="inline text-amber-500" /> : <MdStarBorder key={i} size={12} className="inline text-amber-200/40" />)}（変更可）
           </p>
         )}
         <div className="flex gap-2">
@@ -145,16 +147,12 @@ export function RecordClient({ game, existingEntryId, existingRating }: Props) {
               onClick={() => setRating(star)}
               onMouseEnter={() => setHoverRating(star)}
               onMouseLeave={() => setHoverRating(0)}
-              className="text-4xl transition-transform hover:scale-110 focus:outline-none"
+              className="transition-transform hover:scale-110 focus:outline-none"
               aria-label={`${star}点`}
             >
-              <span
-                className={
-                  star <= (hoverRating || rating) ? "text-amber-500" : "text-amber-200/40"
-                }
-              >
-                ★
-              </span>
+              {star <= (hoverRating || rating)
+                ? <MdStar size={36} className="text-amber-500" />
+                : <MdStarBorder size={36} className="text-amber-200/40" />}
             </button>
           ))}
         </div>

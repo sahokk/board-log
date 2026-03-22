@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
+import { GiDiceSixFacesFive } from "react-icons/gi"
+import { MdFavoriteBorder } from "react-icons/md"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { WishlistButton } from "@/components/WishlistButton"
@@ -35,10 +37,10 @@ export default async function WishlistPage() {
 
         {items.length === 0 ? (
           <div className="wood-card rounded-2xl p-16 text-center shadow-sm">
-            <div className="mb-4 text-5xl">🤍</div>
+            <div className="mb-4 flex justify-center text-amber-400"><MdFavoriteBorder size={52} /></div>
             <p className="mb-2 text-lg font-medium text-amber-900">気になるゲームを追加しよう</p>
             <p className="mb-8 text-sm text-amber-800/70">
-              ゲーム検索やおすすめから 🤍 をタップすると追加されます
+              ゲーム検索やおすすめからハートアイコンをタップすると追加されます
             </p>
             <Link
               href="/"
@@ -66,7 +68,7 @@ export default async function WishlistPage() {
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center text-amber-300">
-                      <span className="text-4xl">🎲</span>
+                      <GiDiceSixFacesFive size={40} />
                     </div>
                   )}
                   <div className="absolute right-2 top-2">

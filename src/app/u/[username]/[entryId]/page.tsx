@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
+import { GiDiceSixFacesFive } from "react-icons/gi"
+import { MdPeople, MdTimer, MdBalance, MdStar, MdStarBorder } from "react-icons/md"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { translateCategory } from "@/lib/bgg/translations"
@@ -87,7 +89,7 @@ export default async function PublicGameDetailPage({ params }: Props) {
               />
             ) : (
               <div className="flex h-full items-center justify-center text-amber-300">
-                <span className="text-7xl">🎲</span>
+                <GiDiceSixFacesFive size={72} />
               </div>
             )}
           </div>
@@ -119,12 +121,12 @@ export default async function PublicGameDetailPage({ params }: Props) {
             {(game.minPlayers || game.maxPlayers || game.playingTime || game.weight) && (
               <div className="flex flex-wrap gap-4 text-sm text-amber-800/80">
                 {(game.minPlayers || game.maxPlayers) && (
-                  <span>
-                    👥 {game.minPlayers ?? "?"}{game.maxPlayers && game.maxPlayers !== game.minPlayers ? `〜${game.maxPlayers}` : ""}人
+                  <span className="flex items-center gap-1">
+                    <MdPeople size={14} /> {game.minPlayers ?? "?"}{game.maxPlayers && game.maxPlayers !== game.minPlayers ? `〜${game.maxPlayers}` : ""}人
                   </span>
                 )}
-                {game.playingTime && <span>⏱ {game.playingTime}分</span>}
-                {game.weight && <span>⚖️ 複雑度 {game.weight.toFixed(1)} / 5</span>}
+                {game.playingTime && <span className="flex items-center gap-1"><MdTimer size={14} /> {game.playingTime}分</span>}
+                {game.weight && <span className="flex items-center gap-1"><MdBalance size={14} /> 複雑度 {game.weight.toFixed(1)} / 5</span>}
               </div>
             )}
             {game.categories && (
@@ -165,12 +167,9 @@ export default async function PublicGameDetailPage({ params }: Props) {
             ) : (
               <div className="flex gap-0.5">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <span
-                    key={star}
-                    className={star <= entry.rating ? "text-amber-500" : "text-amber-200/40"}
-                  >
-                    ★
-                  </span>
+                  star <= entry.rating
+                    ? <MdStar key={star} size={18} className="text-amber-500" />
+                    : <MdStarBorder key={star} size={18} className="text-amber-200/40" />
                 ))}
               </div>
             )}

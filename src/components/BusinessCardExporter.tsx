@@ -2,6 +2,8 @@
 
 import { useRef, useState, useEffect, useLayoutEffect } from "react"
 import Image from "next/image"
+import { GiDiceSixFacesFive } from "react-icons/gi"
+import { MdStar, MdStarBorder } from "react-icons/md"
 import { toPng } from "html-to-image"
 import { BusinessCard } from "./BusinessCard"
 import { useToast } from "./Toast"
@@ -160,8 +162,8 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://boardory.pekori.dev"
     const profileUrl = user.username ? `${baseUrl}/u/${user.username}` : baseUrl
     const lines = [
-      `${boardgameType.icon} ボードゲームタイプ：${boardgameType.name}`,
-      `🎲 総プレイ数 ${stats.totalPlays}回 / ${stats.uniqueGames}種類`,
+      `ボードゲームタイプ：${boardgameType.name}`,
+      `総プレイ数 ${stats.totalPlays}回 / ${stats.uniqueGames}種類`,
       "",
       profileUrl,
       "",
@@ -262,11 +264,11 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
                     {game.imageUrl ? (
                       <Image src={game.imageUrl} alt={game.name} fill className="object-contain" sizes="80px" />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-xl">🎲</div>
+                      <div className="flex h-full items-center justify-center text-amber-400"><GiDiceSixFacesFive size={20} /></div>
                     )}
                   </div>
                   <p className="line-clamp-2 text-[10px] leading-tight text-amber-900">{game.name}</p>
-                  <p className="mt-0.5 text-[10px] text-amber-500">{"★".repeat(game.rating)}{"☆".repeat(5 - game.rating)}</p>
+                  <div className="mt-0.5 flex text-amber-500">{[1,2,3,4,5].map((i) => i <= game.rating ? <MdStar key={i} size={10} /> : <MdStarBorder key={i} size={10} />)}</div>
                   {selected && (
                     <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-600 text-[9px] font-bold text-white">
                       {selectedIds.indexOf(game.entryId) + 1}

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import Image from "next/image"
+import { GiDiceSixFacesFive } from "react-icons/gi"
 
 interface Play {
   id: string
@@ -81,7 +82,7 @@ export function RecentPlaysCarousel({ plays }: Props) {
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center text-amber-300">
-                    <span className="text-4xl">🎲</span>
+                    <GiDiceSixFacesFive size={40} />
                   </div>
                 )}
               </div>

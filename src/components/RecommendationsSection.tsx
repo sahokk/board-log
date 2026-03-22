@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { GiDiceSixFacesFive } from "react-icons/gi"
 import { WishlistButton } from "@/components/WishlistButton"
 import { refreshRecommendations } from "@/app/actions"
 import type { RecommendedGame } from "@/lib/recommendations"
@@ -61,7 +62,7 @@ export function RecommendationsSection({ initialGames, username }: Readonly<Prop
                 />
               ) : (
                 <div className="flex h-full items-center justify-center text-amber-300">
-                  <span className="text-4xl">🎲</span>
+                  <GiDiceSixFacesFive size={40} />
                 </div>
               )}
               <div className="absolute right-2 top-2">

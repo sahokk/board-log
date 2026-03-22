@@ -1,4 +1,6 @@
 import Image from "next/image"
+import { GiDiceSixFacesFive } from "react-icons/gi"
+import { MdAccountCircle, MdStar } from "react-icons/md"
 import { getDisplayName, getProfileImage, parseFavoriteGenres } from "@/lib/profile-utils"
 import type { TitleWithUnlocked } from "@/lib/titles"
 import type { BoardgameType } from "@/lib/boardgame-type"
@@ -73,7 +75,7 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
             background: `radial-gradient(circle, rgba(${theme.decorRgb},0.10) 0%, transparent 70%)`,
             bottom: -40, left: -40,
           }} />
-          <div style={{ position: "absolute", fontSize: 64, top: 12, right: 16, opacity: 0.1, userSelect: "none" }}>🎲</div>
+          <div style={{ position: "absolute", top: 12, right: 16, opacity: 0.1, userSelect: "none" }}><GiDiceSixFacesFive size={64} color="white" /></div>
 
           {/* Avatar */}
           <div style={{
@@ -83,8 +85,8 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
             {profileImage ? (
               <Image src={profileImage} alt={displayName} fill className="object-cover" sizes="76px" />
             ) : (
-              <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, background: "rgba(255,255,255,0.1)" }}>
-                👤
+              <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.1)" }}>
+                <MdAccountCircle size={36} color="rgba(255,255,255,0.8)" />
               </div>
             )}
           </div>
@@ -117,7 +119,7 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
             <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: theme.accentMuted, marginBottom: 6 }}>
               ボードゲームタイプ
             </p>
-            <span style={{ fontSize: 40, lineHeight: 1, display: "block" }}>{boardgameType.icon}</span>
+            <div style={{ display: "flex", justifyContent: "center" }}><boardgameType.icon size={40} color="white" /></div>
             <p style={{ marginTop: 6, fontSize: 17, fontWeight: 800, color: "#fff", lineHeight: 1.1 }}>{boardgameType.name}</p>
             <p style={{ marginTop: 4, fontSize: 11, color: theme.accentColor, opacity: 0.85 }}>{boardgameType.tagline}</p>
           </div>
@@ -147,8 +149,8 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
           </div>
 
           {/* Featured games */}
-          <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#b45309", marginBottom: 10 }}>
-            ★ お気に入りゲーム
+          <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#b45309", marginBottom: 10, display: "flex", alignItems: "center", gap: 3 }}>
+            <MdStar size={10} color="#b45309" /> お気に入りゲーム
           </p>
           {displayGames.length > 0 ? (
             <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
@@ -161,7 +163,7 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
                     {game.imageUrl ? (
                       <Image src={game.imageUrl} alt={game.name} fill className="object-contain" style={{ padding: 8 }} sizes="180px" />
                     ) : (
-                      <div style={{ display: "flex", height: "100%", alignItems: "center", justifyContent: "center", fontSize: 28 }}>🎲</div>
+                      <div style={{ display: "flex", height: "100%", alignItems: "center", justifyContent: "center" }}><GiDiceSixFacesFive size={28} color="#d97706" /></div>
                     )}
                   </div>
                   <div style={{ padding: "6px 6px 8px" }}>
@@ -182,8 +184,8 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
           {/* Titles */}
           {unlockedTitles.length > 0 && (
             <>
-              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#b45309", marginBottom: 8 }}>
-                ★ 獲得称号
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#b45309", marginBottom: 8, display: "flex", alignItems: "center", gap: 3 }}>
+                <MdStar size={10} color="#b45309" /> 獲得称号
               </p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                 {unlockedTitles.map((title) => (
@@ -192,7 +194,7 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
                     padding: "4px 10px", borderRadius: 9999,
                     background: "#451a03", color: "#fff",
                   }}>
-                    <span style={{ fontSize: 12 }}>{title.icon}</span>
+                    <title.icon size={12} color="white" />
                     <span style={{ fontSize: 10, fontWeight: 600 }}>{title.name}</span>
                   </div>
                 ))}
@@ -209,7 +211,7 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "0 32px",
       }}>
-        <p style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>🎲 Boardory</p>
+        <p style={{ fontSize: 14, fontWeight: 700, color: "#fff", display: "flex", alignItems: "center", gap: 4 }}><GiDiceSixFacesFive size={18} color="white" /> Boardory</p>
         <p style={{ fontSize: 10, color: theme.accentMuted }}>{profileUrl}</p>
       </div>
     </div>

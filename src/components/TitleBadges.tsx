@@ -33,7 +33,7 @@ export function TitleBadges({ titles }: Props) {
                   : "bg-gray-100 opacity-40 grayscale"
               }`}
             >
-              <span className="mb-1.5 text-2xl">{title.icon}</span>
+              <title.icon size={24} className="mb-1.5" />
               <span
                 className={`text-xs font-medium leading-tight ${
                   title.unlocked ? "text-amber-950" : "text-gray-500"

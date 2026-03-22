@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
+import { GiDiceSixFacesFive } from "react-icons/gi"
 
 interface Props {
   onCancel: () => void
@@ -125,8 +126,8 @@ export function ManualGameForm({ onCancel, initialName = "" }: Props) {
                 sizes="80px"
               />
             ) : (
-              <div className="flex h-full items-center justify-center text-3xl text-amber-300">
-                🎲
+              <div className="flex h-full items-center justify-center text-amber-300">
+                <GiDiceSixFacesFive size={36} />
               </div>
             )}
           </div>

@@ -1,6 +1,8 @@
 import { notFound, redirect } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
+import { GiDiceSixFacesFive } from "react-icons/gi"
+import { MdPeople, MdTimer, MdBalance } from "react-icons/md"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { translateCategory } from "@/lib/bgg/translations"
@@ -55,7 +57,7 @@ export default async function PlayDetailPage({ params }: Props) {
               />
             ) : (
               <div className="flex h-full items-center justify-center text-amber-300">
-                <span className="text-7xl">🎲</span>
+                <GiDiceSixFacesFive size={72} />
               </div>
             )}
           </div>
@@ -87,15 +89,15 @@ export default async function PlayDetailPage({ params }: Props) {
             {(entry.game.minPlayers || entry.game.maxPlayers || entry.game.playingTime) && (
               <div className="flex flex-wrap gap-4 text-sm text-amber-800/80">
                 {(entry.game.minPlayers || entry.game.maxPlayers) && (
-                  <span>
-                    👥 {entry.game.minPlayers ?? "?"}{entry.game.maxPlayers && entry.game.maxPlayers !== entry.game.minPlayers ? `〜${entry.game.maxPlayers}` : ""}人
+                  <span className="flex items-center gap-1">
+                    <MdPeople size={14} /> {entry.game.minPlayers ?? "?"}{entry.game.maxPlayers && entry.game.maxPlayers !== entry.game.minPlayers ? `〜${entry.game.maxPlayers}` : ""}人
                   </span>
                 )}
                 {entry.game.playingTime && (
-                  <span>⏱ {entry.game.playingTime}分</span>
+                  <span className="flex items-center gap-1"><MdTimer size={14} /> {entry.game.playingTime}分</span>
                 )}
                 {entry.game.weight && (
-                  <span>⚖️ 複雑度 {entry.game.weight.toFixed(1)} / 5</span>
+                  <span className="flex items-center gap-1"><MdBalance size={14} /> 複雑度 {entry.game.weight.toFixed(1)} / 5</span>
                 )}
               </div>
             )}

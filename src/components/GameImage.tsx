@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { GiDiceSixFacesFive } from "react-icons/gi"
 
 interface Props {
   src: string | null | undefined
@@ -24,7 +25,7 @@ export function GameImage({
   }
   return (
     <div className={fallbackClassName}>
-      🎲
+      <GiDiceSixFacesFive size={40} />
     </div>
   )
 }

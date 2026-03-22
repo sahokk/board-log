@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { MdFavorite, MdFavoriteBorder } from "react-icons/md"
 
 interface Props {
   gameId: string
@@ -41,7 +42,7 @@ export function WishlistButton({ gameId, initialWishlisted, size = "default" }: 
             : "bg-white/80 text-amber-700 hover:bg-amber-50"
         }`}
       >
-        {wishlisted ? "🩷" : "🤍"}
+        {wishlisted ? <MdFavorite className="text-pink-500" size={16} /> : <MdFavoriteBorder size={16} />}
       </button>
     )
   }
@@ -56,7 +57,7 @@ export function WishlistButton({ gameId, initialWishlisted, size = "default" }: 
           : "border border-amber-300 text-amber-800 hover:bg-amber-50"
       }`}
     >
-      <span>{wishlisted ? "🩷" : "🤍"}</span>
+      <span>{wishlisted ? <MdFavorite className="text-pink-500" size={14} /> : <MdFavoriteBorder size={14} />}</span>
       <span>{wishlisted ? "気になり中" : "気になる"}</span>
     </button>
   )

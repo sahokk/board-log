@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import { MdAccountCircle } from "react-icons/md"
 
 const GENRE_OPTIONS = [
   "戦略",
@@ -186,8 +187,8 @@ export function ProfileEditForm({
                 sizes="80px"
               />
             ) : (
-              <div className="flex h-full items-center justify-center text-3xl text-amber-400">
-                👤
+              <div className="flex h-full items-center justify-center">
+                <MdAccountCircle size={40} className="text-amber-400" />
               </div>
             )}
           </div>
