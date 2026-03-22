@@ -5,6 +5,7 @@ import { getDisplayName, getProfileImage, parseFavoriteGenres } from "@/lib/prof
 import type { TitleWithUnlocked } from "@/lib/titles"
 import { TYPE_DEFINITIONS } from "@/lib/boardgame-type"
 import type { BoardgameType } from "@/lib/boardgame-type"
+import { TITLE_ICONS } from "@/lib/titles"
 import type { CardTheme } from "@/lib/card-themes"
 
 interface Game {
@@ -195,7 +196,7 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
                     padding: "4px 10px", borderRadius: 9999,
                     background: "#451a03", color: "#fff",
                   }}>
-                    <title.icon size={12} color="white" />
+                    {(() => { const Icon = TITLE_ICONS[title.id]; return Icon ? <Icon size={12} color="white" /> : null })()}
                     <span style={{ fontSize: 10, fontWeight: 600 }}>{title.name}</span>
                   </div>
                 ))}

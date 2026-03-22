@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { TITLE_ICONS } from "@/lib/titles"
 import type { TitleWithUnlocked } from "@/lib/titles"
 
 interface Props {
@@ -33,7 +34,7 @@ export function TitleBadges({ titles }: Props) {
                   : "bg-gray-100 opacity-40 grayscale"
               }`}
             >
-              <title.icon size={24} className="mb-1.5" />
+              {(() => { const Icon = TITLE_ICONS[title.id]; return Icon ? <Icon size={24} className="mb-1.5" /> : null })()}
               <span
                 className={`text-xs font-medium leading-tight ${
                   title.unlocked ? "text-amber-950" : "text-gray-500"

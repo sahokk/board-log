@@ -12,11 +12,36 @@ export interface Title {
   id: string
   name: string
   description: string
-  icon: IconType
 }
 
 export interface TitleWithUnlocked extends Title {
   unlocked: boolean
+}
+
+/** Client-side icon lookup — do NOT include in serialized props */
+export const TITLE_ICONS: Record<string, IconType> = {
+  "first-step": GiFootprint,
+  "apprentice": GiDiceSixFacesFive,
+  "regular": GiWoodenChair,
+  "veteran": GiMedal,
+  "master": GiCrown,
+  "adventurer": GiTreasureMap,
+  "collector": MdLibraryBooks,
+  "professor": MdSchool,
+  "devoted": GiCutDiamond,
+  "mastered": GiCrossedSwords,
+  "connoisseur": GiMagnifyingGlass,
+  "fan": MdGrade,
+  "weekly": GiFire,
+  "monthly": GiTrophy,
+  "genre-explorer": GiTreasureMap,
+  "genre-allrounder": GiRainbowStar,
+  "genre-specialist": GiBullseye,
+  "mechanic-hunter": MdSettings,
+  "mechanic-expert": MdBuild,
+  "mechanic-devotee": MdLightbulb,
+  "wishlist-dreamer": MdModeNight,
+  "wishlist-collector": MdAssignment,
 }
 
 export interface TitleData {
@@ -27,6 +52,7 @@ export interface TitleData {
 }
 
 interface TitleDefinition extends Title {
+  icon: IconType
   check: (stats: TitleStats) => boolean
 }
 
@@ -298,7 +324,6 @@ export function calculateTitles({ entries, sessions, games = [], wishlistCount =
     id: title.id,
     name: title.name,
     description: title.description,
-    icon: title.icon,
     unlocked: title.check(stats),
   }))
 }
