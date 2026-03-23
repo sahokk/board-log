@@ -1,0 +1,55 @@
+/**
+ * BGGメカニクス名 → ボドゲーマカテゴリの日本語情報を返すヘルパー。
+ *
+ * データソース:
+ *   src/data/bgg-to-bodogamer.json   BGGメカニクス名 → ボドゲーマID[]
+ *   src/data/bodogamer-mechanics.json  ボドゲーマID → jaName/shortDesc
+ */
+
+import bggToBodogamer from "@/data/bgg-to-bodogamer.json"
+import bodogamerMechanicsRaw from "@/data/bodogamer-mechanics.json"
+
+interface BodoGamerMechanic {
+  id: number
+  jaName: string
+  shortDesc: string
+}
+
+const byId = new Map<number, BodoGamerMechanic>(
+  (bodogamerMechanicsRaw as BodoGamerMechanic[]).map((m) => [m.id, m])
+)
+const mapping = bggToBodogamer as Record<string, number[]>
+
+/** BGGメカニクス名 → ボドゲーマカテゴリの日本語名（最初のカテゴリ、なければ undefined） */
+export function getMechanicJaName(bggName: string): string | undefined {
+  const ids = mapping[bggName]
+  if (!ids?.length) return undefined
+  return byId.get(ids[0])?.jaName
+}
+
+/** BGGメカニクス名 → ボドゲーマカテゴリの短い説明（最初のカテゴリ、なければ undefined） */
+export function getMechanicShortDesc(bggName: string): string | undefined {
+  const ids = mapping[bggName]
+  if (!ids?.length) return undefined
+  return byId.get(ids[0])?.shortDesc
+}
+
+/** BGGメカニクス名に対応するボドゲーマカテゴリが存在するか */
+export function hasMechanicMapping(bggName: string): boolean {
+  return !!mapping[bggName]?.length
+}
+
+/**
+ * `|`区切りメカニクス文字列を分割し、解決後の日本語ラベルが重複するものを除去して返す。
+ * 同じボドゲーマカテゴリに対応する複数のBGGメカニクスを1つにまとめる。
+ */
+export function deduplicateMechanics(mechanicsStr: string): string[] {
+  const mechanics = mechanicsStr.split("|").map((m) => m.trim()).filter(Boolean)
+  const seenLabels = new Set<string>()
+  return mechanics.filter((m) => {
+    const label = getMechanicJaName(m) ?? m
+    if (seenLabels.has(label)) return false
+    seenLabels.add(label)
+    return true
+  })
+}

@@ -160,12 +160,15 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://boardory.pekori.dev"
     const profileUrl = user.username ? `${baseUrl}/u/${user.username}` : baseUrl
     const lines = [
-      `${boardgameType.icon} ボードゲームタイプ：${boardgameType.name}`,
-      `🎲 総プレイ数 ${stats.totalPlays}回 / ${stats.uniqueGames}種類`,
+      "あなたは…",
+      "",
+      `${boardgameType.icon} ${boardgameType.name}`,
+      "",
+      boardgameType.description,
       "",
       profileUrl,
       "",
-      "#Boardory #ボードゲーム #ボドゲ",
+      "#Boardory診断 #ボードゲーム #ボドゲ",
     ]
     globalThis.open(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(lines.join("\n"))}`,

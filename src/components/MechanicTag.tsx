@@ -1,4 +1,4 @@
-import { translateMechanic, getMechanicDesc } from "@/lib/bgg/translations"
+import { getMechanicJaName, getMechanicShortDesc } from "@/lib/bgg/mechanic-labels"
 
 interface Props {
   name: string // BGG英語名
@@ -15,8 +15,8 @@ const PILL_CLASS: Record<string, string> = {
 }
 
 export function MechanicTag({ name, variant = "default" }: Readonly<Props>) {
-  const label = translateMechanic(name) || name
-  const desc = getMechanicDesc(name)
+  const label = getMechanicJaName(name) ?? name
+  const desc = getMechanicShortDesc(name)
 
   // bare: テキスト＋ツールチップのみ、pill スタイルなし（親要素に埋め込む用）
   if (variant === "bare") {

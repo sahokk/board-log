@@ -1,0 +1,422 @@
+{
+  "Abstract Strategy": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "運要素がなく、全情報が公開されていて手を読みきることが可能"
+  },
+  "Acting": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "参加者が物語を作り上げていく"
+  },
+  "Action Drafting": {
+    "bggId": "2838",
+    "description": "",
+    "descriptionJa": "複数カードを確認して自分のカードを選定、余りを他プレイヤーに回す"
+  },
+  "Action Points": {
+    "bggId": "2001",
+    "description": "",
+    "descriptionJa": "アクションの種類によって消費する行動ポイントが異なる"
+  },
+  "Action Queue": {
+    "bggId": "2689",
+    "description": "",
+    "descriptionJa": "アクション前に行動内容を決定"
+  },
+  "Action Retrieval": {
+    "bggId": "2839",
+    "description": "",
+    "descriptionJa": "アクション前に行動内容を決定"
+  },
+  "Area Control": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "コマの数を多く配置した人が、そのエリア内で優勢となる"
+  },
+  "Area Majority / Influence": {
+    "bggId": "2080",
+    "description": "",
+    "descriptionJa": "コマの数を多く配置した人が、そのエリア内で優勢となる"
+  },
+  "Area Movement": {
+    "bggId": "2046",
+    "description": "",
+    "descriptionJa": "マスを包括するエリアの概念、エリア間の往来に影響が発生する"
+  },
+  "Auction / Bidding": {
+    "bggId": "2012",
+    "description": "",
+    "descriptionJa": "落札者が落札金額を支払いアイテム等を獲得する"
+  },
+  "Auction/Bidding": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "落札者が落札金額を支払いアイテム等を獲得する"
+  },
+  "Betting and Bluffing": {
+    "bggId": "2014",
+    "description": "",
+    "descriptionJa": "情報に個人差があり、ハッタリ勝負を仕掛けられる"
+  },
+  "Bidding": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "落札者が落札金額を支払いアイテム等を獲得する"
+  },
+  "Bluffing": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "情報に個人差があり、ハッタリ勝負を仕掛けられる"
+  },
+  "Campaign / Battle Card Driven": {
+    "bggId": "2018",
+    "description": "",
+    "descriptionJa": "カードの攻撃値と防御値が衝突し優劣が決定される"
+  },
+  "Card Drafting": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "複数カードを確認して自分のカードを選定、余りを他プレイヤーに回す"
+  },
+  "Chit-Pull System": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "出目によって移動量や獲得アイテムがランダムに決定する"
+  },
+  "Closed Drafting": {
+    "bggId": "2984",
+    "description": "",
+    "descriptionJa": "複数カードを確認して自分のカードを選定、余りを他プレイヤーに回す"
+  },
+  "Communication Limits": {
+    "bggId": "2893",
+    "description": "",
+    "descriptionJa": "プレイヤーの潜在情報を特定/共有する会話やジェスチャーが禁止"
+  },
+  "Contracts": {
+    "bggId": "2912",
+    "description": "",
+    "descriptionJa": "物・お金・情報・行動など、言い値で交渉/交換が成立する"
+  },
+  "Cooperative Game": {
+    "bggId": "2023",
+    "description": "",
+    "descriptionJa": "プレイヤー同士で援護や役割分担しながらクリアを目指す"
+  },
+  "Deck Building": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "場札を獲得し、自分の山札（デッキ）に編入させていく"
+  },
+  "Deck Construction": {
+    "bggId": "3004",
+    "description": "",
+    "descriptionJa": "場札を獲得し、自分の山札（デッキ）に編入させていく"
+  },
+  "Deck, Bag, and Pool Building": {
+    "bggId": "2664",
+    "description": "",
+    "descriptionJa": "場札を獲得し、自分の山札（デッキ）に編入させていく"
+  },
+  "Deduction": {
+    "bggId": "3002",
+    "description": "",
+    "descriptionJa": "論理的推察により答えを導き出す"
+  },
+  "Dice Rolling": {
+    "bggId": "2072",
+    "description": "",
+    "descriptionJa": "出目によって移動量や獲得アイテムがランダムに決定する"
+  },
+  "Drafting": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "複数カードを確認して自分のカードを選定、余りを他プレイヤーに回す"
+  },
+  "Enclosure": {
+    "bggId": "2043",
+    "description": "",
+    "descriptionJa": "コマ等の配置でエリアを作り、囲みを作る"
+  },
+  "Follow": {
+    "bggId": "2843",
+    "description": ""
+  },
+  "Force Commitment": {
+    "bggId": "2864",
+    "description": "",
+    "descriptionJa": "アクション前に行動内容を決定"
+  },
+  "Grid Movement": {
+    "bggId": "2676",
+    "description": "",
+    "descriptionJa": "四角や六角のマスにコマを置き、コマの移動先を選択できる"
+  },
+  "Hand Management": {
+    "bggId": "2040",
+    "description": "",
+    "descriptionJa": "自分のカードの組み合わせや能力を見て取捨選択する"
+  },
+  "Hexagon Grid": {
+    "bggId": "2026",
+    "description": "",
+    "descriptionJa": "四角や六角のマスにコマを置き、コマの移動先を選択できる"
+  },
+  "Hidden Movement": {
+    "bggId": "2967",
+    "description": "",
+    "descriptionJa": "特定プレイヤーだけ認識するコマ/ボードに関する情報が存在"
+  },
+  "Hidden Roles": {
+    "bggId": "2891",
+    "description": "",
+    "descriptionJa": "プレイヤーが自分の立場や得た情報を偽装する"
+  },
+  "Income": {
+    "bggId": "2902",
+    "description": ""
+  },
+  "Induction": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "論理的推察により答えを導き出す"
+  },
+  "King of the Hill": {
+    "bggId": "2886",
+    "description": "",
+    "descriptionJa": "コマの数を多く配置した人が、そのエリア内で優勢となる"
+  },
+  "Loans": {
+    "bggId": "2904",
+    "description": ""
+  },
+  "Map Addition": {
+    "bggId": "2959",
+    "description": ""
+  },
+  "Map Reduction": {
+    "bggId": "2960",
+    "description": ""
+  },
+  "Market": {
+    "bggId": "2900",
+    "description": ""
+  },
+  "Memory": {
+    "bggId": "2047",
+    "description": "",
+    "descriptionJa": "記憶力が直接的にゲーム展開を左右する"
+  },
+  "Modular Board": {
+    "bggId": "2011",
+    "description": "",
+    "descriptionJa": "メインボードがタイルを組み合わせて完成するランダムボード"
+  },
+  "Movement Points": {
+    "bggId": "2947",
+    "description": ""
+  },
+  "Negotiation": {
+    "bggId": "2915",
+    "description": "",
+    "descriptionJa": "物・お金・情報・行動など、言い値で交渉/交換が成立する"
+  },
+  "Network and Route Building": {
+    "bggId": "2081",
+    "description": "",
+    "descriptionJa": "移動経路を延長したり、設置物を延長させていく"
+  },
+  "Once-Per-Game Abilities": {
+    "bggId": "2846",
+    "description": ""
+  },
+  "Open Drafting": {
+    "bggId": "2041",
+    "description": "",
+    "descriptionJa": "複数カードを確認して自分のカードを選定、余りを他プレイヤーに回す"
+  },
+  "Order Counters": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "アクション前に行動内容を決定"
+  },
+  "Paper-and-Pencil": {
+    "bggId": "2055",
+    "description": ""
+  },
+  "Pattern Building": {
+    "bggId": "2048",
+    "description": "",
+    "descriptionJa": "コマの配置条件を達成することで成果や効果が得られる"
+  },
+  "Pattern Recognition": {
+    "bggId": "2060",
+    "description": "",
+    "descriptionJa": "絵や図に含まれる/欠如している情報から正解を特定"
+  },
+  "Physical": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "プレイヤー自身の手や体を使うゲーム"
+  },
+  "Pick-up and Deliver": {
+    "bggId": "2007",
+    "description": ""
+  },
+  "Pickup and Deliver": {
+    "bggId": "",
+    "description": ""
+  },
+  "Player Elimination": {
+    "bggId": "2685",
+    "description": "",
+    "descriptionJa": "敗者がゲーム途中で離脱し、生き残りプレイヤーで続行"
+  },
+  "Point to Point Movement": {
+    "bggId": "2078",
+    "description": "",
+    "descriptionJa": "場所と場所をつなぐ移動経路（道や航路等）の接続先に移動"
+  },
+  "Prisoner's Dilemma": {
+    "bggId": "2858",
+    "description": "",
+    "descriptionJa": "宣言した物や数が他プレイヤーと被るとペナルティが発生"
+  },
+  "Push Your Luck": {
+    "bggId": "2661",
+    "description": "",
+    "descriptionJa": "カード等の保有上限があり、超えると廃棄/ペナルティがある"
+  },
+  "Race": {
+    "bggId": "2876",
+    "description": ""
+  },
+  "Random Production": {
+    "bggId": "2909",
+    "description": "",
+    "descriptionJa": "出目によって移動量や獲得アイテムがランダムに決定する"
+  },
+  "Real-Time": {
+    "bggId": "2831",
+    "description": "",
+    "descriptionJa": "制限時間内や所定条件を満たすまで、手番に関係なく行動可能"
+  },
+  "Rock-Paper-Scissors": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "じゃんけんの様に、絶対的な強さがない均衡関係がある"
+  },
+  "Role Playing": {
+    "bggId": "2028",
+    "description": "",
+    "descriptionJa": "担当キャラクターが存在する"
+  },
+  "Roll / Spin and Move": {
+    "bggId": "2035",
+    "description": "",
+    "descriptionJa": "サイコロやルーレットの出目に応じて移動していく"
+  },
+  "Route/Network Building": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "移動経路を延長したり、設置物を延長させていく"
+  },
+  "Score-and-Reset Game": {
+    "bggId": "2823",
+    "description": ""
+  },
+  "Semi-Cooperative Game": {
+    "bggId": "2820",
+    "description": "",
+    "descriptionJa": "プレイヤー同士で援護や役割分担しながらクリアを目指す"
+  },
+  "Set Collection": {
+    "bggId": "2004",
+    "description": "",
+    "descriptionJa": "数字・色・形など、特定の組み合わせによって「役」が生まれる"
+  },
+  "Simultaneous Action Selection": {
+    "bggId": "2020",
+    "description": "",
+    "descriptionJa": "アクション前に行動内容を決定"
+  },
+  "Social Deduction": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "プレイヤーが自分の立場や得た情報を偽装する"
+  },
+  "Speed Matching": {
+    "bggId": "2991",
+    "description": "",
+    "descriptionJa": "プレイヤー自身の手や体を使うゲーム"
+  },
+  "Storytelling": {
+    "bggId": "2027",
+    "description": "",
+    "descriptionJa": "参加者が物語を作り上げていく"
+  },
+  "Take That": {
+    "bggId": "2686",
+    "description": "",
+    "descriptionJa": "間接的な妨害ではなく直接マイナス効果を与える攻撃システム"
+  },
+  "Team-Based Game": {
+    "bggId": "2019",
+    "description": "",
+    "descriptionJa": "予め2対2や3対5など味方陣営：敵陣営の対立関係が存在"
+  },
+  "Tech Trees / Tech Tracks": {
+    "bggId": "2849",
+    "description": ""
+  },
+  "Tile Placement": {
+    "bggId": "2002",
+    "description": "",
+    "descriptionJa": "地形タイルなどの「配置の仕方」に工夫や戦略がある"
+  },
+  "Track Movement": {
+    "bggId": "2939",
+    "description": "",
+    "descriptionJa": "サイコロやルーレットの出目に応じて移動していく"
+  },
+  "Trading": {
+    "bggId": "2008",
+    "description": "",
+    "descriptionJa": "プレイヤー間で物や資源などの物々交換ができる"
+  },
+  "Traitor Game": {
+    "bggId": "2814",
+    "description": "",
+    "descriptionJa": "プレイヤーが自分の立場や得た情報を偽装する"
+  },
+  "Variable Phase Order": {
+    "bggId": "2079",
+    "description": "",
+    "descriptionJa": "ラウンドごとにフェーズの順番や内容が変化する"
+  },
+  "Variable Player Powers": {
+    "bggId": "2015",
+    "description": "",
+    "descriptionJa": "プレイヤーの扱えるキャラ/コマが別の性質や能力をもつ"
+  },
+  "Variable Set-up": {
+    "bggId": "2897",
+    "description": ""
+  },
+  "Voting": {
+    "bggId": "2017",
+    "description": "",
+    "descriptionJa": "複数の選択肢に対してプレイヤーが投票する"
+  },
+  "Word Game": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "言葉を作ったり単語を発見する、言語中心のゲーム"
+  },
+  "Worker Placement": {
+    "bggId": "2082",
+    "description": "",
+    "descriptionJa": "コマを配置した人がアクション実行権や資源獲得権を得る"
+  }
+}

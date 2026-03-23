@@ -7,6 +7,7 @@ import Link from "next/link"
 import { getDisplayName, getProfileImage } from "@/lib/profile-utils"
 import { ProfileEditForm } from "@/components/ProfileEditForm"
 import { BusinessCardExporter } from "@/components/BusinessCardExporter"
+import { BoardgameTypeCard } from "@/components/BoardgameTypeCard"
 import type { TitleWithUnlocked } from "@/lib/titles"
 import type { BoardgameType } from "@/lib/boardgame-type"
 
@@ -169,6 +170,13 @@ export function ProfileClient({ user, stats, allGames, featuredGames, savedFeatu
           </button>
         </div>
       </div>
+
+      {/* 診断結果 */}
+      {stats.totalPlays > 0 && (
+        <div className="mb-8">
+          <BoardgameTypeCard type={boardgameType} />
+        </div>
+      )}
 
       {/* Business Card */}
       {stats.totalPlays > 0 && (

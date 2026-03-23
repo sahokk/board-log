@@ -4,6 +4,7 @@ import Link from "next/link"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { translateCategory } from "@/lib/bgg/translations"
+import { deduplicateMechanics } from "@/lib/bgg/mechanic-labels"
 import { MechanicTag } from "@/components/MechanicTag"
 import { WishlistButton } from "@/components/WishlistButton"
 import { RatingEditor } from "@/components/RatingEditor"
@@ -147,8 +148,8 @@ export default async function PublicGameDetailPage({ params }: Props) {
               <div>
                 <p className="mb-2 text-xs font-medium text-amber-800/60">メカニクス</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {game.mechanics.split(",").map((mech) => (
-                    <MechanicTag key={mech} name={mech.trim()} variant="outline" />
+                  {deduplicateMechanics(game.mechanics).map((mech) => (
+                    <MechanicTag key={mech} name={mech} variant="outline" />
                   ))}
                 </div>
               </div>
@@ -225,7 +226,7 @@ export default async function PublicGameDetailPage({ params }: Props) {
               emptyRedirectPath={`/u/${username}`}
             />
           )}
-          {entry.sessions.length > 0 && !isOwner && (
+          {entry.sessions.length > 0 && !isOwner && session?.user?.id && (
             <div className="space-y-3">
               {entry.sessions.map((s) => (
                 <div key={s.id} className="wood-card rounded-2xl p-4 shadow-sm">

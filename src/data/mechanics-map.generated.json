@@ -1,0 +1,421 @@
+{
+  "Hand Management": {
+    "STRATEGY": 1,
+    "CONTROL": 1,
+    "COOP": 2
+  },
+  "Variable Player Powers": {
+    "STRATEGY": 2,
+    "COOP": 2,
+    "INTERACTION": 1
+  },
+  "Solo / Solitaire Game": {
+    "STRATEGY": 2,
+    "COOP": 2
+  },
+  "Set Collection": {
+    "STRATEGY": 1,
+    "CONTROL": 1,
+    "COOP": 1
+  },
+  "Variable Set-up": {
+    "STRATEGY": 2,
+    "COOP": 1,
+    "INTERACTION": 1
+  },
+  "Dice Rolling": {
+    "STRATEGY": 2,
+    "COOP": 2,
+    "INTERACTION": 2,
+    "LUCK": 1
+  },
+  "Open Drafting": {
+    "STRATEGY": 1,
+    "INTERACTION": 1
+  },
+  "End Game Bonuses": {
+    "STRATEGY": 2
+  },
+  "Income": {
+    "STRATEGY": 1,
+    "CONTROL": 2
+  },
+  "Modular Board": {
+    "STRATEGY": 2,
+    "COOP": 2
+  },
+  "Cooperative Game": {
+    "STRATEGY": 2,
+    "COOP": 3
+  },
+  "Tags": {
+    "STRATEGY": 2,
+    "COOP": 2
+  },
+  "Tile Placement": {
+    "STRATEGY": 2
+  },
+  "Take That": {
+    "STRATEGY": 2,
+    "INTERACTION": 2
+  },
+  "Hexagon Grid": {
+    "STRATEGY": 2,
+    "COOP": 1,
+    "INTERACTION": 2
+  },
+  "Race": {
+    "STRATEGY": 1,
+    "PARTY": 1
+  },
+  "Grid Movement": {
+    "STRATEGY": 2,
+    "COOP": 2,
+    "INTERACTION": 2
+  },
+  "Multi-Use Cards": {
+    "STRATEGY": 2,
+    "COOP": 2,
+    "INTERACTION": 1
+  },
+  "Contracts": {
+    "STRATEGY": 1,
+    "CONTROL": 1,
+    "COOP": 1
+  },
+  "Action Points": {
+    "STRATEGY": 2,
+    "COOP": 3
+  },
+  "Square Grid": {
+    "STRATEGY": 1,
+    "COOP": 1
+  },
+  "Player Elimination": {
+    "STRATEGY": 1,
+    "COOP": 2,
+    "INTERACTION": 1,
+    "PARTY": 2
+  },
+  "Worker Placement": {
+    "STRATEGY": 2
+  },
+  "Events": {
+    "STRATEGY": 2,
+    "COOP": 3
+  },
+  "Area Majority / Influence": {
+    "STRATEGY": 3,
+    "COOP": 2,
+    "INTERACTION": 2
+  },
+  "Simultaneous Action Selection": {
+    "STRATEGY": 1,
+    "COOP": 2,
+    "INTERACTION": 1
+  },
+  "Network and Route Building": {
+    "STRATEGY": 2
+  },
+  "Trading": {
+    "STRATEGY": 1,
+    "COOP": 2
+  },
+  "Tech Trees / Tech Tracks": {
+    "STRATEGY": 2,
+    "INTERACTION": 2
+  },
+  "Team-Based Game": {
+    "STRATEGY": 1,
+    "COOP": 3,
+    "PARTY": 2
+  },
+  "Pattern Building": {
+    "LUCK": 1
+  },
+  "Card Play Conflict Resolution": {
+    "STRATEGY": 2,
+    "COOP": 3,
+    "INTERACTION": 3
+  },
+  "Once-Per-Game Abilities": {
+    "STRATEGY": 2,
+    "COOP": 2
+  },
+  "Role Playing": {
+    "STRATEGY": 2,
+    "COOP": 3,
+    "SOCIAL": 3,
+    "INTERACTION": 1
+  },
+  "Area Movement": {
+    "STRATEGY": 2,
+    "COOP": 3,
+    "INTERACTION": 1
+  },
+  "Point to Point Movement": {
+    "STRATEGY": 2,
+    "COOP": 3
+  },
+  "Push Your Luck": {
+    "STRATEGY": 1,
+    "COOP": 2,
+    "LUCK": 2
+  },
+  "Scenario / Mission / Campaign Game": {
+    "STRATEGY": 2,
+    "COOP": 3,
+    "INTERACTION": 1
+  },
+  "Storytelling": {
+    "STRATEGY": 1,
+    "COOP": 3,
+    "SOCIAL": 3,
+    "INTERACTION": 1,
+    "PARTY": 2
+  },
+  "Increase Value of Unchosen Resources": {
+    "STRATEGY": 1,
+    "CONTROL": 2,
+    "INTERACTION": 1
+  },
+  "Turn Order: Progressive": {
+    "STRATEGY": 2
+  },
+  "Score-and-Reset Game": {
+    "COOP": 1,
+    "PARTY": 2
+  },
+  "Communication Limits": {
+    "STRATEGY": 1,
+    "COOP": 3,
+    "SOCIAL": 3,
+    "INTERACTION": 1,
+    "PARTY": 2
+  },
+  "Market": {
+    "STRATEGY": 1,
+    "CONTROL": 2
+  },
+  "Voting": {
+    "STRATEGY": 1,
+    "COOP": 3,
+    "PARTY": 3
+  },
+  "Auction / Bidding": {
+    "STRATEGY": 1,
+    "PARTY": 2
+  },
+  "Deck, Bag, and Pool Building": {
+    "ENGINE": 2,
+    "COOP": 2
+  },
+  "Hidden Victory Points": {
+    "STRATEGY": 2,
+    "INTERACTION": 1
+  },
+  "Action Queue": {
+    "STRATEGY": 2,
+    "COOP": 3,
+    "INTERACTION": 2
+  },
+  "Action Retrieval": {
+    "STRATEGY": 3,
+    "COOP": 3,
+    "INTERACTION": 2
+  },
+  "Narrative Choice / Paragraph": {
+    "STRATEGY": 2,
+    "COOP": 3,
+    "INTERACTION": 1
+  },
+  "Grid Coverage": {
+    "STRATEGY": 1
+  },
+  "Track Movement": {
+    "STRATEGY": 1,
+    "LUCK": 2
+  },
+  "Ownership": {
+    "STRATEGY": 2
+  },
+  "Turn Order: Claim Action": {
+    "STRATEGY": 2,
+    "COOP": 1
+  },
+  "Closed Drafting": {
+    "STRATEGY": 1,
+    "COOP": 1,
+    "INTERACTION": 2,
+    "PARTY": 1
+  },
+  "Delayed Purchase": {
+    "STRATEGY": 1,
+    "COOP": 1
+  },
+  "Deduction": {
+    "COOP": 3,
+    "PARTY": 3
+  },
+  "Campaign / Battle Card Driven": {
+    "STRATEGY": 3,
+    "COOP": 3,
+    "INTERACTION": 2
+  },
+  "Chaining": {
+    "STRATEGY": 1,
+    "COOP": 1
+  },
+  "Turn Order: Stat-Based": {
+    "STRATEGY": 2,
+    "LUCK": 1
+  },
+  "Sudden Death Ending": {
+    "STRATEGY": 2,
+    "COOP": 1,
+    "INTERACTION": 3
+  },
+  "Hidden Roles": {
+    "COOP": 2,
+    "SOCIAL": 3,
+    "INTERACTION": 1,
+    "PARTY": 3
+  },
+  "Traitor Game": {
+    "STRATEGY": 1,
+    "COOP": 3,
+    "PARTY": 2
+  },
+  "Movement Points": {
+    "STRATEGY": 3,
+    "COOP": 1,
+    "INTERACTION": 3
+  },
+  "Map Addition": {
+    "STRATEGY": 2,
+    "COOP": 2
+  },
+  "Variable Phase Order": {
+    "STRATEGY": 3,
+    "INTERACTION": 2
+  },
+  "Victory Points as a Resource": {
+    "STRATEGY": 1,
+    "CONTROL": 2,
+    "INTERACTION": 1
+  },
+  "Die Icon Resolution": {
+    "STRATEGY": 1,
+    "COOP": 2,
+    "INTERACTION": 2,
+    "LUCK": 2
+  },
+  "Worker Placement, Different Worker Types": {
+    "STRATEGY": 2,
+    "COOP": 1
+  },
+  "Pattern Recognition": {
+    "COOP": 1,
+    "PARTY": 3,
+    "SPEED": 2
+  },
+  "Roll / Spin and Move": {
+    "PARTY": 1,
+    "LUCK": 2
+  },
+  "Deck Construction": {
+    "ENGINE": 3,
+    "COOP": 3,
+    "INTERACTION": 2
+  },
+  "Action Drafting": {
+    "STRATEGY": 3,
+    "COOP": 2,
+    "INTERACTION": 2
+  },
+  "Enclosure": {
+    "STRATEGY": 2
+  },
+  "Turn Order: Pass Order": {
+    "STRATEGY": 3
+  },
+  "Follow": {
+    "STRATEGY": 3,
+    "INTERACTION": 2
+  },
+  "Connections": {
+    "STRATEGY": 2
+  },
+  "Resource to Move": {
+    "STRATEGY": 1,
+    "CONTROL": 2,
+    "COOP": 2,
+    "INTERACTION": 1,
+    "LUCK": 1
+  },
+  "Memory": {
+    "COOP": 3,
+    "PARTY": 3,
+    "SPEED": 1
+  },
+  "Line of Sight": {
+    "STRATEGY": 2,
+    "COOP": 3,
+    "INTERACTION": 3
+  },
+  "Stat Check Resolution": {
+    "STRATEGY": 3,
+    "COOP": 3,
+    "INTERACTION": 2,
+    "LUCK": 1
+  },
+  "Automatic Resource Growth": {
+    "STRATEGY": 2,
+    "CONTROL": 2,
+    "COOP": 2
+  },
+  "Hot Potato": {
+    "STRATEGY": 2,
+    "INTERACTION": 3,
+    "PARTY": 2
+  },
+  "Force Commitment": {
+    "STRATEGY": 2,
+    "INTERACTION": 2
+  },
+  "King of the Hill": {
+    "STRATEGY": 2,
+    "INTERACTION": 3,
+    "LUCK": 1
+  },
+  "Negotiation": {
+    "STRATEGY": 1,
+    "INTERACTION": 2
+  },
+  "Auction: Turn Order Until Pass": {
+    "PARTY": 2
+  },
+  "Paper-and-Pencil": {
+    "PARTY": 2,
+    "LUCK": 2
+  },
+  "Commodity Speculation": {
+    "STRATEGY": 3
+  },
+  "Speed Matching": {
+    "PARTY": 3,
+    "LUCK": 1,
+    "SPEED": 3
+  },
+  "Betting and Bluffing": {
+    "STRATEGY": 1,
+    "INTERACTION": 2,
+    "SOCIAL": 3,
+    "PARTY": 3,
+    "LUCK": 2
+  },
+  "Pick-up and Deliver": {
+    "STRATEGY": 1,
+    "COOP": 3
+  }
+}
