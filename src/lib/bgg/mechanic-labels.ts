@@ -38,3 +38,18 @@ export function getMechanicShortDesc(bggName: string): string | undefined {
 export function hasMechanicMapping(bggName: string): boolean {
   return !!mapping[bggName]?.length
 }
+
+/**
+ * `|`区切りメカニクス文字列を分割し、解決後の日本語ラベルが重複するものを除去して返す。
+ * 同じボドゲーマカテゴリに対応する複数のBGGメカニクスを1つにまとめる。
+ */
+export function deduplicateMechanics(mechanicsStr: string): string[] {
+  const mechanics = mechanicsStr.split("|").map((m) => m.trim()).filter(Boolean)
+  const seenLabels = new Set<string>()
+  return mechanics.filter((m) => {
+    const label = getMechanicJaName(m) ?? m
+    if (seenLabels.has(label)) return false
+    seenLabels.add(label)
+    return true
+  })
+}

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { translateCategory } from "@/lib/bgg/translations"
+import { deduplicateMechanics } from "@/lib/bgg/mechanic-labels"
 import { MechanicTag } from "@/components/MechanicTag"
 import { WishlistButton } from "@/components/WishlistButton"
 import type { Metadata } from "next"
@@ -127,8 +128,8 @@ export default async function PublicGamePage({ params }: Props) {
               <div>
                 <p className="mb-2 text-xs font-medium text-amber-800/60">メカニクス</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {game.mechanics.split("|").map((mech) => (
-                    <MechanicTag key={mech} name={mech.trim()} variant="outline" />
+                  {deduplicateMechanics(game.mechanics).map((mech) => (
+                    <MechanicTag key={mech} name={mech} variant="outline" />
                   ))}
                 </div>
               </div>
