@@ -1,14 +1,10 @@
 "use client"
 
-import { useState, useEffect, useRef, useLayoutEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { toPng } from "html-to-image"
 import { calculateBoardgameType } from "@/lib/boardgame-type"
-import { calculateTitles } from "@/lib/titles"
-import { BusinessCard } from "@/components/BusinessCard"
 import { BoardgameTypeCard } from "@/components/BoardgameTypeCard"
 import { GameImage } from "@/components/GameImage"
-import { CARD_THEMES, getTheme } from "@/lib/card-themes"
 
 interface SearchGame {
   id: string
@@ -21,41 +17,15 @@ interface SearchGame {
 }
 
 export function TryClient() {
-  const [displayName, setDisplayName] = useState("")
   const [query, setQuery] = useState("")
   const [results, setResults] = useState<SearchGame[]>([])
   const [selected, setSelected] = useState<SearchGame[]>([])
   const [searching, setSearching] = useState(false)
   const [showResults, setShowResults] = useState(false)
-  const [themeId, setThemeId] = useState("amber")
-  const [exporting, setExporting] = useState(false)
-  const [isReady, setIsReady] = useState(false)
-  const [scale, setScale] = useState(0.55)
 
-  const cardRef = useRef<HTMLDivElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(() => {
-    const t = setTimeout(() => setIsReady(true), 800)
-    return () => clearTimeout(t)
-  }, [])
-
-  useLayoutEffect(() => {
-    if (containerRef.current) {
-      setScale(containerRef.current.offsetWidth / 1000)
-    }
-  }, [])
-
-  useEffect(() => {
-    const el = containerRef.current
-    if (!el) return
-    const obs = new ResizeObserver(([e]) => setScale(e.contentRect.width / 1000))
-    obs.observe(el)
-    return () => obs.disconnect()
-  }, [])
 
   // 検索デバウンス
   useEffect(() => {
@@ -110,7 +80,6 @@ export function TryClient() {
 
   const gameName = (g: SearchGame) => g.nameJa ?? g.name
 
-  // クライアント側で計算
   const boardgameType =
     selected.length > 0
       ? calculateBoardgameType({
@@ -123,56 +92,6 @@ export function TryClient() {
           })),
         })
       : null
-
-  const titles =
-    selected.length > 0
-      ? calculateTitles({
-          entries: selected.map((g) => ({ gameId: g.id, rating: 0 })),
-          sessions: [],
-          games: selected.map((g) => ({
-            categories: g.categories ?? null,
-            mechanics: g.mechanics ?? null,
-          })),
-          wishlistCount: 0,
-        })
-      : []
-
-  const effectiveName = displayName.trim() || "ゲスト"
-  const user = {
-    displayName: effectiveName,
-    username: null as string | null,
-    name: null as string | null,
-    customImageUrl: null as string | null,
-    image: null as string | null,
-    favoriteGenres: null as string | null,
-  }
-  const stats = { totalPlays: selected.length, uniqueGames: selected.length }
-  const featuredGames = selected.slice(0, 3).map((g) => ({
-    id: g.id,
-    name: gameName(g),
-    imageUrl: g.imageUrl ?? null,
-  }))
-  const theme = getTheme(themeId)
-  const previewH = Math.round(560 * scale)
-
-  const handleExportPNG = async () => {
-    if (!cardRef.current || !boardgameType) return
-    setExporting(true)
-    try {
-      await new Promise((r) => setTimeout(r, 500))
-      const dataUrl = await toPng(cardRef.current, {
-        cacheBust: true,
-        pixelRatio: 2,
-        backgroundColor: "#faf7f0",
-      })
-      const link = document.createElement("a")
-      link.download = `boardory-card-${Date.now()}.png`
-      link.href = dataUrl
-      link.click()
-    } finally {
-      setExporting(false)
-    }
-  }
 
   const handleShareX = () => {
     if (!boardgameType) return
@@ -196,36 +115,21 @@ export function TryClient() {
   }
 
   return (
-    <div ref={containerRef}>
+    <div>
       {/* ヘッダー */}
       <div className="mb-8 text-center">
         <p className="mb-3 text-4xl">🎲</p>
-        <h1 className="text-3xl font-bold tracking-tight text-amber-950">ゲストで試す</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-amber-950">ボドゲタイプ診断</h1>
         <p className="mt-3 text-sm text-amber-800/70">
-          ログイン不要でボドゲタイプ診断と名刺を作れます
+          遊んだゲームを選ぶだけ。ログイン不要で診断できます
         </p>
-      </div>
-
-      {/* ニックネーム */}
-      <div className="wood-card mb-4 rounded-2xl p-5 shadow-sm">
-        <label className="mb-2 block text-sm font-semibold text-amber-950">
-          ニックネーム<span className="ml-1 font-normal text-amber-700/60">（任意）</span>
-        </label>
-        <input
-          type="text"
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
-          placeholder="名前を入力…"
-          maxLength={30}
-          className="w-full rounded-xl border border-amber-200 bg-white/80 px-4 py-2.5 text-sm text-amber-950 placeholder-amber-400 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
-        />
       </div>
 
       {/* ゲーム検索 */}
       <div className="wood-card rounded-2xl p-5 shadow-sm">
         <p className="mb-3 text-sm font-semibold text-amber-950">
-          遊んだゲームを選ぼう
-          <span className="ml-1.5 font-normal text-amber-700/60">（1件から診断できます）</span>
+          遊んだゲームを選ぼう{" "}
+          <span className="font-normal text-amber-700/60">（1件から診断できます）</span>
         </p>
 
         <div className="relative">
@@ -309,104 +213,32 @@ export function TryClient() {
 
       {/* 診断結果 */}
       {boardgameType && (
-        <div className="mt-8 space-y-6">
+        <div className="mt-8 space-y-4">
           <BoardgameTypeCard type={boardgameType} />
 
-          {/* 名刺 */}
-          <div className="wood-card rounded-2xl p-5 shadow-sm">
-            <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-amber-950">
-              <span>🎴</span>ボドゲ名刺
-            </h2>
+          {/* アクション */}
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={handleShareX}
+              className="flex-1 rounded-lg bg-black px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800"
+            >
+              𝕏 でシェア
+            </button>
+          </div>
 
-            {/* エクスポート用（画面外） */}
-            <div style={{ position: "absolute", left: "-9999px", top: 0, width: "1000px", height: "560px" }}>
-              <div ref={cardRef}>
-                <BusinessCard
-                  user={user}
-                  stats={stats}
-                  featuredGames={featuredGames}
-                  boardgameType={boardgameType}
-                  theme={theme}
-                  titles={titles}
-                />
-              </div>
-            </div>
-
-            {/* プレビュー */}
-            <div className="overflow-hidden rounded-xl shadow-md" style={{ height: previewH }}>
-              <div
-                style={{
-                  transform: `scale(${scale})`,
-                  transformOrigin: "top left",
-                  width: 1000,
-                  height: 560,
-                }}
-              >
-                <BusinessCard
-                  user={user}
-                  stats={stats}
-                  featuredGames={featuredGames}
-                  boardgameType={boardgameType}
-                  theme={theme}
-                  titles={titles}
-                />
-              </div>
-            </div>
-
-            {/* テーマ */}
-            <div className="mt-4 flex items-center gap-3">
-              <p className="shrink-0 text-xs font-medium text-amber-800/70">カラー</p>
-              <div className="flex flex-wrap gap-2">
-                {CARD_THEMES.map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => setThemeId(t.id)}
-                    title={t.name}
-                    className="h-6 w-6 rounded-full transition-all focus:outline-none"
-                    style={{
-                      background: t.leftBg,
-                      boxShadow:
-                        themeId === t.id
-                          ? `0 0 0 2px white, 0 0 0 4px ${t.swatch}`
-                          : "0 1px 3px rgba(0,0,0,0.3)",
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* アクション */}
-            <div className="mt-4 flex gap-3">
-              <button
-                type="button"
-                onClick={handleExportPNG}
-                disabled={exporting || !isReady}
-                className="flex-1 rounded-lg bg-amber-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-amber-800 disabled:opacity-50"
-              >
-                {exporting ? "生成中…" : "画像DL"}
-              </button>
-              <button
-                type="button"
-                onClick={handleShareX}
-                className="flex-1 rounded-lg bg-black px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800"
-              >
-                𝕏 でシェア
-              </button>
-            </div>
-
-            {/* ログインCTA */}
-            <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50/60 p-4 text-center">
-              <p className="text-sm text-amber-900">
-                記録を保存してより詳しく診断したい方は
-              </p>
-              <Link
-                href="/api/auth/signin"
-                className="mt-2 inline-block rounded-lg bg-amber-900 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-800"
-              >
-                ログインして始める
-              </Link>
-            </div>
+          {/* ログインCTA */}
+          <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-5 text-center">
+            <p className="text-sm font-medium text-amber-950">記録を残して本格診断しよう</p>
+            <p className="mt-1 text-xs text-amber-800/70">
+              ゲームを登録すると、プレイ回数が反映されてより精度の高い診断になります
+            </p>
+            <Link
+              href="/api/auth/signin"
+              className="mt-3 inline-block rounded-lg bg-amber-900 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-800"
+            >
+              ログインして始める
+            </Link>
           </div>
         </div>
       )}

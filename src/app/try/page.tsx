@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 import { TryClient } from "./TryClient"
 
 export const metadata: Metadata = {
-  title: "ゲストで試す | Boardory",
-  description: "ログイン不要でボドゲタイプ診断と名刺画像を作れます",
+  title: "ボドゲタイプ診断 | Boardory",
+  description: "ログイン不要でボードゲームタイプを診断。遊んだゲームを選ぶだけで、あなたのプレイスタイルがわかります。",
 }
 
 export default function TryPage() {

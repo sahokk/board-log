@@ -124,7 +124,7 @@ export default async function PublicProfilePage({ params }: Props) {
   })
 
   const shareText = encodeURIComponent(displayName + "のボードゲームプロフィール🎲")
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://board-log.pekori.dev"
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://boardory.pekori.dev"
   const shareUrl = encodeURIComponent(`${baseUrl}/u/${username}`)
 
   return (
