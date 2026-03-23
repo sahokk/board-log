@@ -7,6 +7,7 @@ interface GameResult {
   bggId: string | null
   name: string
   nameJa: string | null
+  customNameJa?: string | null
   yearPublished?: number
   imageUrl?: string
   thumbnailUrl?: string
@@ -28,7 +29,13 @@ export async function GET(request: NextRequest) {
     // 1. ローカルDB検索（offset=0のみ）
     const localGames = offset === 0
       ? await prisma.game.findMany({
-          where: { name: { contains: trimmed, mode: "insensitive" } },
+          where: {
+            OR: [
+              { name: { contains: trimmed, mode: "insensitive" } },
+              { nameJa: { contains: trimmed, mode: "insensitive" } },
+              { customNameJa: { contains: trimmed, mode: "insensitive" } },
+            ]
+          },
           take: 20,
         })
       : []
@@ -38,6 +45,7 @@ export async function GET(request: NextRequest) {
       bggId: g.bggId,
       name: g.name,
       nameJa: g.nameJa,
+      customNameJa: g.customNameJa ?? null,
       imageUrl: g.imageUrl ?? undefined,
       mechanics: g.mechanics,
       categories: g.categories,

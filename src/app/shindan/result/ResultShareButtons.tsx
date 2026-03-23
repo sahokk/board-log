@@ -23,7 +23,7 @@ export function ResultShareButtons({ type, resultUrl }: Props) {
   ].join("\n")
 
   const copyText = [
-    `私のボドゲタイプは ${type.icon} ${type.name}！`,
+    `私のボドゲタイプは… ${type.icon} ${type.name}！`,
     "",
     type.description,
     "",
@@ -40,7 +40,7 @@ export function ResultShareButtons({ type, resultUrl }: Props) {
 
   const handleShareLine = () => {
     globalThis.open(
-      `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(resultUrl)}`,
+      `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(copyText)}`,
       "_blank"
     )
   }
@@ -65,15 +65,15 @@ export function ResultShareButtons({ type, resultUrl }: Props) {
       </button>
       <button
         onClick={handleShareLine}
-        className="rounded-lg bg-[#06C755] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#05b34c]"
+        className="flex-1 rounded-lg bg-[#06C755] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#05b34c]"
       >
-        LINE
+        LINEで共有
       </button>
       <button
         onClick={handleShareX}
-        className="rounded-lg bg-black px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800"
+        className="flex-1 rounded-lg bg-black px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800"
       >
-        𝕏
+        𝕏で共有
       </button>
     </div>
   )
