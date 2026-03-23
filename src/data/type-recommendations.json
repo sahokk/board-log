@@ -1,0 +1,62 @@
+{
+  "cooperative": [
+    { "bggId": "30549",  "nameEn": "Pandemic",               "nameJa": "パンデミック" },
+    { "bggId": "161936", "nameEn": "Arkham Horror: The Card Game", "nameJa": "アーカムホラーカードゲーム" },
+    { "bggId": "162886", "nameEn": "Spirit Island",           "nameJa": "スピリット・アイランド" },
+    { "bggId": "98778",  "nameEn": "Hanabi",                  "nameJa": "花火" }
+  ],
+  "gambler": [
+    { "bggId": "70323",  "nameEn": "King of Tokyo",           "nameJa": "キング・オブ・トーキョー" },
+    { "bggId": "41",     "nameEn": "Can't Stop",              "nameJa": "キャント・ストップ" },
+    { "bggId": "29544",  "nameEn": "Zombie Dice",             "nameJa": "ゾンビダイス" },
+    { "bggId": "2243",   "nameEn": "Yahtzee",                 "nameJa": "ヤッツィー" }
+  ],
+  "heavy-strategist": [
+    { "bggId": "169786", "nameEn": "Scythe",                  "nameJa": "サイズ 大鎌戦役" },
+    { "bggId": "237182", "nameEn": "Root",                    "nameJa": "ルート" },
+    { "bggId": "12333",  "nameEn": "Twilight Struggle",       "nameJa": "トワイライトストラグル" },
+    { "bggId": "72125",  "nameEn": "Eclipse",                 "nameJa": "エクリプス" }
+  ],
+  "engine-builder": [
+    { "bggId": "266192", "nameEn": "Wingspan",                "nameJa": "ウイングスパン" },
+    { "bggId": "167791", "nameEn": "Terraforming Mars",       "nameJa": "テラフォーミング・マーズ" },
+    { "bggId": "36218",  "nameEn": "Dominion",                "nameJa": "ドミニオン" },
+    { "bggId": "28143",  "nameEn": "Race for the Galaxy",     "nameJa": "レース・フォー・ザ・ギャラクシー" }
+  ],
+  "negotiator": [
+    { "bggId": "13",     "nameEn": "Catan",                   "nameJa": "カタン" },
+    { "bggId": "39463",  "nameEn": "Cosmic Encounter",        "nameJa": "コズミック・エンカウンター" },
+    { "bggId": "11",     "nameEn": "Bohnanza",                "nameJa": "ボーナンザ" },
+    { "bggId": "188006", "nameEn": "Sheriff of Nottingham",   "nameJa": "ノッティンガムの保安官" }
+  ],
+  "strategic-player": [
+    { "bggId": "230802", "nameEn": "Azul",                    "nameJa": "アズール" },
+    { "bggId": "173346", "nameEn": "7 Wonders Duel",          "nameJa": "7ワンダーズ デュエル" },
+    { "bggId": "295947", "nameEn": "Cascadia",                "nameJa": "カスカディア" },
+    { "bggId": "154",    "nameEn": "Hive",                    "nameJa": "ハイブ" }
+  ],
+  "trickster": [
+    { "bggId": "188834", "nameEn": "Secret Hitler",           "nameJa": "シークレット・ヒトラー" },
+    { "bggId": "147949", "nameEn": "One Night Ultimate Werewolf","nameJa": "ワンナイト人狼" },
+    { "bggId": "92415",  "nameEn": "Skull",                   "nameJa": "スカル" },
+    { "bggId": "131357", "nameEn": "Coup",                    "nameJa": "クー" }
+  ],
+  "party-master": [
+    { "bggId": "178900", "nameEn": "Codenames",               "nameJa": "コードネーム" },
+    { "bggId": "63268",  "nameEn": "Dobble",                  "nameJa": "ドブル" },
+    { "bggId": "254640", "nameEn": "Just One",                "nameJa": "ジャスト・ワン" },
+    { "bggId": "8811",   "nameEn": "Jungle Speed",            "nameJa": "ジャングルスピード" }
+  ],
+  "casual": [
+    { "bggId": "9209",   "nameEn": "Ticket to Ride",          "nameJa": "チケット・トゥ・ライド" },
+    { "bggId": "133473", "nameEn": "Sushi Go!",               "nameJa": "すしゴー！" },
+    { "bggId": "129622", "nameEn": "Love Letter",             "nameJa": "ラブレター" },
+    { "bggId": "822",    "nameEn": "Carcassonne",             "nameJa": "カルカソンヌ" }
+  ],
+  "balanced": [
+    { "bggId": "68448",  "nameEn": "7 Wonders",               "nameJa": "7ワンダーズ" },
+    { "bggId": "224517", "nameEn": "Brass: Birmingham",       "nameJa": "ブラス・バーミンガム" },
+    { "bggId": "316554", "nameEn": "Dune: Imperium",          "nameJa": "デューン：インペリウム" },
+    { "bggId": "9209",   "nameEn": "Ticket to Ride",          "nameJa": "チケット・トゥ・ライド" }
+  ]
+}

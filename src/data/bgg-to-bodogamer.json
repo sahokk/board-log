@@ -1,0 +1,620 @@
+{
+  "Abstract Strategy": [
+    94
+  ],
+  "Acting": [
+    48
+  ],
+  "Action / Event": [
+    55
+  ],
+  "Action Drafting": [
+    96
+  ],
+  "Action Points": [
+    26
+  ],
+  "Action Queue": [
+    87
+  ],
+  "Action Retrieval": [
+    87
+  ],
+  "Action Timer": [
+    97
+  ],
+  "Advantage Token": [
+    26
+  ],
+  "Alliances": [
+    22
+  ],
+  "Area Control": [
+    16
+  ],
+  "Area Majority / Influence": [
+    16
+  ],
+  "Area Movement": [
+    68
+  ],
+  "Area-Impulse": [
+    68
+  ],
+  "Auction / Bidding": [
+    2
+  ],
+  "Auction Compensation": [
+    2
+  ],
+  "Auction: Dexterity": [
+    2
+  ],
+  "Auction: Dutch": [
+    2
+  ],
+  "Auction: Dutch Priority": [
+    2
+  ],
+  "Auction: English": [
+    2
+  ],
+  "Auction: Fixed Placement": [
+    2
+  ],
+  "Auction: Multiple Lot": [
+    2
+  ],
+  "Auction: Once Around": [
+    2
+  ],
+  "Auction: Sealed Bid": [
+    2
+  ],
+  "Auction: Turn Order Until Pass": [
+    2
+  ],
+  "Auction/Bidding": [
+    2
+  ],
+  "Automatic Resource Growth": [
+    35
+  ],
+  "Betting and Bluffing": [
+    9,
+    4
+  ],
+  "Bias": [
+    56
+  ],
+  "Bidding": [
+    2
+  ],
+  "Bids As Wagers": [
+    2,
+    4
+  ],
+  "Bingo": [
+    79
+  ],
+  "Bluffing": [
+    9
+  ],
+  "Bribery": [
+    22
+  ],
+  "Campaign / Battle Card Driven": [
+    70
+  ],
+  "Card Drafting": [
+    96
+  ],
+  "Card Play Conflict Resolution": [
+    70
+  ],
+  "Catch the Leader": [
+    41
+  ],
+  "Chaining": [
+    45
+  ],
+  "Chit-Pull System": [
+    5
+  ],
+  "Closed Drafting": [
+    96
+  ],
+  "Closed Economy Auction": [
+    2
+  ],
+  "Command Cards": [
+    87
+  ],
+  "Commodity Speculation": [
+    35
+  ],
+  "Communication Limits": [
+    98
+  ],
+  "Connections": [
+    13
+  ],
+  "Constrained Bidding": [
+    2
+  ],
+  "Contracts": [
+    22
+  ],
+  "Cooperative Game": [
+    34
+  ],
+  "Crayon Rail System": [
+    13
+  ],
+  "Critical Hits and Failures": [
+    5
+  ],
+  "Cube Tower": [
+    5
+  ],
+  "Deck Building": [
+    59
+  ],
+  "Deck Construction": [
+    59
+  ],
+  "Deck, Bag, and Pool Building": [
+    59
+  ],
+  "Deduction": [
+    44
+  ],
+  "Delayed Purchase": [
+    45
+  ],
+  "Dice Rolling": [
+    5
+  ],
+  "Die Icon Resolution": [
+    5
+  ],
+  "Different Dice Movement": [
+    5
+  ],
+  "Drafting": [
+    96
+  ],
+  "Drawing": [
+    77
+  ],
+  "Elapsed Real Time Ending": [
+    97
+  ],
+  "Enclosure": [
+    67
+  ],
+  "End Game Bonuses": [
+    33
+  ],
+  "Events": [
+    55
+  ],
+  "Finale Ending": [
+    33
+  ],
+  "Flicking": [
+    37
+  ],
+  "Follow": [
+    55
+  ],
+  "Force Commitment": [
+    87
+  ],
+  "Grid Coverage": [
+    78
+  ],
+  "Grid Movement": [
+    75
+  ],
+  "Hand Management": [
+    45
+  ],
+  "Hexagon Grid": [
+    75
+  ],
+  "Hidden Movement": [
+    85
+  ],
+  "Hidden Roles": [
+    18
+  ],
+  "Hidden Victory Points": [
+    18
+  ],
+  "Highest-Lowest Scoring": [
+    33
+  ],
+  "Hot Potato": [
+    82
+  ],
+  "I Cut, You Choose": [
+    22
+  ],
+  "Impulse Movement": [
+    68
+  ],
+  "Income": [
+    35
+  ],
+  "Increase Value of Unchosen Resources": [
+    22
+  ],
+  "Induction": [
+    44
+  ],
+  "Interrupts": [
+    101
+  ],
+  "Investment": [
+    35
+  ],
+  "Kill Steal": [
+    41
+  ],
+  "King of the Hill": [
+    16
+  ],
+  "Ladder Climbing": [
+    1
+  ],
+  "Layering": [
+    6
+  ],
+  "Legacy Game": [
+    99
+  ],
+  "Line Drawing": [
+    13
+  ],
+  "Line of Sight": [
+    85
+  ],
+  "Loans": [
+    35
+  ],
+  "Lose a Turn": [
+    41
+  ],
+  "Mancala": [
+    103
+  ],
+  "Map Addition": [
+    25
+  ],
+  "Map Deformation": [
+    25
+  ],
+  "Map Reduction": [
+    25
+  ],
+  "Market": [
+    35
+  ],
+  "Matching": [
+    79
+  ],
+  "Measurement Movement": [
+    75
+  ],
+  "Melding and Splaying": [
+    33
+  ],
+  "Memory": [
+    15
+  ],
+  "Minimap Resolution": [
+    75
+  ],
+  "Modular Board": [
+    25
+  ],
+  "Move Through Deck": [
+    59
+  ],
+  "Movement Points": [
+    26
+  ],
+  "Movement Template": [
+    75
+  ],
+  "Moving Multiple Units": [
+    75
+  ],
+  "Multi-Use Cards": [
+    45
+  ],
+  "Multiple Maps": [
+    25
+  ],
+  "Narrative Choice / Paragraph": [
+    48
+  ],
+  "Negotiation": [
+    22
+  ],
+  "Neighbor Scope": [
+    75
+  ],
+  "Network and Route Building": [
+    13
+  ],
+  "Once-Per-Game Abilities": [
+    56
+  ],
+  "Open Drafting": [
+    96
+  ],
+  "Order Counters": [
+    87
+  ],
+  "Ordering": [
+    87
+  ],
+  "Ownership": [
+    16
+  ],
+  "Paper-and-Pencil": [
+    77
+  ],
+  "Passed Action Token": [
+    26
+  ],
+  "Pattern Building": [
+    78
+  ],
+  "Pattern Movement": [
+    75
+  ],
+  "Pattern Recognition": [
+    79
+  ],
+  "Physical": [
+    37
+  ],
+  "Physical Removal": [
+    37
+  ],
+  "Pick-up and Deliver": [
+    81
+  ],
+  "Pieces as Map": [
+    6
+  ],
+  "Player Elimination": [
+    80
+  ],
+  "Player Judge": [
+    30
+  ],
+  "Point to Point Movement": [
+    81
+  ],
+  "Predictive Bid": [
+    2,
+    4
+  ],
+  "Prisoner's Dilemma": [
+    95
+  ],
+  "Programmed Movement": [
+    87
+  ],
+  "Push Your Luck": [
+    27
+  ],
+  "Questions and Answers": [
+    44
+  ],
+  "Race": [
+    84
+  ],
+  "Random Production": [
+    5
+  ],
+  "Ratio / Combat Results Table": [
+    70
+  ],
+  "Re-rolling and Locking": [
+    5
+  ],
+  "Real-Time": [
+    97
+  ],
+  "Relative Movement": [
+    75
+  ],
+  "Resource Queue": [
+    87
+  ],
+  "Resource to Move": [
+    26
+  ],
+  "Rock-Paper-Scissors": [
+    8
+  ],
+  "Role Playing": [
+    83
+  ],
+  "Roles with Asymmetric Information": [
+    18
+  ],
+  "Roll / Spin and Move": [
+    84
+  ],
+  "Rondel": [
+    103
+  ],
+  "Route/Network Building": [
+    13
+  ],
+  "Scenario / Mission / Campaign Game": [
+    48
+  ],
+  "Score-and-Reset Game": [
+    27
+  ],
+  "Secret Unit Deployment": [
+    85
+  ],
+  "Selection Order Bid": [
+    2
+  ],
+  "Semi-Cooperative Game": [
+    34
+  ],
+  "Set Collection": [
+    33
+  ],
+  "Simulation": [
+    56
+  ],
+  "Simultaneous Action Selection": [
+    87,
+    95
+  ],
+  "Singing": [
+    48
+  ],
+  "Single Loser Game": [
+    80
+  ],
+  "Slide / Push": [
+    37
+  ],
+  "Social Deduction": [
+    18
+  ],
+  "Solo / Solitaire Game": [
+    34
+  ],
+  "Speed Matching": [
+    37,
+    97
+  ],
+  "Spelling": [
+    21
+  ],
+  "Square Grid": [
+    75
+  ],
+  "Stacking and Balancing": [
+    37
+  ],
+  "Stat Check Resolution": [
+    70
+  ],
+  "Static Capture": [
+    67
+  ],
+  "Stock Holding": [
+    35
+  ],
+  "Storytelling": [
+    48
+  ],
+  "Sudden Death Ending": [
+    80
+  ],
+  "Tags": [
+    45
+  ],
+  "Take That": [
+    41
+  ],
+  "Targeted Clues": [
+    44
+  ],
+  "Team-Based Game": [
+    66
+  ],
+  "Tech Trees / Tech Tracks": [
+    59
+  ],
+  "Three Dimensional Movement": [
+    75
+  ],
+  "Tile Placement": [
+    6
+  ],
+  "Track Movement": [
+    84
+  ],
+  "Trading": [
+    23
+  ],
+  "Traitor Game": [
+    18
+  ],
+  "Trick-taking": [
+    1
+  ],
+  "Tug of War": [
+    16
+  ],
+  "Turn Order: Auction": [
+    2,
+    89
+  ],
+  "Turn Order: Claim Action": [
+    89
+  ],
+  "Turn Order: Pass Order": [
+    89
+  ],
+  "Turn Order: Progressive": [
+    89
+  ],
+  "Turn Order: Random": [
+    89
+  ],
+  "Turn Order: Role Order": [
+    89
+  ],
+  "Turn Order: Stat-Based": [
+    89
+  ],
+  "Turn Order: Time Track": [
+    89
+  ],
+  "Variable Phase Order": [
+    55
+  ],
+  "Variable Player Powers": [
+    56
+  ],
+  "Variable Set-up": [
+    25
+  ],
+  "Victory Points as a Resource": [
+    35
+  ],
+  "Voting": [
+    30
+  ],
+  "Word Game": [
+    21
+  ],
+  "Worker Placement": [
+    58
+  ],
+  "Worker Placement with Dice Workers": [
+    102
+  ],
+  "Worker Placement, Different Worker Types": [
+    58
+  ],
+  "Zone of Control": [
+    16
+  ]
+}

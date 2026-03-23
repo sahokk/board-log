@@ -1,6 +1,76 @@
 import { prisma } from "@/lib/prisma"
-import { translateMechanic } from "@/lib/bgg/translations"
+import { getMechanicJaName } from "@/lib/bgg/mechanic-labels"
 import { MECHANICS_MAP } from "@/lib/boardgame-type"
+import { getBggGameDetails } from "@/lib/bgg/client"
+import rawTypeRecommendations from "@/data/type-recommendations.json"
+
+const TYPE_RECOMMENDATIONS = rawTypeRecommendations as Record<
+  string,
+  { bggId: string; nameEn: string; nameJa: string }[]
+>
+
+export interface TypeRecommendedGame {
+  bggId: string
+  nameEn: string
+  nameJa: string
+  id?: string
+  imageUrl?: string | null
+}
+
+export async function getTypeRecommendedGames(typeId: string): Promise<TypeRecommendedGame[]> {
+  const statics = TYPE_RECOMMENDATIONS[typeId] ?? []
+  if (statics.length === 0) return []
+
+  const bggIds = statics.map((g) => g.bggId)
+  const dbGames = await prisma.game.findMany({
+    where: { bggId: { in: bggIds } },
+    select: { id: true, bggId: true, imageUrl: true },
+  })
+
+  const dbMap = new Map(dbGames.map((g) => [g.bggId, g]))
+
+  // DBにないゲームはBGGから取得してupsert
+  const missingBggIds = bggIds.filter((id) => !dbMap.has(id))
+  if (missingBggIds.length > 0) {
+    try {
+      const details = await getBggGameDetails(missingBggIds)
+      const upserted = await Promise.all(
+        details.map((d) =>
+          prisma.game.upsert({
+            where: { bggId: d.id },
+            update: { imageUrl: d.imageUrl ?? null },
+            create: {
+              bggId: d.id,
+              name: d.name,
+              nameJa: d.nameJa ?? null,
+              imageUrl: d.imageUrl ?? null,
+              categories: d.categories.length > 0 ? d.categories.join(",") : null,
+              mechanics: d.mechanics.length > 0 ? d.mechanics.join("|") : null,
+              weight: d.weight ?? null,
+              playingTime: d.playingTime ?? null,
+              minPlayers: d.minPlayers ?? null,
+              maxPlayers: d.maxPlayers ?? null,
+            },
+            select: { id: true, bggId: true, imageUrl: true },
+          })
+        )
+      )
+      for (const g of upserted) {
+        if (g.bggId) dbMap.set(g.bggId, g)
+      }
+    } catch {
+      // BGG API不可でも静的データのみで返す
+    }
+  }
+
+  return statics.map((s) => ({
+    bggId: s.bggId,
+    nameEn: s.nameEn,
+    nameJa: s.nameJa,
+    id: dbMap.get(s.bggId)?.id,
+    imageUrl: dbMap.get(s.bggId)?.imageUrl,
+  }))
+}
 
 export interface RecommendedGame {
   id: string
@@ -19,7 +89,7 @@ function buildUserIntermediateProfile(
 ): Map<string, number> {
   const profile = new Map<string, number>()
   for (const entry of entries) {
-    const mechanics = entry.game.mechanics?.split(",").map((s) => s.trim()).filter(Boolean) ?? []
+    const mechanics = entry.game.mechanics?.split("|").map((s) => s.trim()).filter(Boolean) ?? []
     for (const mechanic of mechanics) {
       const mapping = MECHANICS_MAP[mechanic]
       if (!mapping) continue
@@ -55,7 +125,7 @@ function topMechanics(
 ): string[] {
   const counts = new Map<string, number>()
   for (const entry of entries) {
-    entry.game.mechanics?.split(",").forEach((m) => {
+    entry.game.mechanics?.split("|").forEach((m) => {
       const key = m.trim()
       if (key) counts.set(key, (counts.get(key) ?? 0) + 1)
     })
@@ -99,7 +169,7 @@ export async function getRecommendations(userId: string): Promise<RecommendedGam
   })
 
   const scored = candidates.map((game) => {
-    const gameMechanics = game.mechanics?.split(",").map((s) => s.trim()).filter(Boolean) ?? []
+    const gameMechanics = game.mechanics?.split("|").map((s) => s.trim()).filter(Boolean) ?? []
 
     // 中間カテゴリの一致度でスコア算出
     const score = scoreGameAgainstProfile(gameMechanics, userProfile)
@@ -107,7 +177,7 @@ export async function getRecommendations(userId: string): Promise<RecommendedGam
     // おすすめ理由：スコアに最も貢献したメカニクスを表示
     let reason = ""
     for (const mech of top) {
-      const ja = translateMechanic(mech)
+      const ja = getMechanicJaName(mech)
       if (ja && gameMechanics.includes(mech)) {
         reason = `「${ja}」好きにおすすめ`
         break

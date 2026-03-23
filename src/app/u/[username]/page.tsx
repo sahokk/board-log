@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma"
 import { getDisplayName, getProfileImage, parseFavoriteGenres } from "@/lib/profile-utils"
 import { calculateTitles } from "@/lib/titles"
 import { calculateBoardgameType } from "@/lib/boardgame-type"
-import { translateMechanic } from "@/lib/bgg/translations"
+import { getMechanicJaName } from "@/lib/bgg/mechanic-labels"
 import { GameImage } from "@/components/GameImage"
 import { TitleBadges } from "@/components/TitleBadges"
 import { MechanicTag } from "@/components/MechanicTag"
@@ -88,9 +88,9 @@ export default async function PublicProfilePage({ params }: Props) {
   const mechanicMap = new Map<string, { count: number; nameEn: string }>()
   entries.forEach((e) => {
     if (e.game.mechanics) {
-      e.game.mechanics.split(",").forEach((mech) => {
+      e.game.mechanics.split("|").forEach((mech) => {
         const en = mech.trim()
-        const ja = translateMechanic(en)
+        const ja = getMechanicJaName(en)
         if (!ja) return
         const existing = mechanicMap.get(ja)
         mechanicMap.set(ja, { count: (existing?.count ?? 0) + 1, nameEn: en })
@@ -114,7 +114,7 @@ export default async function PublicProfilePage({ params }: Props) {
 
   // ボドゲタイプ
   const boardgameType = calculateBoardgameType({
-    entries: entries.map((e) => ({ gameId: e.gameId, sessionCount: e._count.sessions })),
+    entries: entries.map((e) => ({ gameId: e.gameId, sessionCount: e._count.sessions, rating: e.rating })),
     games: entries.map((e) => ({
       gameId: e.gameId,
       weight: e.game.weight,
@@ -122,9 +122,8 @@ export default async function PublicProfilePage({ params }: Props) {
       mechanics: e.game.mechanics,
     })),
   })
-
   const shareText = encodeURIComponent(displayName + "のボードゲームプロフィール🎲")
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://board-log.pekori.dev"
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://boardory.pekori.dev"
   const shareUrl = encodeURIComponent(`${baseUrl}/u/${username}`)
 
   return (
@@ -208,10 +207,9 @@ export default async function PublicProfilePage({ params }: Props) {
         </div>
 
         {/* Boardgame Type */}
-        <div className="mb-8">
+        <div className="mb-4">
           <BoardgameTypeCard type={boardgameType} />
         </div>
-
         {/* 称号 */}
         <div className="mb-12">
           <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">称号</h2>

@@ -49,7 +49,7 @@ export default async function ProfilePage() {
   })
 
   const boardgameType = calculateBoardgameType({
-    entries: entries.map((e) => ({ gameId: e.gameId, sessionCount: e.sessions.length })),
+    entries: entries.map((e) => ({ gameId: e.gameId, sessionCount: e.sessions.length, rating: e.rating })),
     games: entries.map((e) => ({
       gameId: e.gameId,
       weight: e.game.weight,
