@@ -33,8 +33,6 @@ export interface BoardgameType {
   tagline: string
   description: string
   scores: BoardgameScores
-  subType: string
-  subTypeId: string
 }
 
 export interface BoardgameTypeInput {
@@ -162,97 +160,90 @@ const INTERMEDIATE_TO_BOARDORY: Record<IntermediateCategory, Partial<Record<Boar
 }
 
 // ============================================================
-// タイプ定義（設計書 9）
+// タイプ定義（10種類、優先順位順）
 // ============================================================
 export const TYPE_DEFINITIONS = [
   {
-    id: "strategist",
-    name: "ストラテジスト",
-    icon: "♟️",
-    tagline: "思考の果てに勝利をつかむ",
+    id: "pure-strategist",
+    name: "純戦略マスター",
+    icon: "🏰",
+    tagline: "運に頼らず盤面を支配する",
     description:
-      "複雑なルールと長期戦略を楽しむタイプ。ゲームを深く分析し、最適解を追い求める。重量級ゲームをこよなく愛す本格派ゲーマー。",
-    dominantAxis: "strategy" as BoardoryAxis | null,
+      "運に頼らず、盤面を支配する職人タイプ。じっくり考えるゲームを好む。",
   },
   {
-    id: "interactor",
-    name: "インタラクター",
-    icon: "⚔️",
-    tagline: "対人戦の醍醐味を知る者",
+    id: "strategic-player",
+    name: "対戦ストラテジスト",
+    icon: "🧠",
+    tagline: "対人戦で輝く思考型プレイヤー",
     description:
-      "他プレイヤーとの駆け引きや交渉を楽しむタイプ。エリアコントロールや交渉ゲームで本領を発揮し、対戦相手との読み合いに興奮する。",
-    dominantAxis: "interaction" as BoardoryAxis | null,
+      "勝つために最適解を探し続ける思考型プレイヤー。対人戦でこそ真価を発揮する。",
+  },
+  {
+    id: "engine-builder",
+    name: "エンジンビルダー",
+    icon: "📈",
+    tagline: "効率化と構築に快感を覚える職人",
+    description:
+      "じわじわ強くなる構築型。長期的な成長と効率化に快感を覚える。",
+  },
+  {
+    id: "negotiator",
+    name: "駆け引きネゴシエーター",
+    icon: "🤝",
+    tagline: "交渉と読み合いで場を支配する",
+    description:
+      "交渉・心理戦・読み合いが大好物。人を動かして勝つタイプ。",
+  },
+  {
+    id: "trickster",
+    name: "心理戦トリックスター",
+    icon: "🕵️",
+    tagline: "嘘と読み合いで場をかき乱す",
+    description:
+      "嘘・ブラフ・読み合いを楽しむトリッキーなタイプ。相手の思考を崩すのが得意。",
   },
   {
     id: "party-maker",
-    name: "パーティメーカー",
+    name: "盛り上げパーティメーカー",
     icon: "🎉",
-    tagline: "みんなを笑顔にする天才",
+    tagline: "いるだけで場が盛り上がる存在",
     description:
-      "盛り上がりと楽しい雰囲気を最優先するタイプ。パーティゲームや大人数ゲームが大好きで、場の空気を最高にする才能がある。",
-    dominantAxis: "party" as BoardoryAxis | null,
+      "勝ち負けより場の楽しさ重視。その場にいるだけでゲームが盛り上がる存在。",
+  },
+  {
+    id: "gambler",
+    name: "ハイリスクギャンブラー",
+    icon: "🎲",
+    tagline: "運も実力のうち、一発逆転",
+    description:
+      "運も実力のうち。大きく勝つか、大きく負けるかを楽しむタイプ。",
+  },
+  {
+    id: "speed-player",
+    name: "スピードプレイヤー",
+    icon: "⚡",
+    tagline: "直感と判断力でテンポよく回す",
+    description:
+      "テンポ重視、サクサク進むゲームが好き。直感と判断力で場を回す。",
   },
   {
     id: "casual",
-    name: "カジュアル",
-    icon: "🎲",
-    tagline: "気軽にサクッと楽しみたい",
+    name: "まったりカジュアル派",
+    icon: "🧘",
+    tagline: "重さより心地よさを大事に",
     description:
-      "ルールが簡単でテンポのよいゲームを好むタイプ。運要素やスピード感のあるゲームで楽しさを見つける。気軽に誰とでも遊べる親しみやすさが魅力。",
-    dominantAxis: null,
+      "気軽に楽しく遊べればOK。重さよりも心地よさを大事にするタイプ。",
   },
   {
     id: "balanced",
-    name: "バランス型",
-    icon: "⚖️",
-    tagline: "オールラウンドなゲーマー",
+    name: "バランスプレイヤー",
+    icon: "🧩",
+    tagline: "どんなゲームでも楽しめる万能型",
     description:
-      "特定のスタイルにこだわらず、あらゆるゲームを楽しめるタイプ。戦略もパーティも協力ゲームも全部こなせる万能プレイヤー。",
-    dominantAxis: null,
+      "どんなゲームでも楽しめる万能型。場に合わせてプレイスタイルを変える柔軟さが強み。",
   },
 ]
-
-// ============================================================
-// サブタイプ定義（設計書 9.2）
-// [メインタイプID][2番目に高い軸] → サブタイプ名
-// ============================================================
-const SUB_TYPE_MAP: Record<string, Record<BoardoryAxis, string>> = {
-  strategist: {
-    strategy:    "ピュアストラテジスト",
-    interaction: "対戦ストラテジスト",
-    party:       "社交ストラテジスト",
-    luck:        "博打ストラテジスト",
-    speed:       "速攻ストラテジスト",
-  },
-  interactor: {
-    strategy:    "戦略インタラクター",
-    interaction: "ガチンコインタラクター",
-    party:       "社交インタラクター",
-    luck:        "ギャンブルインタラクター",
-    speed:       "機動インタラクター",
-  },
-  "party-maker": {
-    strategy:    "知略パーティメーカー",
-    interaction: "競争パーティメーカー",
-    party:       "盛り上げ屋",
-    luck:        "ラッキーパーティメーカー",
-    speed:       "爆速パーティメーカー",
-  },
-  casual: {
-    strategy:    "頭脳派カジュアル",
-    interaction: "社交派カジュアル",
-    party:       "パーティ派カジュアル",
-    luck:        "ラッキーカジュアル",
-    speed:       "スピード派カジュアル",
-  },
-  balanced: {
-    strategy:    "バランス型",
-    interaction: "バランス型",
-    party:       "バランス型",
-    luck:        "バランス型",
-    speed:       "バランス型",
-  },
-}
 
 // ============================================================
 // スコア計算（設計書 8）
@@ -358,51 +349,28 @@ export function calculateBoardgameType(data: BoardgameTypeInput): BoardgameType 
 }
 
 // ============================================================
-// タイプ分類（設計書 9）
+// タイプ分類（優先順位順に判定）
 // ============================================================
 
+// 優先順位順。条件を満たした最初のエントリが採用される。
+const TYPE_RULES: { id: string; match: (s: BoardgameScores) => boolean }[] = [
+  { id: "pure-strategist",  match: (s) => s.strategy >= 75 && s.luck <= 30 && s.speed <= 40 },
+  { id: "strategic-player", match: (s) => s.strategy >= 70 && s.interaction >= 50 && s.luck <= 40 },
+  { id: "engine-builder",   match: (s) => s.strategy >= 65 && s.speed <= 40 && s.interaction <= 60 },
+  { id: "negotiator",       match: (s) => s.interaction >= 70 && s.strategy >= 40 && s.party <= 60 },
+  { id: "trickster",        match: (s) => s.interaction >= 65 && s.party >= 50 && s.strategy <= 60 },
+  { id: "party-maker",      match: (s) => s.party >= 70 && s.interaction >= 50 },
+  { id: "gambler",          match: (s) => s.luck >= 70 && s.strategy <= 50 },
+  { id: "speed-player",     match: (s) => s.speed >= 70 && s.strategy <= 60 },
+  { id: "casual",           match: (s) => s.luck >= 50 && s.party >= 50 && s.strategy <= 50 },
+]
+
 function determineType(scores: BoardgameScores): string {
-  const { strategy, luck, interaction, party, speed } = scores
-
-  // バランス型: 全軸が均等（最大 - 最小 < 20）
-  const max = Math.max(strategy, luck, interaction, party, speed)
-  const min = Math.min(strategy, luck, interaction, party, speed)
-  if (max - min < 20) return "balanced"
-
-  // カジュアル: luck + speed が他軸より高い
-  const casualScore = (luck + speed) / 2
-  if (casualScore > strategy && casualScore > interaction && casualScore > party) {
-    return "casual"
-  }
-
-  // その他: strategy / interaction / party の最大軸
-  const contenders: [string, number][] = [
-    ["strategist",  strategy],
-    ["interactor",  interaction],
-    ["party-maker", party],
-  ]
-  contenders.sort((a, b) => b[1] - a[1])
-  return contenders[0][0]
+  return TYPE_RULES.find((r) => r.match(scores))?.id ?? "balanced"
 }
 
 function buildResult(typeId: string, scores: BoardgameScores): BoardgameType {
-  const typeDef = TYPE_DEFINITIONS.find((t) => t.id === typeId) ?? TYPE_DEFINITIONS[4] // fallback: balanced
-
-  // サブタイプ: 2番目に高い軸で決定
-  const axisList: [BoardoryAxis, number][] = [
-    ["strategy",    scores.strategy],
-    ["luck",        scores.luck],
-    ["interaction", scores.interaction],
-    ["party",       scores.party],
-    ["speed",       scores.speed],
-  ]
-  axisList.sort((a, b) => b[1] - a[1])
-
-  // メインタイプが casual/balanced の場合は1位の軸、それ以外は2位の軸
-  const secondAxis = axisList.length > 1 ? axisList[1][0] : axisList[0][0]
-  const subTypeRow = SUB_TYPE_MAP[typeId] ?? SUB_TYPE_MAP["balanced"]
-  const subType = subTypeRow[secondAxis]
-  const subTypeId = `${typeId}-${secondAxis}`
+  const typeDef = TYPE_DEFINITIONS.find((t) => t.id === typeId) ?? TYPE_DEFINITIONS.at(-1)!
 
   return {
     id:          typeDef.id,
@@ -411,7 +379,5 @@ function buildResult(typeId: string, scores: BoardgameScores): BoardgameType {
     tagline:     typeDef.tagline,
     description: typeDef.description,
     scores,
-    subType,
-    subTypeId,
   }
 }

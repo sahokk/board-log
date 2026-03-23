@@ -139,8 +139,6 @@ export function BoardgameTypeCard({ type }: Readonly<Props>) {
             <p className="text-sm text-amber-300">{type.tagline}</p>
           </div>
         </div>
-        {/* サブタイプ */}
-        <p className="mt-2 text-xs text-amber-400/80">― {type.subType}</p>
       </div>
 
       {/* Body */}

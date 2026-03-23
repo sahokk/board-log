@@ -178,12 +178,15 @@ export function TryClient() {
     if (!boardgameType) return
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://boardory.pekori.dev"
     const lines = [
-      `${boardgameType.icon} ボードゲームタイプ：${boardgameType.name}`,
-      `🎲 ${selected.length}種類のゲームから診断`,
+      "あなたは…",
+      "",
+      `${boardgameType.icon} ${boardgameType.name}`,
+      "",
+      boardgameType.description,
       "",
       baseUrl,
       "",
-      "#Boardory #ボードゲーム #ボドゲ",
+      "#Boardory診断 #ボードゲーム #ボドゲ",
     ]
     globalThis.open(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(lines.join("\n"))}`,
