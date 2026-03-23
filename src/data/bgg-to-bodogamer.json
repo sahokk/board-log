@@ -1,0 +1,356 @@
+{
+  "Abstract Strategy": [
+    94
+  ],
+  "Acting": [
+    48
+  ],
+  "Action Drafting": [
+    96
+  ],
+  "Action Points": [
+    26
+  ],
+  "Action Queue": [
+    87
+  ],
+  "Action Retrieval": [
+    87
+  ],
+  "Area Control": [
+    16
+  ],
+  "Area Majority / Influence": [
+    16
+  ],
+  "Area Movement": [
+    68
+  ],
+  "Area-Impulse": [
+    68
+  ],
+  "Auction / Bidding": [
+    2
+  ],
+  "Auction: Dexterity": [
+    2
+  ],
+  "Auction: Dutch": [
+    2
+  ],
+  "Auction: Dutch Priority": [
+    2
+  ],
+  "Auction: English": [
+    2
+  ],
+  "Auction: Fixed Placement": [
+    2
+  ],
+  "Auction: Multiple Lot": [
+    2
+  ],
+  "Auction: Once Around": [
+    2
+  ],
+  "Auction: Sealed Bid": [
+    2
+  ],
+  "Auction: Turn Order Until Pass": [
+    2
+  ],
+  "Auction/Bidding": [
+    2
+  ],
+  "Betting and Bluffing": [
+    9,
+    4
+  ],
+  "Bidding": [
+    2
+  ],
+  "Bluffing": [
+    9
+  ],
+  "Bribery": [
+    22
+  ],
+  "Campaign / Battle Card Driven": [
+    70
+  ],
+  "Card Drafting": [
+    96
+  ],
+  "Card Play Conflict Resolution": [
+    70
+  ],
+  "Chit-Pull System": [
+    5
+  ],
+  "Closed Drafting": [
+    96
+  ],
+  "Commodity Speculation": [
+    35
+  ],
+  "Communication Limits": [
+    98
+  ],
+  "Connections": [
+    13
+  ],
+  "Constrained Bidding": [
+    2
+  ],
+  "Contracts": [
+    22
+  ],
+  "Cooperative Game": [
+    34
+  ],
+  "Deck Building": [
+    59
+  ],
+  "Deck Construction": [
+    59
+  ],
+  "Deck, Bag, and Pool Building": [
+    59
+  ],
+  "Deduction": [
+    44
+  ],
+  "Dice Rolling": [
+    5
+  ],
+  "Die Icon Resolution": [
+    5
+  ],
+  "Different Dice Movement": [
+    5
+  ],
+  "Drafting": [
+    96
+  ],
+  "Enclosure": [
+    67
+  ],
+  "Flicking": [
+    37
+  ],
+  "Force Commitment": [
+    87
+  ],
+  "Grid Coverage": [
+    78
+  ],
+  "Grid Movement": [
+    75
+  ],
+  "Hand Management": [
+    45
+  ],
+  "Hexagon Grid": [
+    75
+  ],
+  "Hidden Movement": [
+    85
+  ],
+  "Hidden Roles": [
+    18
+  ],
+  "Induction": [
+    44
+  ],
+  "Interrupts": [
+    101
+  ],
+  "King of the Hill": [
+    16
+  ],
+  "Legacy Game": [
+    99
+  ],
+  "Matching": [
+    79
+  ],
+  "Memory": [
+    15
+  ],
+  "Modular Board": [
+    25
+  ],
+  "Narrative Choice / Paragraph": [
+    48
+  ],
+  "Negotiation": [
+    22
+  ],
+  "Network and Route Building": [
+    13
+  ],
+  "Open Drafting": [
+    96
+  ],
+  "Order Counters": [
+    87
+  ],
+  "Pattern Building": [
+    78
+  ],
+  "Pattern Recognition": [
+    79
+  ],
+  "Physical": [
+    37
+  ],
+  "Player Elimination": [
+    80
+  ],
+  "Point to Point Movement": [
+    81
+  ],
+  "Prisoner's Dilemma": [
+    95
+  ],
+  "Programmed Movement": [
+    87
+  ],
+  "Push Your Luck": [
+    27
+  ],
+  "Random Production": [
+    5
+  ],
+  "Ratio / Combat Results Table": [
+    70
+  ],
+  "Re-rolling and Locking": [
+    5
+  ],
+  "Real-Time": [
+    97
+  ],
+  "Rock-Paper-Scissors": [
+    8
+  ],
+  "Role Playing": [
+    83
+  ],
+  "Roles with Asymmetric Information": [
+    18
+  ],
+  "Roll / Spin and Move": [
+    84
+  ],
+  "Rondel": [
+    103
+  ],
+  "Route/Network Building": [
+    13
+  ],
+  "Secret Unit Deployment": [
+    85
+  ],
+  "Selection Order Bid": [
+    2
+  ],
+  "Semi-Cooperative Game": [
+    34
+  ],
+  "Set Collection": [
+    33
+  ],
+  "Simultaneous Action Selection": [
+    87,
+    95
+  ],
+  "Social Deduction": [
+    18
+  ],
+  "Speed Matching": [
+    37,
+    97
+  ],
+  "Spelling": [
+    21
+  ],
+  "Square Grid": [
+    75
+  ],
+  "Stacking and Balancing": [
+    37
+  ],
+  "Stat Check Resolution": [
+    70
+  ],
+  "Stock Holding": [
+    35
+  ],
+  "Storytelling": [
+    48
+  ],
+  "Take That": [
+    41
+  ],
+  "Targeted Clues": [
+    44
+  ],
+  "Team-Based Game": [
+    66
+  ],
+  "Tile Placement": [
+    6
+  ],
+  "Track Movement": [
+    84
+  ],
+  "Trading": [
+    23
+  ],
+  "Traitor Game": [
+    18
+  ],
+  "Turn Order: Claim Action": [
+    89
+  ],
+  "Turn Order: Pass Order": [
+    89
+  ],
+  "Turn Order: Progressive": [
+    89
+  ],
+  "Turn Order: Random": [
+    89
+  ],
+  "Turn Order: Role Order": [
+    89
+  ],
+  "Turn Order: Stat-Based": [
+    89
+  ],
+  "Turn Order: Time Track": [
+    89
+  ],
+  "Variable Phase Order": [
+    55
+  ],
+  "Variable Player Powers": [
+    56
+  ],
+  "Voting": [
+    30
+  ],
+  "Word Game": [
+    21
+  ],
+  "Worker Placement": [
+    58
+  ],
+  "Worker Placement with Dice Workers": [
+    102
+  ],
+  "Worker Placement, Different Worker Types": [
+    58
+  ]
+}

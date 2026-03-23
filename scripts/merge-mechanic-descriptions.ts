@@ -1,11 +1,15 @@
 #!/usr/bin/env npx tsx
 /**
- * ボドゲーマの日本語メカニクス説明を mechanic-descriptions.json にマージするスクリプト。
+ * BGGメカニクス名 → ボドゲーマID[] のマッピングを生成するスクリプト。
  *
- * 処理フロー:
- *   1. bodogamer-mechanics.json (ボドゲーマのスクレイピング結果) を読み込み
- *   2. BGGメカニクス名 → ボドゲーマID のマッピングを適用
- *   3. mechanic-descriptions.json の descriptionJa フィールドを更新
+ * 出力:
+ *   src/data/bgg-to-bodogamer.json
+ *     { "Dice Rolling": [5], "Betting and Bluffing": [9, 4], ... }
+ *
+ * アプリ側の利用方法:
+ *   1. ゲームのBGGメカニクス名を bgg-to-bodogamer.json で引く → ボドゲーマID[]
+ *   2. 重複を除いてボドゲーマIDのセットを作る
+ *   3. bodogamer-mechanics.json[id].jaName/shortDesc を表示する
  *
  * 使い方:
  *   npx tsx scripts/merge-mechanic-descriptions.ts
@@ -14,7 +18,6 @@
 import * as fs from "node:fs"
 import * as path from "node:path"
 import type { BodoGamerMechanic } from "./fetch-bodogamer-mechanics"
-import type { MechanicDescription } from "./fetch-mechanic-descriptions"
 
 // ============================================================
 // BGGメカニクス名 → ボドゲーマID マッピング
@@ -54,7 +57,8 @@ import type { MechanicDescription } from "./fetch-mechanic-descriptions"
 //   → 94で紐づけ中
 // ============================================================
 
-const BGG_TO_BODOGAMER: Record<string, number> = {
+// number = 単一ID、number[] = 複数IDに同時マッピング
+const BGG_TO_BODOGAMER: Record<string, number | number[]> = {
   // ──────────────────────────────────────────
   // ダイス系 [5]
   // ──────────────────────────────────────────
@@ -76,10 +80,12 @@ const BGG_TO_BODOGAMER: Record<string, number> = {
   "Rock-Paper-Scissors":       8,
 
   // ──────────────────────────────────────────
-  // ブラフ [9]  ※[要確認A]
+  // ブラフ [9] / ベッティング [4]
+  // Bluffing   → ブラフのみ
+  // Betting and Bluffing → 両方に掲載
   // ──────────────────────────────────────────
   "Bluffing":                  9,
-  "Betting and Bluffing":      9,
+  "Betting and Bluffing":      [9, 4],
 
   // ──────────────────────────────────────────
   // 路線・ネットワーク形成 [13]
@@ -173,12 +179,13 @@ const BGG_TO_BODOGAMER: Record<string, number> = {
   "Commodity Speculation":     35,  // 商品投機
 
   // ──────────────────────────────────────────
-  // アクションゲーム（身体的） [37]  ※[要確認E]
+  // アクションゲーム（身体的） [37] / リアルタイム [97]
+  // Speed Matching → 素早く一致させる = 身体的反応でもありリアルタイムでもある
   // ──────────────────────────────────────────
   "Physical":                  37,
-  "Speed Matching":            37,  // 素早く一致させる = 身体的反応
-  "Flicking":                  37,  // フリック（指で弾く）
-  "Stacking and Balancing":    37,  // 積み上げ・バランス
+  "Speed Matching":            [37, 97],  // 身体的反応 + リアルタイム要素
+  "Flicking":                  37,
+  "Stacking and Balancing":    37,
 
   // ──────────────────────────────────────────
   // 直接攻撃 [41]
@@ -304,9 +311,10 @@ const BGG_TO_BODOGAMER: Record<string, number> = {
   "Secret Unit Deployment":    85,  // ユニットの秘匿配置
 
   // ──────────────────────────────────────────
-  // アクション事前決定 [87]  ※[要確認D]
+  // アクション事前決定 [87] / バッティング [95]
+  // Simultaneous Action Selection → 事前決定でもありバッティングでもある
   // ──────────────────────────────────────────
-  "Simultaneous Action Selection": 87,
+  "Simultaneous Action Selection": [87, 95],
   "Programmed Movement":       87,  // プログラム移動（Robo Rally等）
   "Force Commitment":          87,  // 宣言後変更不可
   "Order Counters":            87,  // 順序カウンター = 事前宣言
@@ -388,87 +396,61 @@ const BGG_TO_BODOGAMER: Record<string, number> = {
   "Selection Order Bid":       2,
 }
 
+function toIds(val: number | number[]): number[] {
+  return Array.isArray(val) ? val : [val]
+}
+
 async function main() {
-  console.log("\nメカニクス説明マージスクリプト")
+  console.log("\nBGG → ボドゲーマ マッピング生成スクリプト")
   console.log("=".repeat(50))
 
-  const bodogamerPath = path.join(process.cwd(), "src/data/bodogamer-mechanics.json")
-  const descriptionsPath = path.join(process.cwd(), "src/data/mechanic-descriptions.json")
+  const bodogamerPath  = path.join(process.cwd(), "src/data/bodogamer-mechanics.json")
+  const outputPath     = path.join(process.cwd(), "src/data/bgg-to-bodogamer.json")
 
   if (!fs.existsSync(bodogamerPath)) {
     console.error("❌ bodogamer-mechanics.json が見つかりません。先に fetch-bodogamer-mechanics.ts を実行してください。")
     process.exit(1)
   }
 
-  // ボドゲーマデータをIDでインデックス
   const bdgList: BodoGamerMechanic[] = JSON.parse(fs.readFileSync(bodogamerPath, "utf-8"))
-  const bdgById = new Map(bdgList.map((m) => [m.id, m]))
+  const validIds = new Set(bdgList.map((m) => m.id))
   console.log(`ボドゲーマデータ: ${bdgList.length} 件`)
 
-  // 既存の mechanic-descriptions.json を読み込み
-  let descriptions: Record<string, MechanicDescription> = {}
-  if (fs.existsSync(descriptionsPath)) {
-    descriptions = JSON.parse(fs.readFileSync(descriptionsPath, "utf-8"))
-    console.log(`既存説明データ: ${Object.keys(descriptions).length} 件`)
-  }
+  // BGG名 → ボドゲーマID[] に正規化して出力
+  const output: Record<string, number[]> = {}
+  let multiCount = 0
 
-  // mechanics-map.json から全メカニクス名を取得
-  const mechanicsMapPath = path.join(process.cwd(), "src/data/mechanics-map.json")
-  const mechanicsMap: Record<string, unknown> = JSON.parse(fs.readFileSync(mechanicsMapPath, "utf-8"))
-  const allMechanics = new Set([
-    ...Object.keys(mechanicsMap),
-    ...Object.keys(descriptions),
-  ])
-
-  let updated = 0
-  let notMapped = 0
-
-  for (const bggName of allMechanics) {
-    const bdgId = BGG_TO_BODOGAMER[bggName]
-    if (!bdgId) {
-      notMapped++
+  for (const [bggName, val] of Object.entries(BGG_TO_BODOGAMER)) {
+    const ids = toIds(val).filter((id) => validIds.has(id))
+    if (ids.length === 0) {
+      console.warn(`  ⚠ 無効なボドゲーマID: ${bggName} → ${JSON.stringify(val)}`)
       continue
     }
-
-    const bdgMechanic = bdgById.get(bdgId)
-    if (!bdgMechanic) continue
-
-    const existing = descriptions[bggName] ?? { bggId: "", description: "" }
-    descriptions[bggName] = {
-      ...existing,
-      descriptionJa: bdgMechanic.shortDesc,
-    }
-    updated++
+    output[bggName] = ids
+    if (ids.length > 1) multiCount++
   }
 
-  console.log(`\nマッピング適用: ${updated} 件`)
-  console.log(`未マッピング: ${notMapped} 件`)
-
-  // 未マッピングのメカニクスを表示
-  const unmapped = [...allMechanics].filter((name) => !BGG_TO_BODOGAMER[name])
-  if (unmapped.length > 0) {
-    console.log(`\n未マッピングのメカニクス (${unmapped.length} 件):`)
-    for (const name of unmapped.sort()) {
-      const has = descriptions[name]?.descriptionJa ? " (既存あり)" : ""
-      console.log(`  - ${name}${has}`)
-    }
-  }
-
-  // ソートして保存
+  // アルファベット順にソートして保存
   const sorted = Object.fromEntries(
-    Object.entries(descriptions).sort(([a], [b]) => a.localeCompare(b))
+    Object.entries(output).sort(([a], [b]) => a.localeCompare(b))
   )
-  fs.writeFileSync(descriptionsPath, JSON.stringify(sorted, null, 2), "utf-8")
-  console.log(`\n✓ ${Object.keys(sorted).length} 件を保存: ${descriptionsPath}`)
+  fs.writeFileSync(outputPath, JSON.stringify(sorted, null, 2), "utf-8")
+
+  console.log(`\nマッピング件数: ${Object.keys(sorted).length} BGGメカニクス`)
+  console.log(`複数IDマッピング: ${multiCount} 件`)
+  const multiLines = Object.entries(sorted)
+    .filter(([, v]) => v.length > 1)
+    .map(([k, v]) => `  ${k} → [${v.join(", ")}]`)
+    .join("\n")
+  console.log(multiLines)
+  console.log(`\n✓ 保存: ${outputPath}`)
 
   // ボドゲーマ側で未使用のIDを報告
-  const usedIds = new Set(Object.values(BGG_TO_BODOGAMER))
-  const unusedBdg = bdgList.filter((m) => !usedIds.has(m.id))
-  if (unusedBdg.length > 0) {
+  const usedIds = new Set(Object.values(sorted).flat())
+  const unused = bdgList.filter((m) => !usedIds.has(m.id))
+  if (unused.length > 0) {
     console.log(`\nボドゲーマ未使用メカニクス (参考):`)
-    for (const m of unusedBdg) {
-      console.log(`  ID ${m.id}: ${m.jaName} — ${m.shortDesc}`)
-    }
+    for (const m of unused) console.log(`  [${m.id}] ${m.jaName}`)
   }
 }
 
