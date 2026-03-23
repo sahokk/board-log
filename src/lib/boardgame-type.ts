@@ -196,9 +196,9 @@ function buildGameProfile(
 // ============================================================
 
 function getRatingFactor(rating: number | null | undefined): number {
-  if (!rating) return 1
-  const factors: number[] = [0, 0.6, 0.8, 1, 1.2, 1.5]
-  return factors[rating] ?? 1
+  if (!rating) return 3
+  const factors: number[] = [-0.4, 0.6, 1, 2, 3]
+  return factors[rating - 1] ?? 1
 }
 
 // ============================================================
