@@ -268,7 +268,7 @@ export function calculateBoardgameType(data: BoardgameTypeInput): BoardgameType 
     const game = gameMap.get(entry.gameId)
     if (!game) continue
 
-    const mechanics  = game.mechanics?.split(",").map((s) => s.trim()).filter(Boolean) ?? []
+    const mechanics  = game.mechanics?.split("|").map((s) => s.trim()).filter(Boolean) ?? []
     const categories = game.categories?.split(",").map((s) => s.trim()).filter(Boolean) ?? []
     const profile    = buildGameProfile(mechanics, game.weight, categories)
     if (!profile) continue

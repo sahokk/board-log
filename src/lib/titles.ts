@@ -260,7 +260,7 @@ export function calculateTitles({ entries, sessions, games = [], wishlistCount =
       const key = c.trim()
       if (key) categoryCount.set(key, (categoryCount.get(key) ?? 0) + 1)
     })
-    g.mechanics?.split(",").forEach((m) => {
+    g.mechanics?.split("|").forEach((m) => {
       const key = m.trim()
       if (key) mechanicCount.set(key, (mechanicCount.get(key) ?? 0) + 1)
     })

@@ -10,8 +10,6 @@ import { GameImage } from "@/components/GameImage"
 import { TitleBadges } from "@/components/TitleBadges"
 import { MechanicTag } from "@/components/MechanicTag"
 import { BoardgameTypeCard } from "@/components/BoardgameTypeCard"
-import { TypeRecommendedGames } from "@/components/TypeRecommendedGames"
-import { getTypeRecommendedGames } from "@/lib/recommendations"
 import type { Metadata } from "next"
 
 interface Props {
@@ -90,7 +88,7 @@ export default async function PublicProfilePage({ params }: Props) {
   const mechanicMap = new Map<string, { count: number; nameEn: string }>()
   entries.forEach((e) => {
     if (e.game.mechanics) {
-      e.game.mechanics.split(",").forEach((mech) => {
+      e.game.mechanics.split("|").forEach((mech) => {
         const en = mech.trim()
         const ja = getMechanicJaName(en)
         if (!ja) return
@@ -124,8 +122,6 @@ export default async function PublicProfilePage({ params }: Props) {
       mechanics: e.game.mechanics,
     })),
   })
-  const typeRecommendations = await getTypeRecommendedGames(boardgameType.id)
-
   const shareText = encodeURIComponent(displayName + "のボードゲームプロフィール🎲")
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://boardory.pekori.dev"
   const shareUrl = encodeURIComponent(`${baseUrl}/u/${username}`)
@@ -214,12 +210,6 @@ export default async function PublicProfilePage({ params }: Props) {
         <div className="mb-4">
           <BoardgameTypeCard type={boardgameType} />
         </div>
-        {typeRecommendations.length > 0 && (
-          <div className="mb-8">
-            <TypeRecommendedGames games={typeRecommendations} />
-          </div>
-        )}
-
         {/* 称号 */}
         <div className="mb-12">
           <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">称号</h2>

@@ -45,7 +45,7 @@ export async function getTypeRecommendedGames(typeId: string): Promise<TypeRecom
               nameJa: d.nameJa ?? null,
               imageUrl: d.imageUrl ?? null,
               categories: d.categories.length > 0 ? d.categories.join(",") : null,
-              mechanics: d.mechanics.length > 0 ? d.mechanics.join(",") : null,
+              mechanics: d.mechanics.length > 0 ? d.mechanics.join("|") : null,
               weight: d.weight ?? null,
               playingTime: d.playingTime ?? null,
               minPlayers: d.minPlayers ?? null,
@@ -89,7 +89,7 @@ function buildUserIntermediateProfile(
 ): Map<string, number> {
   const profile = new Map<string, number>()
   for (const entry of entries) {
-    const mechanics = entry.game.mechanics?.split(",").map((s) => s.trim()).filter(Boolean) ?? []
+    const mechanics = entry.game.mechanics?.split("|").map((s) => s.trim()).filter(Boolean) ?? []
     for (const mechanic of mechanics) {
       const mapping = MECHANICS_MAP[mechanic]
       if (!mapping) continue
@@ -125,7 +125,7 @@ function topMechanics(
 ): string[] {
   const counts = new Map<string, number>()
   for (const entry of entries) {
-    entry.game.mechanics?.split(",").forEach((m) => {
+    entry.game.mechanics?.split("|").forEach((m) => {
       const key = m.trim()
       if (key) counts.set(key, (counts.get(key) ?? 0) + 1)
     })
@@ -169,7 +169,7 @@ export async function getRecommendations(userId: string): Promise<RecommendedGam
   })
 
   const scored = candidates.map((game) => {
-    const gameMechanics = game.mechanics?.split(",").map((s) => s.trim()).filter(Boolean) ?? []
+    const gameMechanics = game.mechanics?.split("|").map((s) => s.trim()).filter(Boolean) ?? []
 
     // 中間カテゴリの一致度でスコア算出
     const score = scoreGameAgainstProfile(gameMechanics, userProfile)
