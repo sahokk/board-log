@@ -7,7 +7,7 @@
   "Acting": {
     "bggId": "",
     "description": "",
-    "descriptionJa": "担当キャラクターが存在する"
+    "descriptionJa": "参加者が物語を作り上げていく"
   },
   "Action Drafting": {
     "bggId": "2838",
@@ -21,11 +21,13 @@
   },
   "Action Queue": {
     "bggId": "2689",
-    "description": ""
+    "description": "",
+    "descriptionJa": "アクション前に行動内容を決定"
   },
   "Action Retrieval": {
     "bggId": "2839",
-    "description": ""
+    "description": "",
+    "descriptionJa": "アクション前に行動内容を決定"
   },
   "Area Control": {
     "bggId": "",
@@ -77,6 +79,11 @@
     "description": "",
     "descriptionJa": "複数カードを確認して自分のカードを選定、余りを他プレイヤーに回す"
   },
+  "Chit-Pull System": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "出目によって移動量や獲得アイテムがランダムに決定する"
+  },
   "Closed Drafting": {
     "bggId": "2984",
     "description": "",
@@ -89,7 +96,8 @@
   },
   "Contracts": {
     "bggId": "2912",
-    "description": ""
+    "description": "",
+    "descriptionJa": "物・お金・情報・行動など、言い値で交渉/交換が成立する"
   },
   "Cooperative Game": {
     "bggId": "2023",
@@ -137,7 +145,8 @@
   },
   "Force Commitment": {
     "bggId": "2864",
-    "description": ""
+    "description": "",
+    "descriptionJa": "アクション前に行動内容を決定"
   },
   "Grid Movement": {
     "bggId": "2676",
@@ -151,7 +160,8 @@
   },
   "Hexagon Grid": {
     "bggId": "2026",
-    "description": ""
+    "description": "",
+    "descriptionJa": "四角や六角のマスにコマを置き、コマの移動先を選択できる"
   },
   "Hidden Movement": {
     "bggId": "2967",
@@ -170,12 +180,12 @@
   "Induction": {
     "bggId": "",
     "description": "",
-    "descriptionJa": "運要素がなく、全情報が公開されていて手を読みきることが可能"
+    "descriptionJa": "論理的推察により答えを導き出す"
   },
   "King of the Hill": {
     "bggId": "2886",
     "description": "",
-    "descriptionJa": "繰り返す/継続するほどリスクが増大するギャンブル要素"
+    "descriptionJa": "コマの数を多く配置した人が、そのエリア内で優勢となる"
   },
   "Loans": {
     "bggId": "2904",
@@ -226,6 +236,11 @@
     "description": "",
     "descriptionJa": "複数カードを確認して自分のカードを選定、余りを他プレイヤーに回す"
   },
+  "Order Counters": {
+    "bggId": "",
+    "description": "",
+    "descriptionJa": "アクション前に行動内容を決定"
+  },
   "Paper-and-Pencil": {
     "bggId": "2055",
     "description": ""
@@ -247,13 +262,11 @@
   },
   "Pick-up and Deliver": {
     "bggId": "2007",
-    "description": "",
-    "descriptionJa": "場所と場所をつなぐ移動経路（道や航路等）の接続先に移動"
+    "description": ""
   },
   "Pickup and Deliver": {
     "bggId": "",
-    "description": "",
-    "descriptionJa": "場所と場所をつなぐ移動経路（道や航路等）の接続先に移動"
+    "description": ""
   },
   "Player Elimination": {
     "bggId": "2685",
@@ -281,7 +294,8 @@
   },
   "Random Production": {
     "bggId": "2909",
-    "description": ""
+    "description": "",
+    "descriptionJa": "出目によって移動量や獲得アイテムがランダムに決定する"
   },
   "Real-Time": {
     "bggId": "2831",
@@ -335,7 +349,7 @@
   "Speed Matching": {
     "bggId": "2991",
     "description": "",
-    "descriptionJa": "制限時間内や所定条件を満たすまで、手番に関係なく行動可能"
+    "descriptionJa": "プレイヤー自身の手や体を使うゲーム"
   },
   "Storytelling": {
     "bggId": "2027",
@@ -363,7 +377,8 @@
   },
   "Track Movement": {
     "bggId": "2939",
-    "description": ""
+    "description": "",
+    "descriptionJa": "サイコロやルーレットの出目に応じて移動していく"
   },
   "Trading": {
     "bggId": "2008",
