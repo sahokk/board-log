@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { cache } from "react"
 import { notFound } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { calculateBoardgameType } from "@/lib/boardgame-type"
@@ -12,7 +13,7 @@ interface Props {
   readonly searchParams: Promise<{ games?: string }>
 }
 
-async function getResultData(gamesParam: string | undefined) {
+const getResultData = cache(async function getResultData(gamesParam: string | undefined) {
   if (!gamesParam) return null
   const ids = gamesParam.split(",").filter(Boolean)
   if (ids.length === 0) return null
@@ -34,7 +35,7 @@ async function getResultData(gamesParam: string | undefined) {
   })
 
   return type
-}
+})
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const { games } = await searchParams
