@@ -10,6 +10,9 @@ interface GameResult {
   yearPublished?: number
   imageUrl?: string
   thumbnailUrl?: string
+  mechanics?: string | null
+  categories?: string | null
+  weight?: number | null
 }
 
 export async function GET(request: NextRequest) {
@@ -33,6 +36,9 @@ export async function GET(request: NextRequest) {
       name: g.name,
       nameJa: g.nameJa,
       imageUrl: g.imageUrl ?? undefined,
+      mechanics: g.mechanics,
+      categories: g.categories,
+      weight: g.weight,
     }))
 
     // 2. BGG検索（graceful fallback）
@@ -82,6 +88,9 @@ export async function GET(request: NextRequest) {
           yearPublished: details[i].yearPublished,
           imageUrl: g.imageUrl ?? undefined,
           thumbnailUrl: details[i].thumbnailUrl,
+          mechanics: g.mechanics,
+          categories: g.categories,
+          weight: g.weight,
         }))
       }
     } catch (bggError) {

@@ -59,8 +59,8 @@ export default async function Home() {
               >
                 はじめる
               </Link>
-              <Link href="/onboarding" className="text-sm text-amber-700 underline underline-offset-2 hover:text-amber-900">
-                遊んだゲームをまとめて登録する →
+              <Link href="/try" className="text-sm text-amber-700 underline underline-offset-2 hover:text-amber-900">
+                ログインなしで診断・名刺を試す →
               </Link>
             </div>
           )}
