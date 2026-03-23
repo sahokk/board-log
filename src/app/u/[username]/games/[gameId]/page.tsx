@@ -61,7 +61,7 @@ export default async function PublicGamePage({ params }: Props) {
             {game.imageUrl ? (
               <Image
                 src={game.imageUrl}
-                alt={game.nameJa ?? game.name}
+                alt={game.customNameJa ?? game.nameJa ?? game.name}
                 fill
                 className="object-contain p-6"
                 sizes="256px"
@@ -77,9 +77,9 @@ export default async function PublicGamePage({ params }: Props) {
         {/* ゲーム名 */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold tracking-tight text-amber-950">
-            {game.nameJa ?? game.name}
+            {game.customNameJa ?? game.nameJa ?? game.name}
           </h1>
-          {game.nameJa && (
+          {(game.customNameJa || game.nameJa) && (
             <p className="mt-1 text-sm text-amber-800/60">{game.name}</p>
           )}
         </div>
