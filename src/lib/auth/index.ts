@@ -2,6 +2,7 @@ import NextAuth from "next-auth"
 import Google from "next-auth/providers/google"
 import Twitter from "next-auth/providers/twitter"
 import Discord from "next-auth/providers/discord"
+import Resend from "next-auth/providers/resend"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import type { Adapter } from "next-auth/adapters"
 import { prisma } from "@/lib/prisma"
@@ -22,7 +23,14 @@ const adapter: Adapter = {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter,
-  providers: [Google, Twitter, Discord],
+  providers: [
+    Google,
+    Twitter,
+    Discord,
+    Resend({
+      from: process.env.EMAIL_FROM ?? "noreply@boardory.pekori.dev",
+    }),
+  ],
   pages: {
     signIn: "/signin",
   },
