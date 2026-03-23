@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { calculateBoardgameType } from "@/lib/boardgame-type"
 
-const makeEntry = (gameId: string, sessionCount = 1) => ({ gameId, sessionCount })
+const makeEntry = (gameId: string, sessionCount = 1, rating?: number) => ({ gameId, sessionCount, rating })
 const makeGame = (
   gameId: string,
   options: { weight?: number | null; categories?: string; mechanics?: string } = {}
@@ -13,162 +13,29 @@ const makeGame = (
 })
 
 describe("calculateBoardgameType", () => {
+  // ============================================================
+  // 基本動作
+  // ============================================================
+
   it("returns balanced for empty data", () => {
     const result = calculateBoardgameType({ entries: [], games: [] })
     expect(result.id).toBe("balanced")
-    expect(result.scores.strategy).toBe(20)
-    expect(result.scores.luck).toBe(20)
+    expect(result.scores.depth).toBe(33)
   })
 
-  it("returns pure-strategist for strategy-only heavy games (no luck, no interaction)", () => {
-    // Worker Placement + Abstract Strategy + Tile Placement with weight 5
-    // → strategy=100, luck=0, interaction=0 → pure-strategist
-    const entries = [makeEntry("g1")]
-    const games = [makeGame("g1", { weight: 5, mechanics: "Worker Placement, Abstract Strategy, Tile Placement" })]
-    const result = calculateBoardgameType({ entries, games })
-    expect(result.id).toBe("pure-strategist")
-    expect(result.scores.strategy).toBeGreaterThanOrEqual(65)
-    expect(result.scores.luck).toBeLessThanOrEqual(35)
-    expect(result.scores.interaction).toBeLessThanOrEqual(40)
-  })
-
-  it("returns strategic-player when strategy is primary and interaction is significant", () => {
-    // Worker Placement + Abstract Strategy + Tile Placement (strategy) + Area Control + Take That (interaction)
-    // strategy=100, interaction≈72 → strategy primary, interaction>=45 → strategic-player
-    const entries = [makeEntry("g1")]
-    const games = [makeGame("g1", {
-      weight: 3,
-      mechanics: "Worker Placement, Abstract Strategy, Tile Placement, Area Control, Take That",
-    })]
-    const result = calculateBoardgameType({ entries, games })
-    expect(result.id).toBe("strategic-player")
-    expect(result.scores.strategy).toBeGreaterThan(result.scores.interaction)
-    expect(result.scores.interaction).toBeGreaterThanOrEqual(45)
-  })
-
-  it("returns engine-builder when strategy is primary but neither pure nor interactive", () => {
-    // Engine Building + Deck Building + Resource Management + some luck mechanics
-    // → strategy primary, luck too high for pure-strategist, interaction low → engine-builder
-    const entries = [makeEntry("g1")]
-    const games = [makeGame("g1", {
-      mechanics: "Engine Building, Deck Building, Resource Management, Random Production, Chit-Pull System",
-    })]
-    const result = calculateBoardgameType({ entries, games })
-    expect(result.id).toBe("engine-builder")
-    expect(result.scores.strategy).toBeGreaterThan(result.scores.luck)
-  })
-
-  it("returns negotiator when interaction is primary and party is low", () => {
-    // Area Control + Negotiation + Take That (interaction) + Worker Placement + Tile Placement (strategy)
-    // interaction=100, strategy≈55, party≈7 → interaction primary, party<45 → negotiator
-    const entries = [makeEntry("g1")]
-    const games = [makeGame("g1", {
-      weight: 3,
-      mechanics: "Area Control, Negotiation, Take That, Worker Placement, Tile Placement",
-    })]
-    const result = calculateBoardgameType({ entries, games })
-    expect(result.id).toBe("negotiator")
-    expect(result.scores.interaction).toBeGreaterThan(result.scores.party)
-  })
-
-  it("returns trickster when interaction is primary and party is significant", () => {
-    // Area Control + Bluffing + Hidden Roles + Social Deduction
-    // interaction=100, party≈54 → interaction primary, party>=45 → trickster
-    const entries = [makeEntry("g1")]
-    const games = [makeGame("g1", { mechanics: "Area Control, Bluffing, Hidden Roles, Social Deduction" })]
-    const result = calculateBoardgameType({ entries, games })
-    expect(result.id).toBe("trickster")
-    expect(result.scores.interaction).toBeGreaterThanOrEqual(65)
-    expect(result.scores.party).toBeGreaterThanOrEqual(45)
-  })
-
-  it("returns party-maker when party is primary and interaction is moderate", () => {
-    // Acting + Role Playing + Storytelling + Cooperative + Team-Based
-    // party=100, interaction≈53 → party primary, luck<40, interaction>=35 → party-maker
-    const entries = [makeEntry("g1")]
-    const games = [makeGame("g1", {
-      weight: 1,
-      mechanics: "Acting, Role Playing, Storytelling, Cooperative Game, Team-Based Game",
-    })]
-    const result = calculateBoardgameType({ entries, games })
-    expect(result.id).toBe("party-maker")
-    expect(result.scores.party).toBeGreaterThan(result.scores.luck)
-    expect(result.scores.interaction).toBeGreaterThanOrEqual(35)
-  })
-
-  it("returns gambler when luck is primary and party is low", () => {
-    // Dice Rolling + Push Your Luck + Roll/Spin → luck=100, party=0 → gambler
-    const entries = [makeEntry("g1")]
-    const games = [makeGame("g1", {
-      weight: 1,
-      mechanics: "Dice Rolling, Push Your Luck, Roll / Spin and Move",
-    })]
-    const result = calculateBoardgameType({ entries, games })
-    expect(result.id).toBe("gambler")
-    expect(result.scores.luck).toBeGreaterThan(result.scores.party)
-  })
-
-  it("returns speed-player when speed is primary", () => {
-    // Real-Time + Speed Matching + Pattern Recognition → speed=100 → speed-player
-    const entries = [makeEntry("g1")]
-    const games = [makeGame("g1", {
-      weight: 1,
-      mechanics: "Real-Time, Speed Matching, Pattern Recognition",
-    })]
-    const result = calculateBoardgameType({ entries, games })
-    expect(result.id).toBe("speed-player")
-    expect(result.scores.speed).toBeGreaterThan(result.scores.strategy)
-  })
-
-  it("returns casual when party is primary and luck is significant", () => {
-    // Dice Rolling + Push Your Luck + Acting + Role Playing + Storytelling
-    // party=100, luck≈54 → party primary, luck>=40 → casual
-    const entries = [makeEntry("g1")]
-    const games = [makeGame("g1", {
-      mechanics: "Dice Rolling, Push Your Luck, Acting, Role Playing, Storytelling",
-    })]
-    const result = calculateBoardgameType({ entries, games })
-    expect(result.id).toBe("casual")
-    expect(result.scores.luck).toBeGreaterThanOrEqual(40)
-    expect(result.scores.party).toBeGreaterThan(result.scores.strategy)
-  })
-
-  it("returns casual when luck is primary and party is significant", () => {
-    // Gambler-adjacent but with strong party element
-    // Dice Rolling + Push Your Luck + Trivia + Acting → luck primary, party≈high → casual
-    const entries = [makeEntry("g1")]
-    const games = [makeGame("g1", {
-      weight: 1,
-      mechanics: "Dice Rolling, Push Your Luck, Roll / Spin and Move, Trivia, Acting",
-    })]
-    const result = calculateBoardgameType({ entries, games })
-    expect(result.id).toBe("casual")
-    expect(result.scores.luck).toBeGreaterThanOrEqual(40)
-  })
-
-  it("returns balanced when no axis is dominant (diverse play across all axes)", () => {
-    // 5 different games each from a different axis — 1 session each
-    // Weighted average of per-game profiles: each axis gets ~20, primary < 30 → balanced
-    const entries = Array.from({ length: 5 }, (_, i) => makeEntry(`g${i}`, 1))
-    const games = [
-      makeGame("g0", { mechanics: "Worker Placement" }),
-      makeGame("g1", { mechanics: "Dice Rolling" }),
-      makeGame("g2", { mechanics: "Area Control" }),
-      makeGame("g3", { mechanics: "Storytelling" }),
-      makeGame("g4", { mechanics: "Real-Time" }),
-    ]
-    const result = calculateBoardgameType({ entries, games })
-    expect(result.id).toBe("balanced")
-  })
-
-  it("sparse data (single mechanic) gives a dominant axis — no longer falls through to balanced", () => {
-    // Per-game normalization: single mechanic gives 100 to the dominant axis
-    // Deck Building → ENGINE → strategy=100 → engine-builder (or pure-strategist)
-    const entries = [makeEntry("g1")]
-    const games = [makeGame("g1", { mechanics: "Deck Building" })]
-    const result = calculateBoardgameType({ entries, games })
-    expect(result.id).not.toBe("balanced")
-    expect(result.scores.strategy).toBe(100)
+  it("has valid structural fields", () => {
+    const result = calculateBoardgameType({
+      entries: [makeEntry("g1")],
+      games: [makeGame("g1", { mechanics: "Worker Placement" })],
+    })
+    expect(result).toHaveProperty("id")
+    expect(result).toHaveProperty("name")
+    expect(result).toHaveProperty("icon")
+    expect(result).toHaveProperty("tagline")
+    expect(result).toHaveProperty("description")
+    expect(result.scores).toHaveProperty("depth")
+    expect(result.scores).toHaveProperty("competition")
+    expect(result.scores).toHaveProperty("chaos")
   })
 
   it("all scores are in range 0-100", () => {
@@ -183,63 +50,252 @@ describe("calculateBoardgameType", () => {
     }
   })
 
-  it("has valid structural fields without subType", () => {
-    const entries = [makeEntry("g1")]
-    const games = [makeGame("g1", { mechanics: "Worker Placement" })]
-    const result = calculateBoardgameType({ entries, games })
-    expect(result).toHaveProperty("id")
-    expect(result).toHaveProperty("name")
-    expect(result).toHaveProperty("icon")
-    expect(result).toHaveProperty("tagline")
-    expect(result).toHaveProperty("description")
-    expect(result).not.toHaveProperty("subType")
-    expect(result).not.toHaveProperty("subTypeId")
-    expect(result.scores).toHaveProperty("strategy")
-    expect(result.scores).toHaveProperty("luck")
-    expect(result.scores).toHaveProperty("interaction")
-    expect(result.scores).toHaveProperty("party")
-    expect(result.scores).toHaveProperty("speed")
-  })
-
-  it("weight correction: heavier games suppress speed relative to strategy", () => {
-    // With both strategy and speed mechanics, weight shifts the balance:
-    // heavy → strategy raw up, speed raw down → speed score lower after normalization
-    const sameGame = { mechanics: "Worker Placement, Real-Time" }
-    const heavy = calculateBoardgameType({
-      entries: [makeEntry("g1")],
-      games: [makeGame("g1", { weight: 5, ...sameGame })],
-    })
-    const light = calculateBoardgameType({
-      entries: [makeEntry("g2")],
-      games: [makeGame("g2", { weight: 1, ...sameGame })],
-    })
-    // Both normalize strategy to 100 (primary axis), but heavy suppresses speed
-    expect(heavy.scores.speed).toBeLessThan(light.scores.speed)
-  })
-
-  it("session count weighting: frequently played game has more influence", () => {
-    const entries = [makeEntry("strategy", 10), makeEntry("luck", 1)]
-    const games = [
-      makeGame("strategy", { mechanics: "Worker Placement, Engine Building" }),
-      makeGame("luck", { mechanics: "Dice Rolling, Push Your Luck" }),
-    ]
-    const result = calculateBoardgameType({ entries, games })
-    expect(result.scores.strategy).toBeGreaterThan(result.scores.luck)
-  })
-
-  it("cooperative game contributes to both interaction and party", () => {
-    const entries = [makeEntry("g1")]
-    const games = [makeGame("g1", { mechanics: "Cooperative Game, Team-Based Game" })]
-    const result = calculateBoardgameType({ entries, games })
-    expect(result.scores.interaction).toBeGreaterThan(0)
-    expect(result.scores.party).toBeGreaterThan(0)
-  })
-
   it("unknown mechanics are ignored gracefully", () => {
     const entries = [makeEntry("g1")]
     const games = [makeGame("g1", { mechanics: "NonExistentMechanic123, AnotherFake456" })]
     expect(() => calculateBoardgameType({ entries, games })).not.toThrow()
     const result = calculateBoardgameType({ entries, games })
     expect(result.id).toBeDefined()
+  })
+
+  // ============================================================
+  // Depth 軸（深さ・重さ）
+  // ============================================================
+
+  it("heavy game (weight=5) has high depth score", () => {
+    const result = calculateBoardgameType({
+      entries: [makeEntry("g1")],
+      games: [makeGame("g1", { weight: 5, mechanics: "Worker Placement, Engine Building" })],
+    })
+    expect(result.scores.depth).toBeGreaterThanOrEqual(80)
+  })
+
+  it("light game (weight=1) has low depth score", () => {
+    const result = calculateBoardgameType({
+      entries: [makeEntry("g1")],
+      games: [makeGame("g1", { weight: 1, mechanics: "Dice Rolling" })],
+    })
+    expect(result.scores.depth).toBeLessThanOrEqual(30)
+  })
+
+  it("weight is primary signal for depth — heavier game has higher depth than lighter game with same mechanics", () => {
+    const heavy = calculateBoardgameType({
+      entries: [makeEntry("g1")],
+      games: [makeGame("g1", { weight: 5, mechanics: "Worker Placement" })],
+    })
+    const light = calculateBoardgameType({
+      entries: [makeEntry("g2")],
+      games: [makeGame("g2", { weight: 1, mechanics: "Worker Placement" })],
+    })
+    expect(heavy.scores.depth).toBeGreaterThan(light.scores.depth)
+  })
+
+  // ============================================================
+  // Competition 軸（対戦性）
+  // ============================================================
+
+  it("competitive game (Area Control + Negotiation) has high competition score", () => {
+    const result = calculateBoardgameType({
+      entries: [makeEntry("g1")],
+      games: [makeGame("g1", { mechanics: "Area Control, Negotiation, Take That" })],
+    })
+    expect(result.scores.competition).toBeGreaterThanOrEqual(80)
+  })
+
+  it("cooperative game (Cooperative Game + Team-Based) has low competition score", () => {
+    const result = calculateBoardgameType({
+      entries: [makeEntry("g1")],
+      games: [makeGame("g1", { mechanics: "Cooperative Game, Team-Based Game" })],
+    })
+    expect(result.scores.competition).toBeLessThanOrEqual(30)
+  })
+
+  it("neutral game (no interaction mechanics) has competition near 50", () => {
+    const result = calculateBoardgameType({
+      entries: [makeEntry("g1")],
+      games: [makeGame("g1", { mechanics: "Deck Building, Resource Management" })],
+    })
+    expect(result.scores.competition).toBeGreaterThanOrEqual(35)
+    expect(result.scores.competition).toBeLessThanOrEqual(65)
+  })
+
+  // ============================================================
+  // Chaos 軸（カオス度）
+  // ============================================================
+
+  it("luck-heavy game has high chaos score", () => {
+    const result = calculateBoardgameType({
+      entries: [makeEntry("g1")],
+      games: [makeGame("g1", { mechanics: "Dice Rolling, Push Your Luck, Roll / Spin and Move" })],
+    })
+    expect(result.scores.chaos).toBeGreaterThanOrEqual(80)
+  })
+
+  it("pure strategy game has low chaos score", () => {
+    const result = calculateBoardgameType({
+      entries: [makeEntry("g1")],
+      games: [makeGame("g1", { weight: 4, mechanics: "Worker Placement, Abstract Strategy, Tile Placement" })],
+    })
+    expect(result.scores.chaos).toBeLessThanOrEqual(25)
+  })
+
+  // ============================================================
+  // タイプ分類
+  // ============================================================
+
+  it("returns cooperative when cooperative mechanics dominate", () => {
+    const result = calculateBoardgameType({
+      entries: [makeEntry("g1")],
+      games: [makeGame("g1", { weight: 3, mechanics: "Cooperative Game, Team-Based Game, Hand Management" })],
+    })
+    expect(result.id).toBe("cooperative")
+    expect(result.scores.competition).toBeLessThanOrEqual(28)
+  })
+
+  it("returns gambler for luck-heavy games", () => {
+    const result = calculateBoardgameType({
+      entries: [makeEntry("g1")],
+      games: [makeGame("g1", { weight: 1, mechanics: "Dice Rolling, Push Your Luck, Roll / Spin and Move" })],
+    })
+    expect(result.id).toBe("gambler")
+    expect(result.scores.chaos).toBeGreaterThanOrEqual(72)
+  })
+
+  it("returns heavy-strategist for heavy competitive strategy", () => {
+    // Weight 5 + strategy + competition
+    const result = calculateBoardgameType({
+      entries: [makeEntry("g1")],
+      games: [makeGame("g1", {
+        weight: 5,
+        mechanics: "Worker Placement, Abstract Strategy, Area Control, Take That",
+      })],
+    })
+    expect(result.id).toBe("heavy-strategist")
+    expect(result.scores.depth).toBeGreaterThanOrEqual(60)
+  })
+
+  it("returns engine-builder for heavy low-competition strategy", () => {
+    // Heavy deck/engine building without competition
+    const result = calculateBoardgameType({
+      entries: [makeEntry("g1")],
+      games: [makeGame("g1", {
+        weight: 4,
+        mechanics: "Deck Building, Engine Building, Resource Management",
+      })],
+    })
+    expect(result.id).toBe("engine-builder")
+    expect(result.scores.depth).toBeGreaterThanOrEqual(60)
+    expect(result.scores.competition).toBeLessThan(55)
+  })
+
+  it("returns negotiator for high-competition low-chaos medium games", () => {
+    const result = calculateBoardgameType({
+      entries: [makeEntry("g1")],
+      games: [makeGame("g1", {
+        weight: 3,
+        mechanics: "Negotiation, Area Control, Trading, Worker Placement",
+      })],
+    })
+    expect(result.id).toBe("negotiator")
+    expect(result.scores.competition).toBeGreaterThanOrEqual(68)
+    expect(result.scores.chaos).toBeLessThanOrEqual(45)
+  })
+
+  it("returns trickster for social deduction / bluffing games", () => {
+    const result = calculateBoardgameType({
+      entries: [makeEntry("g1")],
+      games: [makeGame("g1", {
+        mechanics: "Social Deduction, Hidden Roles, Bluffing, Area Control",
+      })],
+    })
+    expect(result.id).toBe("trickster")
+    expect(result.scores.competition).toBeGreaterThanOrEqual(62)
+  })
+
+  it("returns party-master for light party/social games", () => {
+    // Mix of light party games: word, physical, social
+    const entries = [
+      makeEntry("g1"), makeEntry("g2"), makeEntry("g3"),
+      makeEntry("g4"), makeEntry("g5"), makeEntry("g6"),
+    ]
+    const games = [
+      makeGame("g1", { weight: 1, mechanics: "Memory, Pattern Recognition" }),        // speed/reaction
+      makeGame("g2", { weight: 1, mechanics: "Real-Time, Speed Matching, Pattern Recognition" }), // speed
+      makeGame("g3", { weight: 1, mechanics: "Social Deduction" }),                   // social
+      makeGame("g4", { weight: 1, mechanics: "Bluffing" }),                           // bluffing
+      makeGame("g5", { weight: 1, mechanics: "Word Game" }),                          // word
+      makeGame("g6", { weight: 1, mechanics: "Physical" }),                           // physical
+    ]
+    const result = calculateBoardgameType({ entries, games })
+    expect(result.id).toBe("party-master")
+    expect(result.scores.depth).toBeLessThanOrEqual(40)
+  })
+
+  it("returns casual for light low-chaos games", () => {
+    const result = calculateBoardgameType({
+      entries: [makeEntry("g1")],
+      games: [makeGame("g1", { weight: 1.5, mechanics: "Set Collection, Hand Management" })],
+    })
+    expect(result.id).toBe("casual")
+    expect(result.scores.depth).toBeLessThanOrEqual(45)
+    expect(result.scores.chaos).toBeLessThanOrEqual(55)
+  })
+
+  it("returns balanced for diverse play across all axes", () => {
+    // heavy strategy + light luck + interaction + cooperative + mid-weight luck
+    // → depth≈45, competition≈50, chaos≈60 — avoids all type conditions
+    const entries = Array.from({ length: 5 }, (_, i) => makeEntry(`g${i}`, 1))
+    const games = [
+      makeGame("g0", { weight: 4, mechanics: "Worker Placement" }),
+      makeGame("g1", { weight: 1, mechanics: "Dice Rolling" }),
+      makeGame("g2", { mechanics: "Area Control" }),
+      makeGame("g3", { mechanics: "Cooperative Game" }),
+      makeGame("g4", { weight: 2, mechanics: "Push Your Luck" }),
+    ]
+    const result = calculateBoardgameType({ entries, games })
+    expect(result.id).toBe("balanced")
+  })
+
+  // ============================================================
+  // 重み付けと評価
+  // ============================================================
+
+  it("session count weighting: frequently played game has more influence", () => {
+    // strategy game played 10x vs luck game played 1x
+    const entries = [makeEntry("strategy", 10), makeEntry("luck", 1)]
+    const games = [
+      makeGame("strategy", { weight: 4, mechanics: "Worker Placement, Engine Building" }),
+      makeGame("luck", { weight: 1, mechanics: "Dice Rolling, Push Your Luck" }),
+    ]
+    const result = calculateBoardgameType({ entries, games })
+    // Strategy-dominant → low chaos, high depth
+    expect(result.scores.chaos).toBeLessThan(result.scores.depth)
+  })
+
+  it("high rating increases game influence on player profile", () => {
+    const highRated = calculateBoardgameType({
+      entries: [makeEntry("strategy", 2, 5), makeEntry("luck", 2, 1)],
+      games: [
+        makeGame("strategy", { weight: 4, mechanics: "Worker Placement, Engine Building" }),
+        makeGame("luck", { weight: 1, mechanics: "Dice Rolling, Push Your Luck, Roll / Spin and Move" }),
+      ],
+    })
+    const equalRated = calculateBoardgameType({
+      entries: [makeEntry("strategy", 2, 3), makeEntry("luck", 2, 3)],
+      games: [
+        makeGame("strategy", { weight: 4, mechanics: "Worker Placement, Engine Building" }),
+        makeGame("luck", { weight: 1, mechanics: "Dice Rolling, Push Your Luck, Roll / Spin and Move" }),
+      ],
+    })
+    // High-rating-strategy player should have lower chaos (more strategy-leaning)
+    expect(highRated.scores.chaos).toBeLessThan(equalRated.scores.chaos)
+  })
+
+  it("returns balanced when all games are unmapped", () => {
+    const result = calculateBoardgameType({
+      entries: [makeEntry("g1")],
+      games: [makeGame("g1", { mechanics: "NonExistent1, NonExistent2" })],
+    })
+    expect(result.id).toBe("balanced")
   })
 })

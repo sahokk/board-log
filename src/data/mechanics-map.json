@@ -58,9 +58,9 @@
   "Hidden Movement":               { "INTERACTION": 2, "SOCIAL": 1 },
   "Prisoner's Dilemma":            { "INTERACTION": 2, "SOCIAL": 1 },
 
-  "Cooperative Game":              { "SOCIAL": 3 },
-  "Semi-Cooperative Game":         { "SOCIAL": 2, "INTERACTION": 1 },
-  "Team-Based Game":               { "SOCIAL": 3 },
+  "Cooperative Game":              { "COOP": 3 },
+  "Semi-Cooperative Game":         { "COOP": 2, "INTERACTION": 1 },
+  "Team-Based Game":               { "COOP": 3 },
   "Social Deduction":              { "SOCIAL": 3, "INTERACTION": 1 },
   "Bluffing":                      { "SOCIAL": 3 },
   "Hidden Roles":                  { "SOCIAL": 3, "INTERACTION": 1 },
