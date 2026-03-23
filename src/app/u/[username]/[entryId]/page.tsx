@@ -225,7 +225,7 @@ export default async function PublicGameDetailPage({ params }: Props) {
               emptyRedirectPath={`/u/${username}`}
             />
           )}
-          {entry.sessions.length > 0 && !isOwner && (
+          {entry.sessions.length > 0 && !isOwner && session?.user?.id && (
             <div className="space-y-3">
               {entry.sessions.map((s) => (
                 <div key={s.id} className="wood-card rounded-2xl p-4 shadow-sm">
