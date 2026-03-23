@@ -74,7 +74,7 @@ export default async function Home() {
             <h2 className="text-2xl font-bold tracking-tight text-amber-950">ゲームを探す</h2>
             <p className="mt-1 text-sm text-amber-800/70">遊んだゲームを登録しよう</p>
           </div>
-          <GameSearchSection />
+          <GameSearchSection username={me?.username ?? null} />
         </section>
 
         {/* おすすめゲーム */}
