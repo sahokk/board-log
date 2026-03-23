@@ -81,20 +81,22 @@ const INTERMEDIATE_TO_BOARDORY: Record<IntermediateCategory, Partial<Record<Boar
 }
 
 // ============================================================
-// タイプ分類ルール（優先順位順）
-// 条件を満たした最初のエントリが採用される
+// タイプ分類（支配軸ファーストロジック）
+//
+// 正規化後に最大値が常に100になる特性を活かし、
+// 「どの軸が支配的か」を最初に決定してからサブ分類する。
+//
+// balanced 判定:
+//   上位3軸がすべて高い（secondScore>=65 && thirdScore>=45）場合、
+//   特定のプレイスタイルに偏っていないとみなす。
+//
+// 各支配軸のサブ分類:
+//   strategy → pure-strategist / strategic-player / engine-builder
+//   interaction → trickster / negotiator
+//   party → casual / party-maker / casual
+//   luck → casual / gambler
+//   speed → speed-player
 // ============================================================
-const TYPE_RULES: { id: string; match: (s: BoardgameScores) => boolean }[] = [
-  { id: "pure-strategist",  match: (s) => s.strategy >= 75 && s.luck <= 30 && s.speed <= 40 },
-  { id: "strategic-player", match: (s) => s.strategy >= 70 && s.interaction >= 50 && s.luck <= 40 },
-  { id: "engine-builder",   match: (s) => s.strategy >= 65 && s.speed <= 40 && s.interaction <= 60 },
-  { id: "negotiator",       match: (s) => s.interaction >= 70 && s.strategy >= 40 && s.party <= 60 },
-  { id: "trickster",        match: (s) => s.interaction >= 65 && s.party >= 50 && s.strategy <= 60 },
-  { id: "party-maker",      match: (s) => s.party >= 70 && s.interaction >= 50 },
-  { id: "gambler",          match: (s) => s.luck >= 70 && s.strategy <= 50 },
-  { id: "speed-player",     match: (s) => s.speed >= 70 && s.strategy <= 60 },
-  { id: "casual",           match: (s) => s.luck >= 50 && s.party >= 50 && s.strategy <= 50 },
-]
 
 // ============================================================
 // スコア計算
@@ -168,7 +170,43 @@ function toRawScores(
 }
 
 function determineType(scores: BoardgameScores): string {
-  return TYPE_RULES.find((r) => r.match(scores))?.id ?? "balanced"
+  // 全軸を降順ソート（最大値=100が先頭）
+  const axes: [BoardoryAxis, number][] = [
+    ["strategy",    scores.strategy],
+    ["interaction", scores.interaction],
+    ["party",       scores.party],
+    ["luck",        scores.luck],
+    ["speed",       scores.speed],
+  ]
+  const sorted = axes.toSorted((a, b) => b[1] - a[1])
+
+  const primary    = sorted[0][0]
+  const secondScore = sorted[1][1]
+  const thirdScore  = sorted[2][1]
+
+  // 上位3軸が均等なら balanced（特定スタイルへの偏りなし）
+  if (secondScore >= 65 && thirdScore >= 45) return "balanced"
+
+  switch (primary) {
+    case "strategy":
+      if (scores.luck <= 35 && scores.interaction <= 40) return "pure-strategist"
+      if (scores.interaction >= 45) return "strategic-player"
+      return "engine-builder"
+    case "interaction":
+      if (scores.party >= 45) return "trickster"
+      return "negotiator"
+    case "party":
+      if (scores.luck >= 40) return "casual"
+      if (scores.interaction >= 35) return "party-maker"
+      return "casual"
+    case "luck":
+      if (scores.party >= 45) return "casual"
+      return "gambler"
+    case "speed":
+      return "speed-player"
+    default:
+      return "balanced"
+  }
 }
 
 function buildResult(typeId: string, scores: BoardgameScores): BoardgameType {
@@ -197,7 +235,7 @@ export function calculateBoardgameType(data: BoardgameTypeInput): BoardgameType 
   const rawScores = toRawScores(intermediateSum, totalSessions, totalWeightedWeight, totalWeightSessions)
 
   const maxRaw = Math.max(...Object.values(rawScores), 0)
-  const scale = maxRaw > 14 ? 100 / maxRaw : 7
+  const scale = maxRaw > 0 ? 100 / maxRaw : 1
 
   const scores: BoardgameScores = {
     strategy:    clamp100(rawScores.strategy    * scale),
