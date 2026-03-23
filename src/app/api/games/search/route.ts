@@ -22,13 +22,16 @@ export async function GET(request: NextRequest) {
   }
 
   const trimmed = query.trim()
+  const offset = Math.max(0, Number.parseInt(request.nextUrl.searchParams.get("offset") ?? "0", 10))
 
   try {
-    // 1. ローカルDB検索
-    const localGames = await prisma.game.findMany({
-      where: { name: { contains: trimmed, mode: "insensitive" } },
-      take: 20,
-    })
+    // 1. ローカルDB検索（offset=0のみ）
+    const localGames = offset === 0
+      ? await prisma.game.findMany({
+          where: { name: { contains: trimmed, mode: "insensitive" } },
+          take: 20,
+        })
+      : []
 
     const localResults: GameResult[] = localGames.map((g) => ({
       id: g.id,
@@ -43,10 +46,12 @@ export async function GET(request: NextRequest) {
 
     // 2. BGG検索（graceful fallback）
     let bggResults: GameResult[] = []
+    let bggTotal = 0
     try {
       const searchResults = await searchBggGames(trimmed)
-      if (searchResults.length > 0) {
-        const ids = searchResults.slice(0, 20).map((r) => r.id)
+      bggTotal = searchResults.length
+      if (searchResults.length > offset) {
+        const ids = searchResults.slice(offset, offset + 20).map((r) => r.id)
         const details = await getBggGameDetails(ids)
 
         const upserted = await Promise.all(
@@ -107,7 +112,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ games: merged })
+    return NextResponse.json({ games: merged, bggTotal, bggOffset: offset })
   } catch (error) {
     console.error("Game search error:", error)
     return NextResponse.json({ error: "Search failed" }, { status: 500 })

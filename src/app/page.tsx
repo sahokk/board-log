@@ -59,7 +59,7 @@ export default async function Home() {
               >
                 はじめる
               </Link>
-              <Link href="/try" className="text-sm text-amber-700 underline underline-offset-2 hover:text-amber-900">
+              <Link href="/shindan" className="text-sm text-amber-700 underline underline-offset-2 hover:text-amber-900">
                 ログインなしで診断・名刺を試す →
               </Link>
             </div>

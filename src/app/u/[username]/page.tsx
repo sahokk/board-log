@@ -10,6 +10,8 @@ import { GameImage } from "@/components/GameImage"
 import { TitleBadges } from "@/components/TitleBadges"
 import { MechanicTag } from "@/components/MechanicTag"
 import { BoardgameTypeCard } from "@/components/BoardgameTypeCard"
+import { TypeRecommendedGames } from "@/components/TypeRecommendedGames"
+import { getTypeRecommendedGames } from "@/lib/recommendations"
 import type { Metadata } from "next"
 
 interface Props {
@@ -114,7 +116,7 @@ export default async function PublicProfilePage({ params }: Props) {
 
   // ボドゲタイプ
   const boardgameType = calculateBoardgameType({
-    entries: entries.map((e) => ({ gameId: e.gameId, sessionCount: e._count.sessions })),
+    entries: entries.map((e) => ({ gameId: e.gameId, sessionCount: e._count.sessions, rating: e.rating })),
     games: entries.map((e) => ({
       gameId: e.gameId,
       weight: e.game.weight,
@@ -122,6 +124,7 @@ export default async function PublicProfilePage({ params }: Props) {
       mechanics: e.game.mechanics,
     })),
   })
+  const typeRecommendations = await getTypeRecommendedGames(boardgameType.id)
 
   const shareText = encodeURIComponent(displayName + "のボードゲームプロフィール🎲")
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://boardory.pekori.dev"
@@ -208,9 +211,14 @@ export default async function PublicProfilePage({ params }: Props) {
         </div>
 
         {/* Boardgame Type */}
-        <div className="mb-8">
+        <div className="mb-4">
           <BoardgameTypeCard type={boardgameType} />
         </div>
+        {typeRecommendations.length > 0 && (
+          <div className="mb-8">
+            <TypeRecommendedGames games={typeRecommendations} />
+          </div>
+        )}
 
         {/* 称号 */}
         <div className="mb-12">

@@ -1,6 +1,76 @@
 import { prisma } from "@/lib/prisma"
 import { translateMechanic } from "@/lib/bgg/translations"
 import { MECHANICS_MAP } from "@/lib/boardgame-type"
+import { getBggGameDetails } from "@/lib/bgg/client"
+import rawTypeRecommendations from "@/data/type-recommendations.json"
+
+const TYPE_RECOMMENDATIONS = rawTypeRecommendations as Record<
+  string,
+  { bggId: string; nameEn: string; nameJa: string }[]
+>
+
+export interface TypeRecommendedGame {
+  bggId: string
+  nameEn: string
+  nameJa: string
+  id?: string
+  imageUrl?: string | null
+}
+
+export async function getTypeRecommendedGames(typeId: string): Promise<TypeRecommendedGame[]> {
+  const statics = TYPE_RECOMMENDATIONS[typeId] ?? []
+  if (statics.length === 0) return []
+
+  const bggIds = statics.map((g) => g.bggId)
+  const dbGames = await prisma.game.findMany({
+    where: { bggId: { in: bggIds } },
+    select: { id: true, bggId: true, imageUrl: true },
+  })
+
+  const dbMap = new Map(dbGames.map((g) => [g.bggId, g]))
+
+  // DBにないゲームはBGGから取得してupsert
+  const missingBggIds = bggIds.filter((id) => !dbMap.has(id))
+  if (missingBggIds.length > 0) {
+    try {
+      const details = await getBggGameDetails(missingBggIds)
+      const upserted = await Promise.all(
+        details.map((d) =>
+          prisma.game.upsert({
+            where: { bggId: d.id },
+            update: { imageUrl: d.imageUrl ?? null },
+            create: {
+              bggId: d.id,
+              name: d.name,
+              nameJa: d.nameJa ?? null,
+              imageUrl: d.imageUrl ?? null,
+              categories: d.categories.length > 0 ? d.categories.join(",") : null,
+              mechanics: d.mechanics.length > 0 ? d.mechanics.join(",") : null,
+              weight: d.weight ?? null,
+              playingTime: d.playingTime ?? null,
+              minPlayers: d.minPlayers ?? null,
+              maxPlayers: d.maxPlayers ?? null,
+            },
+            select: { id: true, bggId: true, imageUrl: true },
+          })
+        )
+      )
+      for (const g of upserted) {
+        if (g.bggId) dbMap.set(g.bggId, g)
+      }
+    } catch {
+      // BGG API不可でも静的データのみで返す
+    }
+  }
+
+  return statics.map((s) => ({
+    bggId: s.bggId,
+    nameEn: s.nameEn,
+    nameJa: s.nameJa,
+    id: dbMap.get(s.bggId)?.id,
+    imageUrl: dbMap.get(s.bggId)?.imageUrl,
+  }))
+}
 
 export interface RecommendedGame {
   id: string

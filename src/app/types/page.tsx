@@ -53,7 +53,7 @@ export default function TypesPage() {
             プレイ記録から5つの軸を算出し、10種類のタイプに分類します
           </p>
           <Link
-            href="/try"
+            href="/shindan"
             className="mt-5 inline-block rounded-xl bg-amber-900 px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800"
           >
             いますぐ診断する →
@@ -107,7 +107,7 @@ export default function TypesPage() {
           </p>
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link
-              href="/try"
+              href="/shindan"
               className="rounded-xl border border-amber-300 bg-amber-50 px-6 py-2.5 text-sm font-medium text-amber-900 transition-all hover:bg-amber-100"
             >
               ログインなしで試す

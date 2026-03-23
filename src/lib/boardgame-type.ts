@@ -2,7 +2,11 @@
 // Boardory 診断ロジック
 //
 // 処理フロー:
-//   mechanics → 中間カテゴリ → Boardoryスコア(5軸) → タイプ分類
+//   1. ゲームごとに mechanics → 中間カテゴリ → Boardoryスコア(5軸) を計算
+//   2. ゲームの最高軸=100になるよう正規化（ゲームプロファイル）
+//   3. sessionCount × ratingFactor で重み付けした加重平均を求める
+//   4. 0-100の自然な比率としてプレイヤースコアになる
+//   5. 支配軸ファーストロジックでタイプを分類
 //
 // パラメータデータは src/data/ 以下の JSON で管理:
 //   type-definitions.json  — 10種類のタイプ定義
@@ -42,7 +46,7 @@ export interface BoardgameType {
 }
 
 export interface BoardgameTypeInput {
-  entries: { gameId: string; sessionCount: number }[]
+  entries: { gameId: string; sessionCount: number; rating?: number | null }[]
   games: {
     gameId: string
     weight: number | null
@@ -80,97 +84,156 @@ const INTERMEDIATE_TO_BOARDORY: Record<IntermediateCategory, Partial<Record<Boar
   CONTROL:     { strategy: 2 },
 }
 
-// ============================================================
-// タイプ分類（支配軸ファーストロジック）
-//
-// 正規化後に最大値が常に100になる特性を活かし、
-// 「どの軸が支配的か」を最初に決定してからサブ分類する。
-//
-// balanced 判定:
-//   上位3軸がすべて高い（secondScore>=65 && thirdScore>=45）場合、
-//   特定のプレイスタイルに偏っていないとみなす。
-//
-// 各支配軸のサブ分類:
-//   strategy → pure-strategist / strategic-player / engine-builder
-//   interaction → trickster / negotiator
-//   party → casual / party-maker / casual
-//   luck → casual / gambler
-//   speed → speed-player
-// ============================================================
-
-// ============================================================
-// スコア計算
-// ============================================================
-
-function clamp100(v: number): number {
-  return Math.round(Math.min(100, Math.max(0, v)))
+// BGGカテゴリ → Boardoryスコア変換テーブル（メカニクスが未知のゲーム向けフォールバック）
+const CATEGORIES_AXIS: Partial<Record<string, Partial<Record<BoardoryAxis, number>>>> = {
+  "Abstract Strategy": { strategy: 100 },
+  "Party Game":        { party: 100 },
+  "Children's Game":   { luck: 60, speed: 40 },
+  "Economic":          { strategy: 70 },
+  "Wargame":           { strategy: 60, interaction: 40 },
+  "Negotiation":       { interaction: 80 },
+  "Deduction":         { strategy: 50, interaction: 50 },
+  "Dice":              { luck: 100 },
+  "Real-time":         { speed: 100 },
+  "Trivia":            { party: 70, luck: 30 },
+  "Word Game":         { party: 80, speed: 20 },
 }
 
-function accumulateIntermediates(
-  entries: BoardgameTypeInput["entries"],
-  gameMap: Map<string, BoardgameTypeInput["games"][number]>,
-) {
+// ============================================================
+// ゲームプロファイル計算（ゲームごとの正規化）
+// ============================================================
+
+// メカニクスとウェイトからゲームの生スコアを計算
+function computeGameRawAxes(
+  mechanics: string[],
+  weight: number | null,
+): Record<BoardoryAxis, number> {
   const intermediateSum: Record<IntermediateCategory, number> = {
     STRATEGY: 0, LUCK: 0, INTERACTION: 0, PARTY: 0,
     SPEED: 0, ENGINE: 0, SOCIAL: 0, CONTROL: 0,
   }
-  let totalSessions = 0
-  let totalWeightedWeight = 0
-  let totalWeightSessions = 0
 
-  for (const entry of entries) {
-    const game = gameMap.get(entry.gameId)
-    if (!game) continue
-
-    const { sessionCount } = entry
-    totalSessions += sessionCount
-
-    if (game.weight !== null) {
-      totalWeightedWeight += game.weight * sessionCount
-      totalWeightSessions += sessionCount
-    }
-
-    const mechanics = game.mechanics?.split(",").map((s) => s.trim()).filter(Boolean) ?? []
-    for (const mechanic of mechanics) {
-      const mapping = MECHANICS_MAP[mechanic]
-      if (!mapping) continue
-      for (const [cat, w] of Object.entries(mapping) as [IntermediateCategory, number][]) {
-        intermediateSum[cat] += w * sessionCount
-      }
+  for (const mechanic of mechanics) {
+    const mapping = MECHANICS_MAP[mechanic]
+    if (!mapping) continue
+    for (const [cat, w] of Object.entries(mapping) as [IntermediateCategory, number][]) {
+      intermediateSum[cat] += w
     }
   }
 
-  return { intermediateSum, totalSessions, totalWeightedWeight, totalWeightSessions }
-}
-
-function toRawScores(
-  intermediateSum: Record<IntermediateCategory, number>,
-  totalSessions: number,
-  totalWeightedWeight: number,
-  totalWeightSessions: number,
-): Record<BoardoryAxis, number> {
-  const rawScores: Record<BoardoryAxis, number> = {
+  const raw: Record<BoardoryAxis, number> = {
     strategy: 0, luck: 0, interaction: 0, party: 0, speed: 0,
   }
 
   for (const [cat, axisMap] of Object.entries(INTERMEDIATE_TO_BOARDORY) as [IntermediateCategory, Partial<Record<BoardoryAxis, number>>][]) {
-    const avg = totalSessions > 0 ? intermediateSum[cat] / totalSessions : 0
+    const total = intermediateSum[cat]
+    if (total === 0) continue
     for (const [axis, w] of Object.entries(axisMap) as [BoardoryAxis, number][]) {
-      rawScores[axis] += avg * w
+      raw[axis] += total * w
     }
   }
 
-  // weight補正: avgWeight 1〜5 → strategy ±2, speed ∓2
-  const avgWeight = totalWeightSessions > 0 ? totalWeightedWeight / totalWeightSessions : 3
-  const weightNorm = (avgWeight - 1) / 4
-  rawScores.strategy += weightNorm * 2
-  rawScores.speed    -= weightNorm * 2
+  // weight補正: BGG重量 1〜5 → strategy増加・speed減少
+  if (weight !== null) {
+    const weightNorm = (weight - 1) / 4 // 0 (軽い) 〜 1 (重い)
+    raw.strategy += weightNorm * 2
+    raw.speed    -= weightNorm * 2
+  }
 
-  return rawScores
+  // 負値をクランプ
+  for (const axis of Object.keys(raw) as BoardoryAxis[]) {
+    if (raw[axis] < 0) raw[axis] = 0
+  }
+
+  return raw
+}
+
+// ゲームプロファイルを構築（最高軸=100に正規化、マッピング不可なら null）
+function buildGameProfile(
+  mechanics: string[],
+  weight: number | null,
+  categories: string[],
+): Record<BoardoryAxis, number> | null {
+  const raw = computeGameRawAxes(mechanics, weight)
+  const maxRaw = Math.max(...Object.values(raw))
+
+  if (maxRaw > 0) {
+    const factor = 100 / maxRaw
+    return {
+      strategy:    Math.round(raw.strategy    * factor),
+      luck:        Math.round(raw.luck        * factor),
+      interaction: Math.round(raw.interaction * factor),
+      party:       Math.round(raw.party       * factor),
+      speed:       Math.round(raw.speed       * factor),
+    }
+  }
+
+  // メカニクスが未知のゲームはカテゴリでフォールバック
+  if (categories.length > 0) {
+    const catRaw: Record<BoardoryAxis, number> = {
+      strategy: 0, luck: 0, interaction: 0, party: 0, speed: 0,
+    }
+    for (const cat of categories) {
+      const axisMap = CATEGORIES_AXIS[cat]
+      if (!axisMap) continue
+      for (const [axis, w] of Object.entries(axisMap) as [BoardoryAxis, number][]) {
+        catRaw[axis] += w
+      }
+    }
+    const maxCat = Math.max(...Object.values(catRaw))
+    if (maxCat > 0) {
+      const factor = 100 / maxCat
+      return {
+        strategy:    Math.round(catRaw.strategy    * factor),
+        luck:        Math.round(catRaw.luck        * factor),
+        interaction: Math.round(catRaw.interaction * factor),
+        party:       Math.round(catRaw.party       * factor),
+        speed:       Math.round(catRaw.speed       * factor),
+      }
+    }
+  }
+
+  return null // マッピング不可、スキップ
+}
+
+// ============================================================
+// 評価による重み付けファクター
+// ============================================================
+
+function getRatingFactor(rating: number | null | undefined): number {
+  if (!rating) return 1
+  const factors: number[] = [0, 0.6, 0.8, 1, 1.2, 1.5]
+  return factors[rating] ?? 1
+}
+
+// ============================================================
+// タイプ分類（支配軸ファーストロジック）
+//
+// balanced 判定:
+//   primaryScore < 30: 支配軸が弱く全体的に均衡
+//   secondScore >= primaryScore * 0.75: 2位軸が近接し方向性が不明確
+//
+// 各支配軸のサブ分類:
+//   strategy → pure-strategist / strategic-player / engine-builder
+//   interaction → trickster / negotiator
+//   party → casual / party-maker
+//   luck → casual / gambler
+//   speed → speed-player
+// ============================================================
+
+function subtypeForStrategy(scores: BoardgameScores, p: number): string {
+  if (scores.luck <= p * 0.35 && scores.interaction <= p * 0.4) return "pure-strategist"
+  if (scores.interaction >= p * 0.45) return "strategic-player"
+  return "engine-builder"
+}
+
+function subtypeForParty(scores: BoardgameScores, p: number): string {
+  if (scores.luck >= p * 0.4) return "casual"
+  if (scores.interaction >= p * 0.35) return "party-maker"
+  return "casual"
 }
 
 function determineType(scores: BoardgameScores): string {
-  // 全軸を降順ソート（最大値=100が先頭）
   const axes: [BoardoryAxis, number][] = [
     ["strategy",    scores.strategy],
     ["interaction", scores.interaction],
@@ -180,32 +243,23 @@ function determineType(scores: BoardgameScores): string {
   ]
   const sorted = axes.toSorted((a, b) => b[1] - a[1])
 
-  const primary    = sorted[0][0]
-  const secondScore = sorted[1][1]
-  const thirdScore  = sorted[2][1]
+  const primary      = sorted[0][0]
+  const primaryScore = sorted[0][1]
+  const secondScore  = sorted[1][1]
 
-  // 上位3軸が均等なら balanced（特定スタイルへの偏りなし）
-  if (secondScore >= 65 && thirdScore >= 45) return "balanced"
+  // 支配軸がない（均衡）→ balanced
+  if (primaryScore < 30) return "balanced"
+
+  // 2位軸が近接（混合プレイヤー）→ balanced
+  if (secondScore >= primaryScore * 0.9) return "balanced"
 
   switch (primary) {
-    case "strategy":
-      if (scores.luck <= 35 && scores.interaction <= 40) return "pure-strategist"
-      if (scores.interaction >= 45) return "strategic-player"
-      return "engine-builder"
-    case "interaction":
-      if (scores.party >= 45) return "trickster"
-      return "negotiator"
-    case "party":
-      if (scores.luck >= 40) return "casual"
-      if (scores.interaction >= 35) return "party-maker"
-      return "casual"
-    case "luck":
-      if (scores.party >= 45) return "casual"
-      return "gambler"
-    case "speed":
-      return "speed-player"
-    default:
-      return "balanced"
+    case "strategy":    return subtypeForStrategy(scores, primaryScore)
+    case "interaction": return scores.party >= primaryScore * 0.45 ? "trickster" : "negotiator"
+    case "party":       return subtypeForParty(scores, primaryScore)
+    case "luck":        return scores.party >= primaryScore * 0.45 ? "casual" : "gambler"
+    case "speed":       return "speed-player"
+    default:            return "balanced"
   }
 }
 
@@ -221,6 +275,10 @@ function buildResult(typeId: string, scores: BoardgameScores): BoardgameType {
   }
 }
 
+// ============================================================
+// メイン関数
+// ============================================================
+
 export function calculateBoardgameType(data: BoardgameTypeInput): BoardgameType {
   const { entries, games } = data
 
@@ -229,20 +287,40 @@ export function calculateBoardgameType(data: BoardgameTypeInput): BoardgameType 
   }
 
   const gameMap = new Map(games.map((g) => [g.gameId, g]))
-  const { intermediateSum, totalSessions, totalWeightedWeight, totalWeightSessions } =
-    accumulateIntermediates(entries, gameMap)
 
-  const rawScores = toRawScores(intermediateSum, totalSessions, totalWeightedWeight, totalWeightSessions)
+  const axisSum: Record<BoardoryAxis, number> = {
+    strategy: 0, luck: 0, interaction: 0, party: 0, speed: 0,
+  }
+  let totalWeight = 0
 
-  const maxRaw = Math.max(...Object.values(rawScores), 0)
-  const scale = maxRaw > 0 ? 100 / maxRaw : 1
+  for (const entry of entries) {
+    const game = gameMap.get(entry.gameId)
+    if (!game) continue
+
+    const mechanics   = game.mechanics?.split(",").map((s) => s.trim()).filter(Boolean) ?? []
+    const categories  = game.categories?.split(",").map((s) => s.trim()).filter(Boolean) ?? []
+    const profile     = buildGameProfile(mechanics, game.weight, categories)
+    if (!profile) continue
+
+    const entryWeight = entry.sessionCount * getRatingFactor(entry.rating)
+
+    for (const axis of Object.keys(axisSum) as BoardoryAxis[]) {
+      axisSum[axis] += profile[axis] * entryWeight
+    }
+    totalWeight += entryWeight
+  }
+
+  // マッピング可能なゲームが1件もない場合
+  if (totalWeight === 0) {
+    return buildResult("balanced", { strategy: 20, luck: 20, interaction: 20, party: 20, speed: 20 })
+  }
 
   const scores: BoardgameScores = {
-    strategy:    clamp100(rawScores.strategy    * scale),
-    luck:        clamp100(rawScores.luck        * scale),
-    interaction: clamp100(rawScores.interaction * scale),
-    party:       clamp100(rawScores.party       * scale),
-    speed:       clamp100(rawScores.speed       * scale),
+    strategy:    Math.round(axisSum.strategy    / totalWeight),
+    luck:        Math.round(axisSum.luck        / totalWeight),
+    interaction: Math.round(axisSum.interaction / totalWeight),
+    party:       Math.round(axisSum.party       / totalWeight),
+    speed:       Math.round(axisSum.speed       / totalWeight),
   }
 
   return buildResult(determineType(scores), scores)

@@ -5,7 +5,9 @@ import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { calculateBoardgameType } from "@/lib/boardgame-type"
 import { BoardgameTypeCard } from "@/components/BoardgameTypeCard"
+import { TypeRecommendedGames } from "@/components/TypeRecommendedGames"
 import { GameImage } from "@/components/GameImage"
+import type { TypeRecommendedGame } from "@/lib/recommendations"
 
 interface SearchGame {
   id: string
@@ -17,7 +19,7 @@ interface SearchGame {
   weight?: number | null
 }
 
-export function TryClient() {
+export function DiagnosisClient() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -31,6 +33,20 @@ export function TryClient() {
   const [showResults, setShowResults] = useState(false)
   const [loadingFromUrl, setLoadingFromUrl] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [recommendations, setRecommendations] = useState<TypeRecommendedGame[]>([])
+
+  const boardgameType =
+    selected.length > 0
+      ? calculateBoardgameType({
+          entries: selected.map((g) => ({ gameId: g.id, sessionCount: 1 })),
+          games: selected.map((g) => ({
+            gameId: g.id,
+            weight: g.weight ?? null,
+            categories: g.categories ?? null,
+            mechanics: g.mechanics ?? null,
+          })),
+        })
+      : null
 
   const inputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -56,7 +72,7 @@ export function TryClient() {
   // 選択ゲームが変わったらURLを更新
   useEffect(() => {
     const ids = selected.map((g) => g.id).join(",")
-    const url = ids ? `/try?games=${ids}` : "/try"
+    const url = ids ? `/shindan?games=${ids}` : "/shindan"
     router.replace(url, { scroll: false })
   }, [selected, router])
 
@@ -146,18 +162,17 @@ export function TryClient() {
 
   const hasMore = bggTotal > bggOffset + 20
 
-  const boardgameType =
-    selected.length > 0
-      ? calculateBoardgameType({
-          entries: selected.map((g) => ({ gameId: g.id, sessionCount: 1 })),
-          games: selected.map((g) => ({
-            gameId: g.id,
-            weight: g.weight ?? null,
-            categories: g.categories ?? null,
-            mechanics: g.mechanics ?? null,
-          })),
-        })
-      : null
+  // タイプが変わったらおすすめゲームを取得
+  useEffect(() => {
+    if (!boardgameType) {
+      setRecommendations([])
+      return
+    }
+    fetch(`/api/games/recommendations?type=${boardgameType.id}`)
+      .then((res) => res.json())
+      .then((data) => setRecommendations(data.games ?? []))
+      .catch(() => setRecommendations([]))
+  }, [boardgameType?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleShareX = () => {
     if (!boardgameType) return
@@ -339,6 +354,11 @@ export function TryClient() {
               𝕏 でシェア
             </button>
           </div>
+
+          {/* おすすめゲーム */}
+          {recommendations.length > 0 && (
+            <TypeRecommendedGames games={recommendations} />
+          )}
 
           {/* ログインCTA */}
           <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-5 text-center">

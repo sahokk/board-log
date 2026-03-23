@@ -146,10 +146,9 @@ describe("calculateBoardgameType", () => {
     expect(result.scores.luck).toBeGreaterThanOrEqual(40)
   })
 
-  it("returns balanced when top 3 axes are all significant (secondScore>=65 && thirdScore>=45)", () => {
-    // 5 different games each from a different axis — all axes roughly equal
-    // After normalization: strategy≈100, interaction≈93, party≈71, luck≈64, speed≈29
-    // secondScore(93)>=65 && thirdScore(71)>=45 → balanced
+  it("returns balanced when no axis is dominant (diverse play across all axes)", () => {
+    // 5 different games each from a different axis — 1 session each
+    // Weighted average of per-game profiles: each axis gets ~20, primary < 30 → balanced
     const entries = Array.from({ length: 5 }, (_, i) => makeEntry(`g${i}`, 1))
     const games = [
       makeGame("g0", { mechanics: "Worker Placement" }),
@@ -162,13 +161,12 @@ describe("calculateBoardgameType", () => {
     expect(result.id).toBe("balanced")
   })
 
-  it("sparse data (few mechanics) normalizes correctly — no longer falls through to balanced", () => {
-    // Previously: maxRaw<=14 used scale=7, forcing low scores → balanced fallback
-    // Now: always 100/maxRaw → single mechanic → that axis = 100 → correct type
+  it("sparse data (single mechanic) gives a dominant axis — no longer falls through to balanced", () => {
+    // Per-game normalization: single mechanic gives 100 to the dominant axis
+    // Deck Building → ENGINE → strategy=100 → engine-builder (or pure-strategist)
     const entries = [makeEntry("g1")]
     const games = [makeGame("g1", { mechanics: "Deck Building" })]
     const result = calculateBoardgameType({ entries, games })
-    // Deck Building → ENGINE → strategy dominant, no luck/interaction → pure-strategist or engine-builder
     expect(result.id).not.toBe("balanced")
     expect(result.scores.strategy).toBe(100)
   })
