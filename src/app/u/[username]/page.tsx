@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma"
 import { getDisplayName, getProfileImage, parseFavoriteGenres } from "@/lib/profile-utils"
 import { calculateTitles } from "@/lib/titles"
 import { calculateBoardgameType } from "@/lib/boardgame-type"
-import { translateMechanic } from "@/lib/bgg/translations"
+import { getMechanicJaName } from "@/lib/bgg/mechanic-labels"
 import { GameImage } from "@/components/GameImage"
 import { TitleBadges } from "@/components/TitleBadges"
 import { MechanicTag } from "@/components/MechanicTag"
@@ -92,7 +92,7 @@ export default async function PublicProfilePage({ params }: Props) {
     if (e.game.mechanics) {
       e.game.mechanics.split(",").forEach((mech) => {
         const en = mech.trim()
-        const ja = translateMechanic(en)
+        const ja = getMechanicJaName(en)
         if (!ja) return
         const existing = mechanicMap.get(ja)
         mechanicMap.set(ja, { count: (existing?.count ?? 0) + 1, nameEn: en })

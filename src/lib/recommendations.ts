@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import { translateMechanic } from "@/lib/bgg/translations"
+import { getMechanicJaName } from "@/lib/bgg/mechanic-labels"
 import { MECHANICS_MAP } from "@/lib/boardgame-type"
 import { getBggGameDetails } from "@/lib/bgg/client"
 import rawTypeRecommendations from "@/data/type-recommendations.json"
@@ -177,7 +177,7 @@ export async function getRecommendations(userId: string): Promise<RecommendedGam
     // おすすめ理由：スコアに最も貢献したメカニクスを表示
     let reason = ""
     for (const mech of top) {
-      const ja = translateMechanic(mech)
+      const ja = getMechanicJaName(mech)
       if (ja && gameMechanics.includes(mech)) {
         reason = `「${ja}」好きにおすすめ`
         break
