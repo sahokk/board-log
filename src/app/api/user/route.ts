@@ -150,3 +150,13 @@ export async function GET() {
     )
   }
 }
+
+export async function DELETE() {
+  const { userId, error } = await requireAuth()
+  if (error) return error
+
+  // User の削除で Account/Session/GameEntry/WishlistItem/PlaySession が cascade 削除される
+  await prisma.user.delete({ where: { id: userId } })
+  return NextResponse.json({ success: true })
+}
+

@@ -1,5 +1,7 @@
 import NextAuth from "next-auth"
 import Google from "next-auth/providers/google"
+import GitHub from "next-auth/providers/github"
+import Discord from "next-auth/providers/discord"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import type { Adapter } from "next-auth/adapters"
 import { prisma } from "@/lib/prisma"
@@ -20,7 +22,10 @@ const adapter: Adapter = {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter,
-  providers: [Google],
+  providers: [Google, GitHub, Discord],
+  pages: {
+    signIn: "/signin",
+  },
   callbacks: {
     session({ session, user }) {
       session.user.id = user.id

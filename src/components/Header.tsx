@@ -19,20 +19,24 @@ export async function Header() {
           🎲 Boardory
         </Link>
         <nav className="flex items-center gap-3 sm:gap-6">
-          <Link
-            href="/plays"
-            className="flex items-center gap-1 text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
-          >
-            <span className="text-base">📋</span>
-            <span className="hidden sm:inline">遊んだゲーム</span>
-          </Link>
-          <Link
-            href="/wishlist"
-            className="flex items-center gap-1 text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
-          >
-            <span className="text-base">🤍</span>
-            <span className="hidden sm:inline">気になる</span>
-          </Link>
+          {session?.user && (
+            <>
+              <Link
+                href="/plays"
+                className="flex items-center gap-1 text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
+              >
+                <span className="text-base">📋</span>
+                <span className="hidden sm:inline">遊んだゲーム</span>
+              </Link>
+              <Link
+                href="/wishlist"
+                className="flex items-center gap-1 text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
+              >
+                <span className="text-base">🤍</span>
+                <span className="hidden sm:inline">気になる</span>
+              </Link>
+            </>
+          )}
           <AuthButton username={username} />
         </nav>
       </div>
