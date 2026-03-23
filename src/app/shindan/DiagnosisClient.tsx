@@ -3,11 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
-import { calculateBoardgameType } from "@/lib/boardgame-type"
-import { BoardgameTypeCard } from "@/components/BoardgameTypeCard"
-import { TypeRecommendedGames } from "@/components/TypeRecommendedGames"
 import { GameImage } from "@/components/GameImage"
-import type { TypeRecommendedGame } from "@/lib/recommendations"
 
 interface SearchGame {
   id: string
@@ -19,7 +15,11 @@ interface SearchGame {
   weight?: number | null
 }
 
-export function DiagnosisClient() {
+interface Props {
+  readonly suggestedGames?: SearchGame[]
+}
+
+export function DiagnosisClient({ suggestedGames = [] }: Props) {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -32,21 +32,6 @@ export function DiagnosisClient() {
   const [loadingMore, setLoadingMore] = useState(false)
   const [showResults, setShowResults] = useState(false)
   const [loadingFromUrl, setLoadingFromUrl] = useState(false)
-  const [copied, setCopied] = useState(false)
-  const [recommendations, setRecommendations] = useState<TypeRecommendedGame[]>([])
-
-  const boardgameType =
-    selected.length > 0
-      ? calculateBoardgameType({
-          entries: selected.map((g) => ({ gameId: g.id, sessionCount: 1 })),
-          games: selected.map((g) => ({
-            gameId: g.id,
-            weight: g.weight ?? null,
-            categories: g.categories ?? null,
-            mechanics: g.mechanics ?? null,
-          })),
-        })
-      : null
 
   const inputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -162,48 +147,10 @@ export function DiagnosisClient() {
 
   const hasMore = bggTotal > bggOffset + 20
 
-  // タイプが変わったらおすすめゲームを取得
-  useEffect(() => {
-    if (!boardgameType) {
-      setRecommendations([])
-      return
-    }
-    fetch(`/api/games/recommendations?type=${boardgameType.id}`)
-      .then((res) => res.json())
-      .then((data) => setRecommendations(data.games ?? []))
-      .catch(() => setRecommendations([]))
-  }, [boardgameType?.id]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleShareX = () => {
-    if (!boardgameType) return
-    const currentUrl = typeof window !== "undefined" ? window.location.href : ""
-    const lines = [
-      "あなたは…",
-      "",
-      `${boardgameType.icon} ${boardgameType.name}`,
-      "",
-      boardgameType.description,
-      "",
-      currentUrl,
-      "",
-      "#Boardory診断 #ボードゲーム #ボドゲ",
-    ]
-    globalThis.open(
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(lines.join("\n"))}`,
-      "_blank",
-      "width=550,height=420"
-    )
-  }
-
-  const handleCopyUrl = async () => {
-    if (typeof window === "undefined") return
-    try {
-      await navigator.clipboard.writeText(window.location.href)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch {
-      // ignore
-    }
+  const handleDiagnose = () => {
+    if (selected.length === 0) return
+    const ids = selected.map((g) => g.id).join(",")
+    router.push(`/shindan/result?games=${ids}`)
   }
 
   if (loadingFromUrl) {
@@ -211,6 +158,58 @@ export function DiagnosisClient() {
       <div className="flex items-center justify-center py-24">
         <div className="h-6 w-6 animate-spin rounded-full border-2 border-amber-300 border-t-amber-700" />
       </div>
+    )
+  }
+
+  let dropdownContent: React.ReactNode = null
+  if (results.length > 0 || hasMore) {
+    dropdownContent = (
+      <>
+        <div className="max-h-72 overflow-y-auto">
+          {results.map((game) => {
+            const already = selected.some((g) => g.id === game.id)
+            return (
+              <button
+                key={game.id}
+                type="button"
+                onClick={() => !already && addGame(game)}
+                disabled={already}
+                className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors ${
+                  already ? "bg-amber-50 text-amber-400" : "hover:bg-amber-50 text-amber-950"
+                }`}
+              >
+                <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-md bg-amber-100">
+                  <GameImage
+                    src={game.imageUrl}
+                    alt={gameName(game)}
+                    sizes="32px"
+                    className="object-contain"
+                    fallbackClassName="flex h-full items-center justify-center text-sm text-amber-400"
+                  />
+                </div>
+                <span className="flex-1 truncate">{gameName(game)}</span>
+                {already && <span className="shrink-0 text-xs text-amber-400">追加済み</span>}
+              </button>
+            )
+          })}
+        </div>
+        {hasMore && (
+          <div className="border-t border-amber-100">
+            <button
+              type="button"
+              onClick={handleLoadMore}
+              disabled={loadingMore}
+              className="flex w-full items-center justify-center gap-2 px-4 py-2.5 text-xs font-medium text-amber-700 transition-colors hover:bg-amber-50 disabled:opacity-50"
+            >
+              {loadingMore ? "読み込み中…" : "次の20件を見る"}
+            </button>
+          </div>
+        )}
+      </>
+    )
+  } else if (!searching) {
+    dropdownContent = (
+      <p className="px-4 py-3 text-sm text-amber-600">見つかりませんでした</p>
     )
   }
 
@@ -223,6 +222,12 @@ export function DiagnosisClient() {
         <p className="mt-3 text-sm text-amber-800/70">
           遊んだゲームを選ぶだけ。ログイン不要で診断できます
         </p>
+        <Link
+          href="/types"
+          className="mt-2 inline-block text-xs text-amber-700 underline underline-offset-2 hover:text-amber-900"
+        >
+          タイプ一覧を見る →
+        </Link>
       </div>
 
       {/* ゲーム検索 */}
@@ -246,132 +251,94 @@ export function DiagnosisClient() {
             <div className="absolute right-3 top-3.5 h-4 w-4 animate-spin rounded-full border-2 border-amber-300 border-t-amber-700" />
           )}
 
-          {showResults && (results.length > 0 || hasMore) && (
+          {showResults && query.trim() && (
             <div
               ref={dropdownRef}
               className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border border-amber-200 bg-white shadow-lg"
             >
-              <div className="max-h-72 overflow-y-auto">
-                {results.map((game) => {
-                  const already = selected.some((g) => g.id === game.id)
-                  return (
-                    <button
-                      key={game.id}
-                      type="button"
-                      onClick={() => !already && addGame(game)}
-                      disabled={already}
-                      className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors ${
-                        already ? "bg-amber-50 text-amber-400" : "hover:bg-amber-50 text-amber-950"
-                      }`}
-                    >
-                      <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-md bg-amber-100">
-                        <GameImage
-                          src={game.imageUrl}
-                          alt={gameName(game)}
-                          sizes="32px"
-                          className="object-contain"
-                          fallbackClassName="flex h-full items-center justify-center text-sm text-amber-400"
-                        />
-                      </div>
-                      <span className="flex-1 truncate">{gameName(game)}</span>
-                      {already && <span className="shrink-0 text-xs text-amber-400">追加済み</span>}
-                    </button>
-                  )
-                })}
-              </div>
-              {hasMore && (
-                <div className="border-t border-amber-100">
-                  <button
-                    type="button"
-                    onClick={handleLoadMore}
-                    disabled={loadingMore}
-                    className="flex w-full items-center justify-center gap-2 px-4 py-2.5 text-xs font-medium text-amber-700 transition-colors hover:bg-amber-50 disabled:opacity-50"
-                  >
-                    {loadingMore ? (
-                      <>
-                        <span className="h-3 w-3 animate-spin rounded-full border border-amber-300 border-t-amber-700" />
-                        読み込み中…
-                      </>
-                    ) : (
-                      <>次の20件を見る</>
-                    )}
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-
-          {showResults && !searching && results.length === 0 && query.trim() && (
-            <div
-              ref={dropdownRef}
-              className="absolute z-20 mt-1 w-full rounded-xl border border-amber-200 bg-white px-4 py-3 text-sm text-amber-600 shadow-lg"
-            >
-              見つかりませんでした
+              {dropdownContent}
             </div>
           )}
         </div>
 
+        {/* 選択済みゲーム（画像グリッド） */}
         {selected.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {selected.map((g) => (
-              <span
-                key={g.id}
-                className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-white/70 py-1 pl-3 pr-2 text-xs font-medium text-amber-900"
-              >
-                {gameName(g)}
-                <button
-                  type="button"
-                  onClick={() => removeGame(g.id)}
-                  className="text-amber-400 transition-colors hover:text-amber-700"
-                >
-                  ✕
-                </button>
-              </span>
-            ))}
+          <div className="mt-5">
+            <p className="mb-3 text-xs font-medium text-amber-800/60">選択中 {selected.length}件</p>
+            <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
+              {selected.map((g) => (
+                <div key={g.id} className="relative">
+                  <div className="relative aspect-square overflow-hidden rounded-xl bg-amber-100/60">
+                    <GameImage
+                      src={g.imageUrl}
+                      alt={gameName(g)}
+                      sizes="80px"
+                      className="object-contain p-1"
+                      fallbackClassName="flex h-full items-center justify-center text-xl text-amber-300"
+                    />
+                  </div>
+                  <p className="mt-1 line-clamp-1 text-center text-xs leading-tight text-amber-900">
+                    {gameName(g)}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => removeGame(g.id)}
+                    className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-800 text-[10px] text-white shadow-sm transition-colors hover:bg-amber-600"
+                    aria-label={`${gameName(g)}を削除`}
+                  >✕</button>
+                </div>
+              ))}
+            </div>
+
+            {/* 診断するボタン */}
+            <button
+              type="button"
+              onClick={handleDiagnose}
+              className="mt-5 w-full rounded-xl bg-amber-900 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md"
+            >
+              診断する →
+            </button>
           </div>
         )}
       </div>
 
-      {/* 診断結果 */}
-      {boardgameType && (
-        <div className="mt-8 space-y-4">
-          <BoardgameTypeCard type={boardgameType} />
-
-          {/* アクション */}
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={handleCopyUrl}
-              className="flex-1 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-100"
-            >
-              {copied ? "✓ コピーしました" : "🔗 URLをコピー"}
-            </button>
-            <button
-              type="button"
-              onClick={handleShareX}
-              className="flex-1 rounded-lg bg-black px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800"
-            >
-              𝕏 でシェア
-            </button>
-          </div>
-
-          {/* おすすめゲーム */}
-          {recommendations.length > 0 && (
-            <TypeRecommendedGames games={recommendations} />
-          )}
-
-          {/* ログインCTA */}
-          <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-5 text-center">
-            <p className="text-sm font-medium text-amber-950">記録を残して本格診断しよう</p>
-            <p className="mt-1 text-xs text-amber-800/70">
-              ゲームを登録すると、プレイ回数が反映されてより精度の高い診断になります
-            </p>
-            <Link
-              href="/api/auth/signin"
-              className="mt-3 inline-block rounded-lg bg-amber-900 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-800"
-            >
-              ログインして始める
-            </Link>
+      {/* 人気のボドゲ */}
+      {suggestedGames.length > 0 && (
+        <div className="mt-8">
+          <p className="mb-3 text-sm font-semibold text-amber-950">
+            人気のボドゲから選ぶ
+          </p>
+          <div className="grid grid-cols-4 gap-3 sm:grid-cols-6">
+            {suggestedGames.map((game) => {
+              const already = selected.some((g) => g.id === game.id)
+              return (
+                <button
+                  key={game.id}
+                  type="button"
+                  onClick={() => !already && addGame(game)}
+                  disabled={already}
+                  className={`group relative flex flex-col items-center gap-1 transition-opacity ${already ? "opacity-40" : ""}`}
+                >
+                  <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-amber-100/60 shadow-sm ring-1 ring-amber-200/40 transition-all group-hover:-translate-y-0.5 group-hover:shadow-md">
+                    <GameImage
+                      src={game.imageUrl}
+                      alt={gameName(game)}
+                      sizes="(max-width: 640px) 25vw, 17vw"
+                      className="object-contain p-1"
+                      fallbackClassName="flex h-full items-center justify-center text-2xl text-amber-300"
+                    />
+                    {already && (
+                      <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-amber-900/20">
+                        <span className="text-lg">✓</span>
+                      </div>
+                    )}
+                  </div>
+                  <p className="line-clamp-2 text-center text-xs leading-tight text-amber-900">
+                    {gameName(game)}
+                  </p>
+                </button>
+              )
+            })}
           </div>
         </div>
       )}
