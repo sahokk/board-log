@@ -17,6 +17,17 @@ export default async function AdminGamesPage() {
       nameJa: true,
       customNameJa: true,
       imageUrl: true,
+      nameReports: {
+        where: { status: "PENDING" },
+        select: {
+          id: true,
+          suggestedName: true,
+          reason: true,
+          createdAt: true,
+          reporter: { select: { username: true, displayName: true, name: true } },
+        },
+        orderBy: { createdAt: "asc" as const },
+      },
       _count: { select: { nameReports: { where: { status: "PENDING" } } } },
     },
     orderBy: { updatedAt: "desc" },
