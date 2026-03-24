@@ -192,16 +192,16 @@ export default async function PublicProfilePage({ params }: Props) {
               </div>
 
               {/* Right: Stats */}
-              <div className="flex items-center justify-center gap-8 sm:flex-col sm:items-end sm:justify-start sm:gap-5 sm:shrink-0 border-t sm:border-t-0 sm:border-l border-amber-200/60 pt-5 sm:pt-0 sm:pl-8">
+              <div className="flex items-center justify-center gap-6 sm:flex-col sm:items-end sm:justify-start sm:gap-5 sm:shrink-0 border-t sm:border-t-0 sm:border-l border-amber-200/60 pt-5 sm:pt-0 sm:pl-8">
                 <div className="text-center sm:text-right">
-                  <p className="text-3xl sm:text-4xl font-bold tabular-nums tracking-tight text-amber-950">
+                  <p className="text-2xl sm:text-4xl font-bold tabular-nums tracking-tight text-amber-950">
                     {totalSessions}
                   </p>
                   <p className="mt-0.5 text-xs font-medium text-amber-700/70">総プレイ数</p>
                 </div>
                 <div className="h-8 w-px sm:h-px sm:w-12 bg-amber-200/60" />
                 <div className="text-center sm:text-right">
-                  <p className="text-3xl sm:text-4xl font-bold tabular-nums tracking-tight text-amber-950">
+                  <p className="text-2xl sm:text-4xl font-bold tabular-nums tracking-tight text-amber-950">
                     {uniqueGames}
                   </p>
                   <p className="mt-0.5 text-xs font-medium text-amber-700/70">ゲーム種類</p>
@@ -246,7 +246,7 @@ export default async function PublicProfilePage({ params }: Props) {
             <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">
               {"気になるリスト"}<span className="ml-2 text-base font-normal text-amber-800/60">{user.wishlistItems.length}タイトル</span>
             </h2>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {user.wishlistItems.map(({ game }) => (
                 <Link
                   key={game.id}
@@ -261,7 +261,7 @@ export default async function PublicProfilePage({ params }: Props) {
                     />
                   </div>
                   <div className="p-3">
-                    <p className="line-clamp-2 text-xs font-semibold text-amber-950">
+                    <p className="line-clamp-2 text-xs sm:text-sm font-semibold text-amber-950">
                       {getGameName(game)}
                     </p>
                   </div>
@@ -282,7 +282,7 @@ export default async function PublicProfilePage({ params }: Props) {
               <p className="text-lg font-medium text-amber-900">まだプレイ記録がありません</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {entries.map((entry) => {
                 return (
                   <Link
@@ -298,7 +298,7 @@ export default async function PublicProfilePage({ params }: Props) {
                       />
                     </div>
                     <div className="p-3">
-                      <p className="mb-1.5 line-clamp-2 text-xs font-semibold text-amber-950">
+                      <p className="mb-1.5 line-clamp-2 text-xs sm:text-sm font-semibold text-amber-950">
                         {getGameName(entry.game)}
                       </p>
                       <div className="flex items-center justify-between">
