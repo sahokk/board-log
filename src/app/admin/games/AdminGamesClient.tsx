@@ -34,7 +34,7 @@ function emptyMessage(showHidden: boolean, filterReports: boolean): string {
 }
 
 function loadHidden(): Set<string> {
-  if (typeof window === "undefined") return new Set()
+  if (globalThis.window === undefined) return new Set()
   try {
     return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]"))
   } catch {
@@ -46,7 +46,7 @@ function saveHidden(ids: Set<string>) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify([...ids]))
 }
 
-function RowActions({ game }: { game: Game }) {
+function RowActions({ game }: Readonly<{ game: Game }>) {
   const router = useRouter()
   const [editing, setEditing] = useState(false)
   const [value, setValue] = useState(game.customNameJa ?? "")
@@ -60,7 +60,7 @@ function RowActions({ game }: { game: Game }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ gameId: game.id, customNameJa: name }),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) throw new Error("Failed to update")
       setEditing(false)
       router.refresh()
     } finally {
@@ -111,7 +111,7 @@ function RowActions({ game }: { game: Game }) {
   )
 }
 
-function ReportsPanel({ reports, onApply }: Readonly<{ reports: Report[]; onApply: (name: string) => void }>) {
+function ReportsPanel({ reports, onApply }: Readonly<{ reports: Report[]; onApply: (reportId: string) => void }>) {
   return (
     <div className="space-y-2 pt-1">
       {reports.map((r) => {
@@ -127,7 +127,7 @@ function ReportsPanel({ reports, onApply }: Readonly<{ reports: Report[]; onAppl
                 </p>
               </div>
               <button
-                onClick={() => onApply(r.suggestedName)}
+                onClick={() => onApply(r.id)}
                 className="shrink-0 px-2 py-1 bg-amber-500 text-white rounded text-xs hover:bg-amber-600"
               >
                 採用
@@ -169,11 +169,11 @@ export default function AdminGamesClient({ games }: { games: Game[] }) {
     })
   }
 
-  async function applyReport(gameId: string, name: string) {
-    await fetch("/api/admin/games", {
+  async function applyReport(reportId: string) {
+    await fetch(`/api/admin/reports/${reportId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ gameId, customNameJa: name }),
+      body: JSON.stringify({ action: "approve" }),
     })
     router.refresh()
   }
@@ -292,7 +292,7 @@ export default function AdminGamesClient({ games }: { games: Game[] }) {
                     <td colSpan={6} className="px-4 pb-3">
                       <ReportsPanel
                         reports={game.nameReports}
-                        onApply={(name) => applyReport(game.id, name)}
+                        onApply={applyReport}
                       />
                     </td>
                   </tr>

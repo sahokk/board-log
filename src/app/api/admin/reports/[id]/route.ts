@@ -25,13 +25,34 @@ export async function PATCH(request: NextRequest, { params }: Props) {
 
   if (action === "approve") {
     await prisma.$transaction([
+      // ゲームの日本語名を更新
       prisma.game.update({
         where: { id: report.gameId },
         data: { customNameJa: report.suggestedName },
       }),
+      // このレポートを承認
       prisma.nameReport.update({
         where: { id },
         data: { status: "APPROVED", reviewedById: admin.userId },
+      }),
+      // 同じゲーム・同じ提案名のレポートも承認
+      prisma.nameReport.updateMany({
+        where: {
+          gameId: report.gameId,
+          status: "PENDING",
+          suggestedName: report.suggestedName,
+          id: { not: id },
+        },
+        data: { status: "APPROVED", reviewedById: admin.userId },
+      }),
+      // 残りの未対応レポートは却下
+      prisma.nameReport.updateMany({
+        where: {
+          gameId: report.gameId,
+          status: "PENDING",
+          suggestedName: { not: report.suggestedName },
+        },
+        data: { status: "REJECTED", reviewedById: admin.userId },
       }),
     ])
   } else {
