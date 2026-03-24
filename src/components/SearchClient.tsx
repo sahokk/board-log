@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { ManualGameForm } from "@/components/ManualGameForm"
@@ -25,15 +26,20 @@ interface Props {
 const PAGE_SIZE = 6
 
 export function SearchClient({ username }: Props) {
-  const [query, setQuery] = useState("")
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const [query, setQuery] = useState(() => searchParams.get("q") ?? "")
   const [results, setResults] = useState<GameResult[]>([])
-  const [page, setPage] = useState(0)
+  const [page, setPage] = useState(() => Number(searchParams.get("page") ?? "0"))
   const [loading, setLoading] = useState(false)
-  const [searched, setSearched] = useState(false)
+  const [searched, setSearched] = useState(() => !!searchParams.get("q"))
   const [error, setError] = useState<string | null>(null)
   const [showManualForm, setShowManualForm] = useState(false)
   const [wishlistedIds, setWishlistedIds] = useState<Set<string>>(new Set())
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isFirstRender = useRef(true)
 
   useEffect(() => {
     fetch("/api/wishlist")
@@ -46,6 +52,15 @@ export function SearchClient({ username }: Props) {
       .catch(() => {})
   }, [])
 
+  // URL同期
+  useEffect(() => {
+    const params = new URLSearchParams()
+    if (query.trim()) params.set("q", query.trim())
+    if (page > 0) params.set("page", String(page))
+    const qs = params.toString()
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
+  }, [query, page, pathname, router])
+
   useEffect(() => {
     if (!query.trim()) {
       setResults([])
@@ -56,12 +71,14 @@ export function SearchClient({ username }: Props) {
     }
 
     if (debounceRef.current) clearTimeout(debounceRef.current)
+    const delay = isFirstRender.current ? 0 : 500
+    isFirstRender.current = false
     debounceRef.current = setTimeout(async () => {
       setLoading(true)
       setError(null)
       setSearched(true)
       setShowManualForm(false)
-      setPage(0)
+      if (delay > 0) setPage(0)
       try {
         const res = await fetch(`/api/games/search?q=${encodeURIComponent(query.trim())}`)
         const data = await res.json()
@@ -73,7 +90,7 @@ export function SearchClient({ username }: Props) {
       } finally {
         setLoading(false)
       }
-    }, 500)
+    }, delay)
 
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
