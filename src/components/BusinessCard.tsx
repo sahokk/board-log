@@ -162,7 +162,7 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
                 }}>
                   <div style={{ position: "relative", aspectRatio: "1", background: "#fdf6e3" }}>
                     {game.imageUrl ? (
-                      <Image src={game.imageUrl} alt={game.name} fill className="object-contain" style={{ padding: 8 }} sizes="180px" />
+                      <Image src={game.imageUrl} alt={getGameName(game)} fill className="object-contain" style={{ padding: 8 }} sizes="180px" />
                     ) : (
                       <div style={{ display: "flex", height: "100%", alignItems: "center", justifyContent: "center", fontSize: 28 }}>🎲</div>
                     )}
@@ -171,7 +171,7 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
                     <p style={{
                       fontSize: 10, fontWeight: 600, color: "#451a03", lineHeight: 1.3, textAlign: "center",
                       display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
-                    }}>{game.name}</p>
+                    }}>{getGameName(game)}</p>
                   </div>
                 </div>
               ))}

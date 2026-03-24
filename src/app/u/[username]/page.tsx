@@ -7,6 +7,7 @@ import { calculateTitles } from "@/lib/titles"
 import { calculateBoardgameType } from "@/lib/boardgame-type"
 import { getMechanicJaName } from "@/lib/bgg/mechanic-labels"
 import { GameImage } from "@/components/GameImage"
+import { getGameName } from "@/lib/game-utils"
 import { TitleBadges } from "@/components/TitleBadges"
 import { MechanicTag } from "@/components/MechanicTag"
 import { BoardgameTypeCard } from "@/components/BoardgameTypeCard"
@@ -55,6 +56,7 @@ export default async function PublicProfilePage({ params }: Props) {
               id: true,
               name: true,
               nameJa: true,
+              customNameJa: true,
               imageUrl: true,
               categories: true,
               mechanics: true,
@@ -251,13 +253,13 @@ export default async function PublicProfilePage({ params }: Props) {
                   <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
                     <GameImage
                       src={game.imageUrl}
-                      alt={game.nameJa ?? game.name}
+                      alt={getGameName(game)}
                       sizes="(max-width: 640px) 50vw, 20vw"
                     />
                   </div>
                   <div className="p-3">
                     <p className="line-clamp-2 text-xs font-semibold text-amber-950">
-                      {game.nameJa ?? game.name}
+                      {getGameName(game)}
                     </p>
                   </div>
                 </Link>
@@ -288,13 +290,13 @@ export default async function PublicProfilePage({ params }: Props) {
                     <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
                       <GameImage
                         src={entry.game.imageUrl}
-                        alt={entry.game.nameJa ?? entry.game.name}
+                        alt={getGameName(entry.game)}
                         sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
                       />
                     </div>
                     <div className="p-3">
                       <p className="mb-1.5 line-clamp-2 text-xs font-semibold text-amber-950">
-                        {entry.game.nameJa ?? entry.game.name}
+                        {getGameName(entry.game)}
                       </p>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-0.5">
