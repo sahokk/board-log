@@ -65,6 +65,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user?.id) {
         token.id = user.id
+      } else if (typeof token.id === "string") {
+        // Verify the user still exists in DB (handles account deletion with active JWT)
+        const exists = await prisma.user.findUnique({ where: { id: token.id }, select: { id: true } })
+        if (!exists) return null
       }
       return token
     },
