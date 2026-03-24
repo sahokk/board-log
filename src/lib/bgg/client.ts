@@ -17,13 +17,24 @@ const parser = new XMLParser({
   htmlEntities: true,
 })
 
+function decodeEntities(str: string): string {
+  return str
+    .replaceAll(/&#(\d+);/g, (_, code: string) => String.fromCodePoint(Number(code)))
+    .replaceAll(/&#x([0-9a-f]+);/gi, (_, hex: string) => String.fromCodePoint(Number.parseInt(hex, 16)))
+    .replaceAll("&apos;", "'")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&amp;", "&")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+}
+
 function attrStr(val: unknown): string {
   if (val === null || val === undefined) return ""
-  if (typeof val === "string") return val
+  if (typeof val === "string") return decodeEntities(val)
   if (typeof val === "number") return String(val)
   if (typeof val === "object") {
     const v = (val as Record<string, unknown>)["@_value"]
-    if (typeof v === "string") return v
+    if (typeof v === "string") return decodeEntities(v)
     if (typeof v === "number") return String(v)
     return ""
   }
