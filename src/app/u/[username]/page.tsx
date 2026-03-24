@@ -11,6 +11,7 @@ import { getGameName } from "@/lib/game-utils"
 import { TitleBadges } from "@/components/TitleBadges"
 import { MechanicTag } from "@/components/MechanicTag"
 import { BoardgameTypeCard } from "@/components/BoardgameTypeCard"
+import { ShareButtons } from "@/components/ShareButtons"
 import type { Metadata } from "next"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faStar as faStarSolid, faUser } from "@fortawesome/free-solid-svg-icons"
@@ -177,17 +178,11 @@ export default async function PublicProfilePage({ params }: Props) {
                       ))}
                     </div>
                   )}
-                  <div className="mt-3">
-                    <a
-                      href={"https://x.com/intent/tweet?text=" + shareText + "&url=" + shareUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 rounded-full bg-black px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-800 transition-colors"
-                    >
-                      <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.733-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                      シェア
-                    </a>
-                  </div>
+                  <ShareButtons
+                    url={`${baseUrl}/u/${username}`}
+                    encodedUrl={shareUrl}
+                    encodedText={shareText}
+                  />
                 </div>
               </div>
 
@@ -212,7 +207,7 @@ export default async function PublicProfilePage({ params }: Props) {
         </div>
 
         {/* Boardgame Type */}
-        <div className="mb-4">
+        <div className="mb-8">
           <BoardgameTypeCard type={boardgameType} />
         </div>
         {/* 称号 */}
@@ -307,7 +302,7 @@ export default async function PublicProfilePage({ params }: Props) {
                             <FontAwesomeIcon
                               key={star}
                               icon={star <= entry.rating ? faStarSolid : faStarRegular}
-                              className={star <= entry.rating ? "text-amber-500 text-xs" : "text-amber-200/40 text-xs"}
+                              className={star <= entry.rating ? "text-amber-500 text-[10px]" : "text-amber-200/40 text-[10px]"}
                             />
                           ))}
                         </div>
