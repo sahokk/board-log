@@ -104,6 +104,45 @@ export function ProfileClient({ user, stats, allGames, featuredGames, savedFeatu
             onSuccess={handleSaveSuccess}
           />
         </div>
+
+        {/* アカウント削除 */}
+        <div className="mt-8 rounded-xl border border-red-200 bg-red-50/40 p-5">
+          <h2 className="text-sm font-bold text-red-800">アカウント削除</h2>
+          <p className="mt-1 text-xs text-red-700/70">
+            アカウントを削除すると、プレイ記録・ウィッシュリストを含むすべてのデータが完全に削除されます。この操作は取り消せません。
+          </p>
+          {showDeleteConfirm ? (
+            <div className="mt-4 space-y-2">
+              <p className="text-xs font-medium text-red-800">本当に削除しますか？</p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleDeleteAccount}
+                  disabled={deleting}
+                  className="rounded-lg bg-red-600 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+                >
+                  {deleting ? "削除中…" : "はい、削除する"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteConfirm(false)}
+                  disabled={deleting}
+                  className="rounded-lg border border-red-300 px-4 py-2 text-xs font-medium text-red-700 transition-colors hover:bg-red-100 disabled:opacity-50"
+                >
+                  キャンセル
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setShowDeleteConfirm(true)}
+              className="mt-3 rounded-lg border border-red-300 px-4 py-2 text-xs font-medium text-red-700 transition-colors hover:bg-red-100"
+            >
+              アカウントを削除する
+            </button>
+          )}
+        </div>
       </div>
     )
   }
@@ -129,15 +168,6 @@ export function ProfileClient({ user, stats, allGames, featuredGames, savedFeatu
                   <p className="mt-0.5 text-sm text-amber-700/60">@{user.username}</p>
                 )}
                 <p className="mt-0.5 text-sm text-amber-800/50 truncate">{user.email}</p>
-                {user.username && isPublic && (
-                  <Link
-                    href={`/u/${user.username}`}
-                    target="_blank"
-                    className="mt-1.5 inline-block text-xs text-amber-700 underline hover:text-amber-950"
-                  >
-                    公開プロフィールを見る →
-                  </Link>
-                )}
               </div>
             </div>
             <button
@@ -164,6 +194,15 @@ export function ProfileClient({ user, stats, allGames, featuredGames, savedFeatu
               <p className="mt-1 text-xs text-amber-700/60">
                 公開するにはユーザー名の設定が必要です
               </p>
+            )}
+            {user.username && isPublic && (
+              <Link
+                href={`/u/${user.username}`}
+                target="_blank"
+                className="mt-1.5 inline-block text-xs text-amber-700 underline hover:text-amber-950"
+              >
+                公開プロフィールを見る →
+              </Link>
             )}
           </div>
           <button
@@ -228,44 +267,6 @@ export function ProfileClient({ user, stats, allGames, featuredGames, savedFeatu
         </div>
       )}
 
-      {/* アカウント削除 */}
-      <div className="mt-8 rounded-xl border border-red-200 bg-red-50/40 p-5">
-        <h2 className="text-sm font-bold text-red-800">アカウント削除</h2>
-        <p className="mt-1 text-xs text-red-700/70">
-          アカウントを削除すると、プレイ記録・ウィッシュリストを含むすべてのデータが完全に削除されます。この操作は取り消せません。
-        </p>
-        {showDeleteConfirm ? (
-          <div className="mt-4 space-y-2">
-            <p className="text-xs font-medium text-red-800">本当に削除しますか？</p>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={handleDeleteAccount}
-                disabled={deleting}
-                className="rounded-lg bg-red-600 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
-              >
-                {deleting ? "削除中…" : "はい、削除する"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowDeleteConfirm(false)}
-                disabled={deleting}
-                className="rounded-lg border border-red-300 px-4 py-2 text-xs font-medium text-red-700 transition-colors hover:bg-red-100 disabled:opacity-50"
-              >
-                キャンセル
-              </button>
-            </div>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setShowDeleteConfirm(true)}
-            className="mt-3 rounded-lg border border-red-300 px-4 py-2 text-xs font-medium text-red-700 transition-colors hover:bg-red-100"
-          >
-            アカウントを削除する
-          </button>
-        )}
-      </div>
     </>
   )
 }
