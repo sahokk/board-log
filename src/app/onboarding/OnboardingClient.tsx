@@ -3,11 +3,13 @@
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { GameImage } from "@/components/GameImage"
+import { getGameName } from "@/lib/game-utils"
 
 interface Game {
   id: string
   name: string
   nameJa: string | null
+  customNameJa: string | null
   imageUrl?: string | null
 }
 
@@ -149,7 +151,7 @@ export function OnboardingClient({ isLoggedIn, importGameIds }: Props) {
     )
   }
 
-  const gameName = (g: Game) => g.nameJa ?? g.name
+  const gameName = (g: Game) => getGameName(g)
 
   return (
     <div>

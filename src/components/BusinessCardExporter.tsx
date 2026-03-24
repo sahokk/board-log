@@ -3,6 +3,9 @@
 import { useRef, useState, useEffect, useLayoutEffect } from "react"
 import Image from "next/image"
 import { toPng } from "html-to-image"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faStar as faStarSolid } from "@fortawesome/free-solid-svg-icons"
+import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons"
 import { BusinessCard } from "./BusinessCard"
 import { useToast } from "./Toast"
 import type { TitleWithUnlocked } from "@/lib/titles"
@@ -269,7 +272,15 @@ export function BusinessCardExporter({ user, stats, allGames, featuredGames, sav
                     )}
                   </div>
                   <p className="line-clamp-2 text-[10px] leading-tight text-amber-900">{game.name}</p>
-                  <p className="mt-0.5 text-[10px] text-amber-500">{"★".repeat(game.rating)}{"☆".repeat(5 - game.rating)}</p>
+                  <div className="mt-0.5 flex gap-px">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <FontAwesomeIcon
+                        key={s}
+                        icon={s <= game.rating ? faStarSolid : faStarRegular}
+                        className={`text-[8px] ${s <= game.rating ? "text-amber-500" : "text-amber-200/60"}`}
+                      />
+                    ))}
+                  </div>
                   {selected && (
                     <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-600 text-[9px] font-bold text-white">
                       {selectedIds.indexOf(game.entryId) + 1}

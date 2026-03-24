@@ -5,6 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { ManualGameForm } from "@/components/ManualGameForm"
 import { WishlistButton } from "@/components/WishlistButton"
+import { getGameName } from "@/lib/game-utils"
 
 interface GameResult {
   id: string
@@ -150,7 +151,7 @@ export function SearchClient({ username }: Props) {
       {/* 検索結果グリッド */}
       {results.length > 0 && (
         <>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-6">
             {displayed.map((game) => (
               <div
                 key={game.id}
@@ -165,7 +166,7 @@ export function SearchClient({ username }: Props) {
                     {game.imageUrl ? (
                       <Image
                         src={game.imageUrl}
-                        alt={game.customNameJa ?? game.nameJa ?? game.name}
+                        alt={getGameName(game)}
                         fill
                         className="object-contain p-3"
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 17vw"
@@ -177,10 +178,10 @@ export function SearchClient({ username }: Props) {
                     )}
                   </div>
                   <div className="px-3 pb-1 pt-2">
-                    <p className="line-clamp-2 text-xs font-semibold text-amber-950">
-                      {game.customNameJa ?? game.nameJa ?? game.name}
+                    <p className="line-clamp-2 text-xs sm:text-sm font-semibold text-amber-950">
+                      {getGameName(game)}
                     </p>
-                    {(game.customNameJa || game.nameJa) && (
+                    {(game.customNameJa ?? game.nameJa) && (
                       <p className="mt-0.5 line-clamp-1 text-xs text-amber-700/50">
                         {game.name}
                       </p>

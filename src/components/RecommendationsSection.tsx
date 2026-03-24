@@ -6,6 +6,7 @@ import Link from "next/link"
 import { WishlistButton } from "@/components/WishlistButton"
 import { refreshRecommendations } from "@/app/actions"
 import type { RecommendedGame } from "@/lib/recommendations"
+import { getGameName } from "@/lib/game-utils"
 
 interface Props {
   initialGames: RecommendedGame[]
@@ -43,7 +44,7 @@ export function RecommendationsSection({ initialGames, username }: Readonly<Prop
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
         {games.map((game) => (
           <Link
             key={game.id}
@@ -54,7 +55,7 @@ export function RecommendationsSection({ initialGames, username }: Readonly<Prop
               {game.imageUrl ? (
                 <Image
                   src={game.imageUrl}
-                  alt={game.nameJa ?? game.name}
+                  alt={getGameName(game)}
                   fill
                   className="object-contain p-3"
                   sizes="(max-width: 640px) 50vw, 25vw"
@@ -70,10 +71,10 @@ export function RecommendationsSection({ initialGames, username }: Readonly<Prop
             </div>
             <div className="p-3">
               <p className="mb-1 line-clamp-2 text-xs font-semibold text-amber-950">
-                {game.nameJa ?? game.name}
+                {getGameName(game)}
               </p>
               {game.reason && (
-                <p className="line-clamp-1 text-xs text-amber-600/80">{game.reason}</p>
+                <p className="text-xs text-amber-600/80">{game.reason}</p>
               )}
             </div>
           </Link>

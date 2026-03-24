@@ -1,6 +1,9 @@
 "use client"
 
 import { useState } from "react"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons"
+import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons"
 
 interface Props {
   gameId: string
@@ -41,7 +44,7 @@ export function WishlistButton({ gameId, initialWishlisted, size = "default" }: 
             : "bg-white/80 text-amber-700 hover:bg-amber-50"
         }`}
       >
-        {wishlisted ? "🩷" : "🤍"}
+        <FontAwesomeIcon icon={wishlisted ? faHeartSolid : faHeartRegular} className={wishlisted ? "text-pink-500" : ""} />
       </button>
     )
   }
@@ -56,7 +59,7 @@ export function WishlistButton({ gameId, initialWishlisted, size = "default" }: 
           : "border border-amber-300 text-amber-800 hover:bg-amber-50"
       }`}
     >
-      <span>{wishlisted ? "🩷" : "🤍"}</span>
+      <FontAwesomeIcon icon={wishlisted ? faHeartSolid : faHeartRegular} className={wishlisted ? "text-pink-500" : ""} />
       <span>{wishlisted ? "気になり中" : "気になる"}</span>
     </button>
   )

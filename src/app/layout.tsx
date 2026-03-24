@@ -1,10 +1,32 @@
 import type { Metadata } from "next"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
+import { M_PLUS_Rounded_1c, Kaisei_Decol, Mochiy_Pop_One } from "next/font/google"
 import "./globals.css"
+import { config } from "@fortawesome/fontawesome-svg-core"
+config.autoAddCss = false
 import { Header } from "@/components/Header"
 import { Footer } from "@/components/Footer"
 import { Providers } from "@/components/Providers"
+
+const mPlusRounded = M_PLUS_Rounded_1c({
+  weight: ["400", "500", "700"],
+  subsets: ["latin"],
+  variable: "--font-mplus",
+  display: "swap",
+})
+
+const kaiseiDecol = Kaisei_Decol({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  variable: "--font-kaisei",
+  display: "swap",
+})
+
+const mochiyPopOne = Mochiy_Pop_One({
+  weight: ["400"],
+  subsets: ["latin"],
+  variable: "--font-mochiy",
+  display: "swap",
+})
 
 export const metadata: Metadata = {
   title: "Boardory - ボードゲームの思い出アルバム",
@@ -20,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}
+        className={`${mPlusRounded.variable} ${kaiseiDecol.variable} ${mochiyPopOne.variable} antialiased`}
       >
         <Providers>
           <div className="flex min-h-screen flex-col">
