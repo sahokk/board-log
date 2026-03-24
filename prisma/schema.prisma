@@ -83,7 +83,7 @@ model Game {
   bggId       String? @unique // BGG game ID
   name        String
   nameJa      String? // 日本語名（BGG alternate nameより）
-  customNameJa String? // 手動で設定した日本語名（nameJaより優先）
+  customNameJa String? // ユーザーがカスタムでつけた日本語名（nameJaより優先）
   imageUrl    String?
   categories  String? // BGGカテゴリ（カンマ区切り）例: "Fantasy,Economic"
   mechanics   String? // BGGメカニクス（カンマ区切り）例: "Deck Building,Worker Placement"

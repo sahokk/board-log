@@ -43,9 +43,21 @@ function resolveName(names: Record<string, unknown>[]): string {
 }
 
 function resolveJaName(names: Record<string, unknown>[]): string | undefined {
-  const jaPattern = /[\u3040-\u9FFF]/
-  const jaName = names.find((n) => n["@_type"] === "alternate" && jaPattern.test(attrStr(n["@_value"])))
-  return jaName ? attrStr(jaName["@_value"]) : undefined
+  const kanaPattern = /[\u3040-\u309F\u30A0-\u30FF]/   // ひらがな・カタカナ
+  const kanjiPattern = /[\u4E00-\u9FFF]/             // 漢字
+  const chineseLikePattern = /[这国汉语爱车书门戏蚀轉险风间鹰战號爾传时瀑禽哞嗷动]/ // 中国語っぽい文字（簡易的な判定）
+
+  const kanaMatch = names.find((n) => kanaPattern.test(attrStr(n["@_value"])))
+  if (kanaMatch) return attrStr(kanaMatch["@_value"])
+
+  const kanjiMatch = names.find((n) => {
+    const val = attrStr(n["@_value"])
+    return kanjiPattern.test(val) && !chineseLikePattern.test(val)
+  })
+  if (kanjiMatch) return attrStr(kanjiMatch["@_value"])
+  console.debug("resolveJaName no kanji match")
+
+  return undefined
 }
 
 function normalizeImageUrl(url?: string): string | undefined {

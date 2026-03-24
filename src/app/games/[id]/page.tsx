@@ -58,7 +58,7 @@ export default async function GameDetailPage({ params }: Props) {
               {game.imageUrl ? (
                 <Image
                   src={game.imageUrl}
-                  alt={game.nameJa ?? game.name}
+                  alt={game.customNameJa ?? game.nameJa ?? game.name}
                   fill
                   className="object-contain p-2"
                   sizes="112px"
@@ -69,9 +69,9 @@ export default async function GameDetailPage({ params }: Props) {
             </div>
             <div className="min-w-0 flex-1">
               <h1 className="text-xl font-bold leading-tight text-amber-950">
-                {game.nameJa ?? game.name}
+                {game.customNameJa ?? game.nameJa ?? game.name}
               </h1>
-              {game.nameJa && (
+              {(game.customNameJa || game.nameJa) && (
                 <p className="mt-0.5 text-sm text-amber-700/60">{game.name}</p>
               )}
               <div className="mt-3 flex flex-wrap gap-3 text-xs text-amber-800/70">
