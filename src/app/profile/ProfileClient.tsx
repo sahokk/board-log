@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
 import Image from "next/image"
@@ -54,7 +54,14 @@ export function ProfileClient({ user, stats, allGames, featuredGames, savedFeatu
   const [isPublic, setIsPublic] = useState(user.isProfilePublic)
   const [togglingVisibility, setTogglingVisibility] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [deleteEnabled, setDeleteEnabled] = useState(false)
   const [deleting, setDeleting] = useState(false)
+
+  useEffect(() => {
+    if (!showDeleteConfirm) { setDeleteEnabled(false); return }
+    const t = setTimeout(() => setDeleteEnabled(true), 2000)
+    return () => clearTimeout(t)
+  }, [showDeleteConfirm])
 
   const displayName = getDisplayName(user)
   const profileImage = getProfileImage(user)
@@ -118,7 +125,7 @@ export function ProfileClient({ user, stats, allGames, featuredGames, savedFeatu
                 <button
                   type="button"
                   onClick={handleDeleteAccount}
-                  disabled={deleting}
+                  disabled={deleting || !deleteEnabled}
                   className="rounded-lg bg-red-600 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
                 >
                   {deleting ? "削除中…" : "はい、削除する"}
