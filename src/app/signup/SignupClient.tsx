@@ -13,7 +13,21 @@ export function SignupClient({ callbackUrl }: Props) {
   const [confirm, setConfirm] = useState("")
   const [displayName, setDisplayName] = useState("")
   const [username, setUsername] = useState("")
+  const [usernameTouched, setUsernameTouched] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value)
+    if (!usernameTouched) {
+      const local = value.split("@")[0].replaceAll(/[^a-zA-Z0-9_-]/g, "").slice(0, 20)
+      setUsername(local)
+    }
+  }
+
+  const handleUsernameChange = (value: string) => {
+    setUsernameTouched(true)
+    setUsername(value)
+  }
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState(false)
 
@@ -89,7 +103,7 @@ export function SignupClient({ callbackUrl }: Props) {
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => handleEmailChange(e.target.value)}
               placeholder="example@email.com"
               required
               className="w-full rounded-xl border border-amber-200 bg-white/80 px-4 py-3 text-sm text-amber-950 placeholder-amber-300 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
@@ -152,7 +166,7 @@ export function SignupClient({ callbackUrl }: Props) {
                     id="username"
                     type="text"
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(e) => handleUsernameChange(e.target.value)}
                     placeholder="例：boardgame_taro"
                     maxLength={20}
                     pattern="[a-zA-Z0-9_-]{3,20}"
