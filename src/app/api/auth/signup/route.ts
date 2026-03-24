@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server"
-import { supabaseAdmin } from "@/lib/supabase/server"
+import { createClient } from "@supabase/supabase-js"
 import { prisma } from "@/lib/prisma"
+
+// Public client — auth.signUp() is the only method that actually sends confirmation emails
+const supabasePublic = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  { auth: { autoRefreshToken: false, persistSession: false } }
+)
 
 export async function POST(request: Request) {
   const { email, password, displayName, username } = await request.json() as {
@@ -39,18 +46,31 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "このメールアドレスはすでに登録済みです" }, { status: 409 })
   }
 
-  // Create Supabase auth user — email_confirm: false sends a confirmation email
-  const { data, error } = await supabaseAdmin.auth.admin.createUser({
+  // supabase.auth.signUp() sends the confirmation email (admin API does not)
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"
+  const { data, error } = await supabasePublic.auth.signUp({
     email,
     password,
-    email_confirm: false,
-    user_metadata: { displayName: trimmedDisplayName, username: trimmedUsername },
+    options: {
+      data: { displayName: trimmedDisplayName, username: trimmedUsername },
+      emailRedirectTo: `${baseUrl}/signin`,
+    },
   })
   if (error) {
     if (error.message.includes("already registered")) {
       return NextResponse.json({ error: "このメールアドレスはすでに登録済みです" }, { status: 409 })
     }
     return NextResponse.json({ error: "登録に失敗しました。もう一度お試しください" }, { status: 500 })
+  }
+
+  if (!data.user) {
+    return NextResponse.json({ error: "登録に失敗しました。もう一度お試しください" }, { status: 500 })
+  }
+
+  // Check if the email is already taken in Supabase (enumeration protection returns success)
+  // If identities is empty, the email already existed in Supabase
+  if (data.user.identities?.length === 0) {
+    return NextResponse.json({ error: "このメールアドレスはすでに登録済みです" }, { status: 409 })
   }
 
   // Create Prisma user (emailVerified is null until the user confirms their email)
