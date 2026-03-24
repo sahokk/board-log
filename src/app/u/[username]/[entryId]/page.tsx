@@ -10,6 +10,7 @@ import { WishlistButton } from "@/components/WishlistButton"
 import { RatingEditor } from "@/components/RatingEditor"
 import { SessionList } from "@/components/SessionList"
 import { DeleteButton } from "@/components/DeleteButton"
+import ReportNameButton from "@/components/ReportNameButton"
 import type { Metadata } from "next"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faStar as faStarSolid, faUsers, faClock, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
@@ -100,10 +101,15 @@ export default async function PublicGameDetailPage({ params }: Props) {
         {/* ゲーム名 */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold tracking-tight text-amber-950">
-            {game.nameJa ?? game.name}
+            {game.customNameJa ?? game.nameJa ?? game.name}
           </h1>
-          {game.nameJa && (
+          {(game.customNameJa || game.nameJa) && (
             <p className="mt-1 text-sm text-amber-800/60">{game.name}</p>
+          )}
+          {session?.user?.id && (
+            <div className="mt-2 flex justify-center">
+              <ReportNameButton gameId={game.id} currentNameJa={game.customNameJa ?? game.nameJa} />
+            </div>
           )}
         </div>
 

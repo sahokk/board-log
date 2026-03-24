@@ -11,6 +11,7 @@ import { MechanicTag } from "@/components/MechanicTag"
 import { DeleteButton } from "./DeleteButton"
 import { SessionList } from "./SessionList"
 import { RatingEditor } from "./RatingEditor"
+import ReportNameButton from "@/components/ReportNameButton"
 
 interface Props {
   readonly params: Promise<{ id: string }>
@@ -67,11 +68,14 @@ export default async function PlayDetailPage({ params }: Props) {
         {/* ゲーム名 */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold tracking-tight text-amber-950">
-            {entry.game.nameJa ?? entry.game.name}
+            {entry.game.customNameJa ?? entry.game.nameJa ?? entry.game.name}
           </h1>
-          {entry.game.nameJa && (
+          {(entry.game.customNameJa || entry.game.nameJa) && (
             <p className="mt-1 text-sm text-amber-800/60">{entry.game.name}</p>
           )}
+          <div className="mt-2 flex justify-center">
+            <ReportNameButton gameId={entry.game.id} currentNameJa={entry.game.customNameJa ?? entry.game.nameJa} />
+          </div>
         </div>
 
         {/* BGG メタデータ */}

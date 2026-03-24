@@ -7,6 +7,7 @@ import { translateCategory } from "@/lib/bgg/translations"
 import { deduplicateMechanics } from "@/lib/bgg/mechanic-labels"
 import { MechanicTag } from "@/components/MechanicTag"
 import { WishlistButton } from "@/components/WishlistButton"
+import ReportNameButton from "@/components/ReportNameButton"
 import type { Metadata } from "next"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faUsers, faClock, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
@@ -83,6 +84,11 @@ export default async function PublicGamePage({ params }: Props) {
           </h1>
           {(game.customNameJa || game.nameJa) && (
             <p className="mt-1 text-sm text-amber-800/60">{game.name}</p>
+          )}
+          {session?.user?.id && (
+            <div className="mt-2 flex justify-center">
+              <ReportNameButton gameId={game.id} currentNameJa={game.customNameJa ?? game.nameJa} />
+            </div>
           )}
         </div>
 
