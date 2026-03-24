@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation"
+import Link from "next/link"
 import { getAdminSession } from "@/lib/admin"
 import { prisma } from "@/lib/prisma"
 import { GameImage } from "@/components/GameImage"
@@ -19,7 +20,10 @@ export default async function AdminReportsPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">名称修正レポート</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">名称修正レポート</h1>
+        <Link href="/admin/games" className="text-sm text-amber-600 hover:underline">日本語名管理 →</Link>
+      </div>
 
       {reports.length === 0 ? (
         <p className="text-gray-500">未対応のレポートはありません</p>
