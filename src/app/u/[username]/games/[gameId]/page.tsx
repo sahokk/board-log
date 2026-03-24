@@ -9,7 +9,7 @@ import { MechanicTag } from "@/components/MechanicTag"
 import { WishlistButton } from "@/components/WishlistButton"
 import type { Metadata } from "next"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faUsers, faClock, faScaleBalanced, faDiceD6 } from "@fortawesome/free-solid-svg-icons"
+import { faUsers, faClock, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
 
 interface Props {
   readonly params: Promise<{ username: string; gameId: string }>
@@ -69,8 +69,8 @@ export default async function PublicGamePage({ params }: Props) {
                 sizes="256px"
               />
             ) : (
-              <div className="flex h-full items-center justify-center">
-                <FontAwesomeIcon icon={faDiceD6} className="size-16 text-amber-300" />
+              <div className="flex h-full items-center justify-center text-amber-300">
+                <span className="text-7xl">🎲</span>
               </div>
             )}
           </div>

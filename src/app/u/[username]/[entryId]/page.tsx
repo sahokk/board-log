@@ -12,7 +12,7 @@ import { SessionList } from "@/components/SessionList"
 import { DeleteButton } from "@/components/DeleteButton"
 import type { Metadata } from "next"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faStar as faStarSolid, faUsers, faClock, faScaleBalanced, faDiceD6 } from "@fortawesome/free-solid-svg-icons"
+import { faStar as faStarSolid, faUsers, faClock, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons"
 
 interface Props {
@@ -90,8 +90,8 @@ export default async function PublicGameDetailPage({ params }: Props) {
                 sizes="256px"
               />
             ) : (
-              <div className="flex h-full items-center justify-center">
-                <FontAwesomeIcon icon={faDiceD6} className="size-16 text-amber-300" />
+              <div className="flex h-full items-center justify-center text-amber-300">
+                <span className="text-7xl">🎲</span>
               </div>
             )}
           </div>

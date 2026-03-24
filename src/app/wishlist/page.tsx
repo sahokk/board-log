@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { WishlistButton } from "@/components/WishlistButton"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faDiceD6 } from "@fortawesome/free-solid-svg-icons"
+
 import { faHeart } from "@fortawesome/free-regular-svg-icons"
 
 export default async function WishlistPage() {
@@ -70,8 +70,8 @@ export default async function WishlistPage() {
                       sizes="(max-width: 640px) 50vw, 20vw"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center">
-                      <FontAwesomeIcon icon={faDiceD6} className="size-10 text-amber-300" />
+                    <div className="flex h-full items-center justify-center text-amber-300">
+                      <span className="text-4xl">🎲</span>
                     </div>
                   )}
                   <div className="absolute right-2 top-2">
