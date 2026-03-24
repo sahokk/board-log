@@ -19,6 +19,40 @@ interface GameResult {
   thumbnailUrl?: string
 }
 
+interface SearchCache {
+  query: string
+  page: number
+  results: GameResult[]
+}
+
+const CACHE_KEY = "search_cache"
+
+function getCache(): SearchCache | null {
+  try {
+    const raw = sessionStorage.getItem(CACHE_KEY)
+    if (!raw) return null
+    return JSON.parse(raw) as SearchCache
+  } catch {
+    return null
+  }
+}
+
+function setCache(data: SearchCache) {
+  try {
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify(data))
+  } catch {
+    // ignore
+  }
+}
+
+function clearCache() {
+  try {
+    sessionStorage.removeItem(CACHE_KEY)
+  } catch {
+    // ignore
+  }
+}
+
 interface Props {
   readonly username?: string | null
 }
@@ -30,16 +64,23 @@ export function SearchClient({ username }: Props) {
   const router = useRouter()
   const pathname = usePathname()
 
-  const [query, setQuery] = useState(() => searchParams.get("q") ?? "")
-  const [results, setResults] = useState<GameResult[]>([])
-  const [page, setPage] = useState(() => Number(searchParams.get("page") ?? "0"))
+  const urlQuery = searchParams.get("q") ?? ""
+  const urlPage = Number(searchParams.get("page") ?? "0")
+
+  const [query, setQuery] = useState(urlQuery)
+  const cachedData = globalThis.window !== undefined ? getCache() : null
+  const isCacheHit = cachedData?.query === urlQuery && urlQuery !== ""
+
+  const [results, setResults] = useState<GameResult[]>(isCacheHit ? cachedData!.results : [])
+  const [page, setPage] = useState(isCacheHit ? cachedData!.page : urlPage)
   const [loading, setLoading] = useState(false)
-  const [searched, setSearched] = useState(() => !!searchParams.get("q"))
+  const [searched, setSearched] = useState(isCacheHit || !!urlQuery)
   const [error, setError] = useState<string | null>(null)
   const [showManualForm, setShowManualForm] = useState(false)
   const [wishlistedIds, setWishlistedIds] = useState<Set<string>>(new Set())
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isFirstRender = useRef(true)
+  const skipInitialFetch = useRef(isCacheHit)
 
   useEffect(() => {
     fetch("/api/wishlist")
@@ -51,6 +92,15 @@ export function SearchClient({ username }: Props) {
       })
       .catch(() => {})
   }, [])
+
+  // キャッシュ保存
+  useEffect(() => {
+    if (query.trim() && results.length > 0) {
+      setCache({ query: query.trim(), page, results })
+    } else if (!query.trim()) {
+      clearCache()
+    }
+  }, [query, page, results])
 
   // URL同期
   useEffect(() => {
@@ -72,7 +122,15 @@ export function SearchClient({ username }: Props) {
 
     if (debounceRef.current) clearTimeout(debounceRef.current)
     const delay = isFirstRender.current ? 0 : 500
+    const isFirst = isFirstRender.current
     isFirstRender.current = false
+
+    // キャッシュヒット時は初回フェッチをスキップ
+    if (isFirst && skipInitialFetch.current) {
+      setSearched(true)
+      return
+    }
+
     debounceRef.current = setTimeout(async () => {
       setLoading(true)
       setError(null)
@@ -118,7 +176,7 @@ export function SearchClient({ username }: Props) {
 
   function gameDetailHref(game: GameResult): string {
     if (username) return `/u/${username}/games/${game.id}`
-    return `/record?gameId=${game.id}`
+    return `/games/${game.id}`
   }
 
   return (
@@ -172,12 +230,12 @@ export function SearchClient({ username }: Props) {
             {displayed.map((game) => (
               <div
                 key={game.id}
-                className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm"
+                className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
               >
                 {/* 箱画像＋名前 → 詳細ページへ */}
                 <Link
                   href={gameDetailHref(game)}
-                  className="flex flex-1 flex-col transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+                  className="flex flex-1 flex-col"
                 >
                   <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
                     {game.imageUrl ? (
@@ -212,10 +270,10 @@ export function SearchClient({ username }: Props) {
                 </Link>
 
                 {/* アクションボタン */}
-                <div className="flex flex-col gap-1.5 px-3 pb-3">
+                <div className="flex flex-col gap-1.5 px-3 pb-3 pt-1">
                   <Link
                     href={`/record?gameId=${game.id}`}
-                    className="block w-full rounded-lg bg-amber-900 px-3 py-1.5 text-center text-xs font-medium text-white transition-colors hover:bg-amber-800"
+                    className="block w-full rounded-lg bg-amber-900 px-3 py-2 text-center text-xs font-medium text-white transition-colors hover:bg-amber-800"
                   >
                     遊んだ！
                   </Link>
