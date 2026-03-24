@@ -69,7 +69,7 @@ export function RecentPlaysCarousel({ plays }: Props) {
         {[...plays, ...plays].map((play, index) => (
           <div
             key={`${play.id}-${index}`}
-            className="group shrink-0 w-48"
+            className="group shrink-0 w-36 sm:w-48"
           >
             <div className="wood-card overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
               {/* 箱画像 */}
@@ -80,7 +80,7 @@ export function RecentPlaysCarousel({ plays }: Props) {
                     alt={getGameName(play.game)}
                     fill
                     className="object-contain p-4"
-                    sizes="192px"
+                    sizes="(max-width: 640px) 144px, 192px"
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center text-amber-300">
