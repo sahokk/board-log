@@ -38,10 +38,12 @@ export default async function WishlistPage() {
 
         {items.length === 0 ? (
           <div className="wood-card rounded-2xl p-16 text-center shadow-sm">
-            <div className="mb-4 text-5xl">🤍</div>
+            <div className="mb-4 text-5xl text-amber-300">
+              <FontAwesomeIcon icon={faHeart} />
+            </div>
             <p className="mb-2 text-lg font-medium text-amber-900">気になるゲームを追加しよう</p>
             <p className="mb-8 text-sm text-amber-800/70">
-              ゲーム検索やおすすめから 🤍 をタップすると追加されます
+              ゲーム検索やおすすめから <FontAwesomeIcon icon={faHeart} className="text-amber-800" /> をタップすると追加されます
             </p>
             <Link
               href="/"
@@ -68,8 +70,8 @@ export default async function WishlistPage() {
                       sizes="(max-width: 640px) 50vw, 20vw"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-amber-300">
-                      <span className="text-4xl">🎲</span>
+                    <div className="flex h-full items-center justify-center">
+                      <FontAwesomeIcon icon={faDiceD6} className="size-10 text-amber-300" />
                     </div>
                   )}
                   <div className="absolute right-2 top-2">

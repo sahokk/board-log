@@ -65,8 +65,8 @@ export default async function GameDetailPage({ params }: Props) {
                 />
               ) : (
                 <div className="flex h-full items-center justify-center">
-                <FontAwesomeIcon icon={faDiceD6} className="size-10 text-amber-300" />
-              </div>
+                  <FontAwesomeIcon icon={faDiceD6} className="size-10 text-amber-300" />
+                </div>
               )}
             </div>
             <div className="min-w-0 flex-1">

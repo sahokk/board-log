@@ -4,7 +4,7 @@ import Image from "next/image"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faUsers, faClock, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
+import { faUsers, faClock, faScaleBalanced, faDiceD6 } from "@fortawesome/free-solid-svg-icons"
 import { translateCategory } from "@/lib/bgg/translations"
 import { deduplicateMechanics } from "@/lib/bgg/mechanic-labels"
 import { MechanicTag } from "@/components/MechanicTag"
@@ -57,8 +57,8 @@ export default async function PlayDetailPage({ params }: Props) {
                 sizes="256px"
               />
             ) : (
-              <div className="flex h-full items-center justify-center text-amber-300">
-                <span className="text-7xl">🎲</span>
+              <div className="flex h-full items-center justify-center">
+                <FontAwesomeIcon icon={faDiceD6} className="size-16 text-amber-300" />
               </div>
             )}
           </div>
