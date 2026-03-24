@@ -21,22 +21,22 @@ export async function Header() {
         <Link href="/" className="text-xl font-semibold tracking-tight text-amber-950">
           🎲 Boardory
         </Link>
-        <nav className="flex items-center gap-3 sm:gap-6">
+        <nav className="flex items-center gap-2 sm:gap-6">
           {session?.user && (
             <>
               <Link
                 href="/plays"
-                className="flex items-center gap-1 text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
+                className="flex items-center gap-1 text-xs sm:text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
               >
-                <FontAwesomeIcon icon={faList} className="size-4" />
-                <span className="hidden sm:inline">遊んだゲーム</span>
+                <FontAwesomeIcon icon={faList} className="size-3.5 sm:size-4" />
+                <span>遊んだゲーム</span>
               </Link>
               <Link
                 href="/wishlist"
-                className="flex items-center gap-1 text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
+                className="flex items-center gap-1 text-xs sm:text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
               >
-                <FontAwesomeIcon icon={faHeart} className="size-4" />
-                <span className="hidden sm:inline">気になる</span>
+                <FontAwesomeIcon icon={faHeart} className="size-3.5 sm:size-4" />
+                <span>気になる</span>
               </Link>
             </>
           )}
