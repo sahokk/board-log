@@ -15,6 +15,8 @@ export function SignupClient({ callbackUrl }: Props) {
   const [username, setUsername] = useState("")
   const [usernameTouched, setUsernameTouched] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [done, setDone] = useState(false)
 
   const handleEmailChange = (value: string) => {
     setEmail(value)
@@ -28,8 +30,6 @@ export function SignupClient({ callbackUrl }: Props) {
     setUsernameTouched(true)
     setUsername(value)
   }
-  const [error, setError] = useState<string | null>(null)
-  const [done, setDone] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

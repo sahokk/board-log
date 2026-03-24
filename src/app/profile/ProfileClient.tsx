@@ -89,7 +89,7 @@ export function ProfileClient({ user, stats, allGames, featuredGames, savedFeatu
     setDeleting(true)
     try {
       const res = await fetch("/api/user", { method: "DELETE" })
-      if (res.ok) await signOut({ redirectTo: "/" })
+      if (res.ok) await signOut({ callbackUrl: "/" })
     } finally {
       setDeleting(false)
     }

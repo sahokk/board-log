@@ -13,6 +13,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   OAuthAccountNotLinked: "このメールアドレスは別のプロバイダーで登録済みです。以前使ったログイン方法をお試しください。",
   OAuthCallbackError: "ログインに失敗しました。もう一度お試しください。",
   CredentialsSignin: "メールアドレスまたはパスワードが正しくありません。",
+  EmailNotConfirmed: "メールアドレスの確認が完了していません。登録時に送信した確認メールのリンクをクリックしてください。",
   Default: "ログインに失敗しました。もう一度お試しください。",
 }
 
@@ -35,7 +36,7 @@ export function SigninClient({ callbackUrl, error }: Props) {
         redirect: false,
       })
       if (result?.error) {
-        setFormError(ERROR_MESSAGES.CredentialsSignin)
+        setFormError(ERROR_MESSAGES[result.error] ?? ERROR_MESSAGES.CredentialsSignin)
       } else if (result?.url) {
         globalThis.location.href = result.url
       }

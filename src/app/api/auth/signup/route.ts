@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import { prisma } from "@/lib/prisma"
+import { supabaseAdmin } from "@/lib/supabase/server"
 
 // Public client — auth.signUp() is the only method that actually sends confirmation emails
 const supabasePublic = createClient(
@@ -74,13 +75,19 @@ export async function POST(request: Request) {
   }
 
   // Create Prisma user (emailVerified is null until the user confirms their email)
-  await prisma.user.create({
-    data: {
-      email: data.user.email ?? email,
-      displayName: trimmedDisplayName,
-      username: trimmedUsername,
-    },
-  })
+  // If Prisma fails, roll back the Supabase user to keep both stores in sync
+  try {
+    await prisma.user.create({
+      data: {
+        email: data.user.email ?? email,
+        displayName: trimmedDisplayName,
+        username: trimmedUsername,
+      },
+    })
+  } catch {
+    await supabaseAdmin.auth.admin.deleteUser(data.user.id)
+    return NextResponse.json({ error: "登録に失敗しました。もう一度お試しください" }, { status: 500 })
+  }
 
   return NextResponse.json({ success: true })
 }

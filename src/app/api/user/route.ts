@@ -164,10 +164,17 @@ export async function DELETE() {
 
   // Also delete from Supabase so Credentials login cannot recreate this account
   if (user?.email) {
-    const { data } = await supabaseAdmin.auth.admin.listUsers()
-    const supabaseUser = data?.users.find((u) => u.email === user.email)
-    if (supabaseUser) {
-      await supabaseAdmin.auth.admin.deleteUser(supabaseUser.id)
+    let supabaseUserId: string | undefined
+    let page = 1
+    while (!supabaseUserId) {
+      const { data } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 1000 })
+      if (!data?.users.length) break
+      supabaseUserId = data.users.find((u) => u.email === user.email)?.id
+      if (data.users.length < 1000) break
+      page++
+    }
+    if (supabaseUserId) {
+      await supabaseAdmin.auth.admin.deleteUser(supabaseUserId)
     }
   }
 
