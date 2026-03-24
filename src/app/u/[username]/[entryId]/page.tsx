@@ -11,6 +11,8 @@ import { RatingEditor } from "@/components/RatingEditor"
 import { SessionList } from "@/components/SessionList"
 import { DeleteButton } from "@/components/DeleteButton"
 import ReportNameButton from "@/components/ReportNameButton"
+import AdminGameNameEditor from "@/components/AdminGameNameEditor"
+import { isAdminUser } from "@/lib/admin"
 import type { Metadata } from "next"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faStar as faStarSolid, faUsers, faClock, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
@@ -62,11 +64,15 @@ export default async function PublicGameDetailPage({ params }: Props) {
 
   const session = await auth()
   const isOwner = session?.user?.id === entry.userId
-  const wishlisted = !isOwner && session?.user?.id
-    ? (await prisma.wishlistItem.findUnique({
-        where: { userId_gameId: { userId: session.user.id, gameId: game.id } },
-      })) !== null
-    : false
+  const [wishlisted, admin, pendingReports] = await Promise.all([
+    !isOwner && session?.user?.id
+      ? prisma.wishlistItem.findUnique({
+          where: { userId_gameId: { userId: session.user.id, gameId: game.id } },
+        }).then((r) => r !== null)
+      : Promise.resolve(false),
+    session?.user?.id ? isAdminUser(session.user.id) : Promise.resolve(false),
+    prisma.nameReport.count({ where: { gameId: game.id, status: "PENDING" } }),
+  ])
 
   return (
     <div className="wood-texture min-h-screen py-12">
@@ -107,8 +113,16 @@ export default async function PublicGameDetailPage({ params }: Props) {
             <p className="mt-1 text-sm text-amber-800/60">{game.name}</p>
           )}
           {session?.user?.id && (
-            <div className="mt-2 flex justify-center">
-              <ReportNameButton gameId={game.id} currentNameJa={game.customNameJa ?? game.nameJa} />
+            <div className="mt-2 flex flex-col items-center gap-1">
+              {admin ? (
+                <AdminGameNameEditor
+                  gameId={game.id}
+                  currentCustomName={game.customNameJa}
+                  pendingReportCount={pendingReports}
+                />
+              ) : (
+                <ReportNameButton gameId={game.id} currentNameJa={game.customNameJa ?? game.nameJa} />
+              )}
             </div>
           )}
         </div>

@@ -12,6 +12,8 @@ import { DeleteButton } from "./DeleteButton"
 import { SessionList } from "./SessionList"
 import { RatingEditor } from "./RatingEditor"
 import ReportNameButton from "@/components/ReportNameButton"
+import AdminGameNameEditor from "@/components/AdminGameNameEditor"
+import { isAdminUser } from "@/lib/admin"
 
 interface Props {
   readonly params: Promise<{ id: string }>
@@ -34,6 +36,11 @@ export default async function PlayDetailPage({ params }: Props) {
   })
 
   if (!entry) notFound()
+
+  const [admin, pendingReports] = await Promise.all([
+    isAdminUser(session.user.id),
+    prisma.nameReport.count({ where: { gameId: entry.game.id, status: "PENDING" } }),
+  ])
 
   return (
     <div className="wood-texture min-h-screen py-12">
@@ -73,8 +80,17 @@ export default async function PlayDetailPage({ params }: Props) {
           {(entry.game.customNameJa || entry.game.nameJa) && (
             <p className="mt-1 text-sm text-amber-800/60">{entry.game.name}</p>
           )}
-          <div className="mt-2 flex justify-center">
-            <ReportNameButton gameId={entry.game.id} currentNameJa={entry.game.customNameJa ?? entry.game.nameJa} />
+          <div className="mt-2 flex flex-col items-center gap-1">
+            {admin && (
+              <AdminGameNameEditor
+                gameId={entry.game.id}
+                currentCustomName={entry.game.customNameJa}
+                pendingReportCount={pendingReports}
+              />
+            )}
+            {!admin && (
+              <ReportNameButton gameId={entry.game.id} currentNameJa={entry.game.customNameJa ?? entry.game.nameJa} />
+            )}
           </div>
         </div>
 
