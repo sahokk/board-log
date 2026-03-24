@@ -3,6 +3,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faUsers, faClock, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
 import { translateCategory } from "@/lib/bgg/translations"
 import { deduplicateMechanics } from "@/lib/bgg/mechanic-labels"
 import { MechanicTag } from "@/components/MechanicTag"
@@ -88,15 +90,22 @@ export default async function PlayDetailPage({ params }: Props) {
             {(entry.game.minPlayers || entry.game.maxPlayers || entry.game.playingTime) && (
               <div className="flex flex-wrap gap-4 text-sm text-amber-800/80">
                 {(entry.game.minPlayers || entry.game.maxPlayers) && (
-                  <span>
-                    👥 {entry.game.minPlayers ?? "?"}{entry.game.maxPlayers && entry.game.maxPlayers !== entry.game.minPlayers ? `〜${entry.game.maxPlayers}` : ""}人
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faUsers} className="size-3.5" />
+                    {entry.game.minPlayers ?? "?"}{entry.game.maxPlayers && entry.game.maxPlayers !== entry.game.minPlayers ? `〜${entry.game.maxPlayers}` : ""}人
                   </span>
                 )}
                 {entry.game.playingTime && (
-                  <span>⏱ {entry.game.playingTime}分</span>
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faClock} className="size-3.5" />
+                    {entry.game.playingTime}分
+                  </span>
                 )}
                 {entry.game.weight && (
-                  <span>⚖️ 複雑度 {entry.game.weight.toFixed(1)} / 5</span>
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faScaleBalanced} className="size-3.5" />
+                    複雑度 {entry.game.weight.toFixed(1)} / 5
+                  </span>
                 )}
               </div>
             )}

@@ -1,4 +1,6 @@
 import Image from "next/image"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faDiceD6 } from "@fortawesome/free-solid-svg-icons"
 
 interface Props {
   src: string | null | undefined
@@ -24,7 +26,7 @@ export function GameImage({
   }
   return (
     <div className={fallbackClassName}>
-      🎲
+      <FontAwesomeIcon icon={faDiceD6} />
     </div>
   )
 }

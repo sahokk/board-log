@@ -4,6 +4,9 @@ import Link from "next/link"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { WishlistButton } from "@/components/WishlistButton"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faDiceD6 } from "@fortawesome/free-solid-svg-icons"
+import { faHeart } from "@fortawesome/free-regular-svg-icons"
 
 export default async function WishlistPage() {
   const session = await auth()

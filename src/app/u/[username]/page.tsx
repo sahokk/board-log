@@ -12,6 +12,9 @@ import { TitleBadges } from "@/components/TitleBadges"
 import { MechanicTag } from "@/components/MechanicTag"
 import { BoardgameTypeCard } from "@/components/BoardgameTypeCard"
 import type { Metadata } from "next"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faStar as faStarSolid, faUser } from "@fortawesome/free-solid-svg-icons"
+import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons"
 
 interface Props {
   readonly params: Promise<{ username: string }>
@@ -151,8 +154,8 @@ export default async function PublicProfilePage({ params }: Props) {
                       sizes="(max-width: 640px) 80px, 96px"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-3xl sm:text-4xl text-amber-400">
-                      👤
+                    <div className="flex h-full items-center justify-center">
+                      <FontAwesomeIcon icon={faUser} className="size-8 sm:size-10 text-amber-400" />
                     </div>
                   )}
                 </div>
@@ -301,12 +304,11 @@ export default async function PublicProfilePage({ params }: Props) {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-0.5">
                           {[1, 2, 3, 4, 5].map((star) => (
-                            <span
+                            <FontAwesomeIcon
                               key={star}
+                              icon={star <= entry.rating ? faStarSolid : faStarRegular}
                               className={star <= entry.rating ? "text-amber-500 text-xs" : "text-amber-200/40 text-xs"}
-                            >
-                              ★
-                            </span>
+                            />
                           ))}
                         </div>
                         <span className="text-xs text-amber-700/50">{entry._count.sessions}回</span>

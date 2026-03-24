@@ -8,6 +8,8 @@ import { deduplicateMechanics } from "@/lib/bgg/mechanic-labels"
 import { MechanicTag } from "@/components/MechanicTag"
 import { WishlistButton } from "@/components/WishlistButton"
 import type { Metadata } from "next"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faUsers, faClock, faScaleBalanced, faDiceD6 } from "@fortawesome/free-solid-svg-icons"
 
 interface Props {
   readonly params: Promise<{ username: string; gameId: string }>
@@ -67,8 +69,8 @@ export default async function PublicGamePage({ params }: Props) {
                 sizes="256px"
               />
             ) : (
-              <div className="flex h-full items-center justify-center text-amber-300">
-                <span className="text-7xl">🎲</span>
+              <div className="flex h-full items-center justify-center">
+                <FontAwesomeIcon icon={faDiceD6} className="size-16 text-amber-300" />
               </div>
             )}
           </div>
@@ -100,12 +102,23 @@ export default async function PublicGamePage({ params }: Props) {
             {(game.minPlayers || game.maxPlayers || game.playingTime || game.weight) && (
               <div className="flex flex-wrap gap-4 text-sm text-amber-800/80">
                 {(game.minPlayers || game.maxPlayers) && (
-                  <span>
-                    👥 {game.minPlayers ?? "?"}{game.maxPlayers && game.maxPlayers !== game.minPlayers ? `〜${game.maxPlayers}` : ""}人
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faUsers} className="size-3.5" />
+                    {game.minPlayers ?? "?"}{game.maxPlayers && game.maxPlayers !== game.minPlayers ? `〜${game.maxPlayers}` : ""}人
                   </span>
                 )}
-                {game.playingTime && <span>⏱ {game.playingTime}分</span>}
-                {game.weight && <span>⚖️ 複雑度 {game.weight.toFixed(1)} / 5</span>}
+                {game.playingTime && (
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faClock} className="size-3.5" />
+                    {game.playingTime}分
+                  </span>
+                )}
+                {game.weight && (
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faScaleBalanced} className="size-3.5" />
+                    複雑度 {game.weight.toFixed(1)} / 5
+                  </span>
+                )}
               </div>
             )}
             {game.categories && (

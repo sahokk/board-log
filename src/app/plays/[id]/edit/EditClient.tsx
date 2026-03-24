@@ -4,6 +4,9 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faStar as faStarSolid } from "@fortawesome/free-solid-svg-icons"
+import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons"
 
 interface Game {
   id: string
@@ -90,13 +93,10 @@ export function EditClient({ entryId, game, initialRating }: Props) {
               className="text-4xl transition-transform hover:scale-110 focus:outline-none"
               aria-label={`${star}点`}
             >
-              <span
-                className={
-                  star <= (hoverRating || rating) ? "text-amber-500" : "text-amber-200/40"
-                }
-              >
-                ★
-              </span>
+              <FontAwesomeIcon
+                icon={star <= (hoverRating || rating) ? faStarSolid : faStarRegular}
+                className={star <= (hoverRating || rating) ? "text-amber-500" : "text-amber-200/40"}
+              />
             </button>
           ))}
         </div>

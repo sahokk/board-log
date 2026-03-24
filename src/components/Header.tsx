@@ -2,6 +2,9 @@ import Link from "next/link"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { AuthButton } from "@/components/AuthButton"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faList } from "@fortawesome/free-solid-svg-icons"
+import { faHeart } from "@fortawesome/free-regular-svg-icons"
 
 export async function Header() {
   const session = await auth()
@@ -25,14 +28,14 @@ export async function Header() {
                 href="/plays"
                 className="flex items-center gap-1 text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
               >
-                <span className="text-base">📋</span>
+                <FontAwesomeIcon icon={faList} className="size-4" />
                 <span className="hidden sm:inline">遊んだゲーム</span>
               </Link>
               <Link
                 href="/wishlist"
                 className="flex items-center gap-1 text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
               >
-                <span className="text-base">🤍</span>
+                <FontAwesomeIcon icon={faHeart} className="size-4" />
                 <span className="hidden sm:inline">気になる</span>
               </Link>
             </>
