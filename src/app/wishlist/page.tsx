@@ -64,7 +64,7 @@ export default async function WishlistPage() {
                   {game.imageUrl ? (
                     <Image
                       src={game.imageUrl}
-                      alt={game.nameJa ?? game.name}
+                      alt={game.customNameJa ?? game.nameJa ?? game.name}
                       fill
                       className="object-contain p-3"
                       sizes="(max-width: 640px) 50vw, 20vw"
@@ -80,7 +80,7 @@ export default async function WishlistPage() {
                 </div>
                 <div className="p-3">
                   <p className="line-clamp-2 text-xs font-semibold text-amber-950">
-                    {game.nameJa ?? game.name}
+                    {game.customNameJa ?? game.nameJa ?? game.name}
                   </p>
                 </div>
               </Link>

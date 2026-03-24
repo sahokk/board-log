@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { ManualGameForm } from "@/components/ManualGameForm"
@@ -18,6 +19,40 @@ interface GameResult {
   thumbnailUrl?: string
 }
 
+interface SearchCache {
+  query: string
+  page: number
+  results: GameResult[]
+}
+
+const CACHE_KEY = "search_cache"
+
+function getCache(): SearchCache | null {
+  try {
+    const raw = sessionStorage.getItem(CACHE_KEY)
+    if (!raw) return null
+    return JSON.parse(raw) as SearchCache
+  } catch {
+    return null
+  }
+}
+
+function setCache(data: SearchCache) {
+  try {
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify(data))
+  } catch {
+    // ignore
+  }
+}
+
+function clearCache() {
+  try {
+    sessionStorage.removeItem(CACHE_KEY)
+  } catch {
+    // ignore
+  }
+}
+
 interface Props {
   readonly username?: string | null
 }
@@ -25,15 +60,32 @@ interface Props {
 const PAGE_SIZE = 6
 
 export function SearchClient({ username }: Props) {
-  const [query, setQuery] = useState("")
-  const [results, setResults] = useState<GameResult[]>([])
-  const [page, setPage] = useState(0)
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const urlQuery = searchParams.get("q") ?? ""
+  const urlPage = Number(searchParams.get("page") ?? "0")
+
+  const [query, setQuery] = useState(urlQuery)
+  // 初回のみキャッシュを読む（毎レンダーの sessionStorage 読み取りを避けるため ref に保持）
+  const initCacheRef = useRef<{ data: SearchCache | null; hit: boolean } | null>(null)
+  if (initCacheRef.current === null) {
+    const data = globalThis.window !== undefined ? getCache() : null
+    initCacheRef.current = { data, hit: data?.query === urlQuery && urlQuery !== "" }
+  }
+  const { data: cachedData, hit: isCacheHit } = initCacheRef.current
+
+  const [results, setResults] = useState<GameResult[]>(isCacheHit ? cachedData!.results : [])
+  const [page, setPage] = useState(isCacheHit ? cachedData!.page : urlPage)
   const [loading, setLoading] = useState(false)
-  const [searched, setSearched] = useState(false)
+  const [searched, setSearched] = useState(isCacheHit || !!urlQuery)
   const [error, setError] = useState<string | null>(null)
   const [showManualForm, setShowManualForm] = useState(false)
   const [wishlistedIds, setWishlistedIds] = useState<Set<string>>(new Set())
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isFirstRender = useRef(true)
+  const skipInitialFetch = useRef(isCacheHit)
 
   useEffect(() => {
     fetch("/api/wishlist")
@@ -46,6 +98,24 @@ export function SearchClient({ username }: Props) {
       .catch(() => {})
   }, [])
 
+  // キャッシュ保存
+  useEffect(() => {
+    if (query.trim() && results.length > 0) {
+      setCache({ query: query.trim(), page, results })
+    } else if (!query.trim()) {
+      clearCache()
+    }
+  }, [query, page, results])
+
+  // URL同期
+  useEffect(() => {
+    const params = new URLSearchParams()
+    if (query.trim()) params.set("q", query.trim())
+    if (page > 0) params.set("page", String(page))
+    const qs = params.toString()
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
+  }, [query, page, pathname, router])
+
   useEffect(() => {
     if (!query.trim()) {
       setResults([])
@@ -56,12 +126,22 @@ export function SearchClient({ username }: Props) {
     }
 
     if (debounceRef.current) clearTimeout(debounceRef.current)
+    const delay = isFirstRender.current ? 0 : 500
+    const isFirst = isFirstRender.current
+    isFirstRender.current = false
+
+    // キャッシュヒット時は初回フェッチをスキップ
+    if (isFirst && skipInitialFetch.current) {
+      setSearched(true)
+      return
+    }
+
     debounceRef.current = setTimeout(async () => {
       setLoading(true)
       setError(null)
       setSearched(true)
       setShowManualForm(false)
-      setPage(0)
+      if (delay > 0) setPage(0)
       try {
         const res = await fetch(`/api/games/search?q=${encodeURIComponent(query.trim())}`)
         const data = await res.json()
@@ -73,7 +153,7 @@ export function SearchClient({ username }: Props) {
       } finally {
         setLoading(false)
       }
-    }, 500)
+    }, delay)
 
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
@@ -101,7 +181,7 @@ export function SearchClient({ username }: Props) {
 
   function gameDetailHref(game: GameResult): string {
     if (username) return `/u/${username}/games/${game.id}`
-    return `/record?gameId=${game.id}`
+    return `/games/${game.id}`
   }
 
   return (
@@ -155,12 +235,12 @@ export function SearchClient({ username }: Props) {
             {displayed.map((game) => (
               <div
                 key={game.id}
-                className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm"
+                className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
               >
                 {/* 箱画像＋名前 → 詳細ページへ */}
                 <Link
                   href={gameDetailHref(game)}
-                  className="flex flex-1 flex-col transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+                  className="flex flex-1 flex-col"
                 >
                   <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
                     {game.imageUrl ? (
@@ -195,10 +275,10 @@ export function SearchClient({ username }: Props) {
                 </Link>
 
                 {/* アクションボタン */}
-                <div className="flex flex-col gap-1.5 px-3 pb-3">
+                <div className="flex flex-col gap-1.5 px-3 pb-3 pt-1">
                   <Link
                     href={`/record?gameId=${game.id}`}
-                    className="block w-full rounded-lg bg-amber-900 px-3 py-1.5 text-center text-xs font-medium text-white transition-colors hover:bg-amber-800"
+                    className="block w-full rounded-lg bg-amber-900 px-3 py-2 text-center text-xs font-medium text-white transition-colors hover:bg-amber-800"
                   >
                     遊んだ！
                   </Link>

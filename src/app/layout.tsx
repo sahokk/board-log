@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { M_PLUS_Rounded_1c, Kaisei_Decol, Mochiy_Pop_One } from "next/font/google"
+import { M_PLUS_Rounded_1c, Zen_Maru_Gothic } from "next/font/google"
 import "./globals.css"
 import { config } from "@fortawesome/fontawesome-svg-core"
 config.autoAddCss = false
@@ -14,17 +14,11 @@ const mPlusRounded = M_PLUS_Rounded_1c({
   display: "swap",
 })
 
-const kaiseiDecol = Kaisei_Decol({
-  weight: ["400", "700"],
-  subsets: ["latin"],
-  variable: "--font-kaisei",
-  display: "swap",
-})
 
-const mochiyPopOne = Mochiy_Pop_One({
-  weight: ["400"],
+const zenMaruGothic = Zen_Maru_Gothic({
+  weight: ["400", "500", "700"],
   subsets: ["latin"],
-  variable: "--font-mochiy",
+  variable: "--font-zen-maru",
   display: "swap",
 })
 
@@ -42,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${mPlusRounded.variable} ${kaiseiDecol.variable} ${mochiyPopOne.variable} antialiased`}
+        className={`${mPlusRounded.variable} ${zenMaruGothic.variable} antialiased`}
       >
         <Providers>
           <div className="flex min-h-screen flex-col">

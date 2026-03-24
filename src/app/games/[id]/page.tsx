@@ -46,8 +46,8 @@ export default async function GameDetailPage({ params }: Props) {
     <div className="wood-texture min-h-screen py-12">
       <div className="mx-auto max-w-xl px-6">
 
-        <Link href="/shindan" className="mb-6 inline-flex items-center gap-1 text-sm text-amber-700 hover:text-amber-900">
-          ← 診断に戻る
+        <Link href="/" className="mb-6 inline-flex items-center gap-1 text-sm text-amber-700 hover:text-amber-900">
+          ← ホームに戻る
         </Link>
 
         <div className="wood-card mt-4 overflow-hidden rounded-2xl shadow-sm">

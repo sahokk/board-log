@@ -25,11 +25,11 @@ body {
 }
 
 h1, h2, h3 {
-  font-family: var(--font-mochiy), "Mochiy Pop One", sans-serif;
+  font-family: var(--font-zen-maru), "Zen Maru Gothic", sans-serif;
 }
 
 .font-logo {
-  font-family: var(--font-kaisei), "Kaisei Decol", sans-serif;
+  font-family: var(--font-zen-maru), "Zen Maru Gothic", sans-serif;
 }
 
 /* Wood grain texture using CSS gradients */
@@ -63,4 +63,16 @@ h1, h2, h3 {
 
 .animate-fade-in-up {
   animation: fade-in-up 0.2s ease-out;
+}
+
+@keyframes heart-pop {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.5); }
+  60%  { transform: scale(0.9); }
+  80%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.animate-heart-pop {
+  animation: heart-pop 0.45s ease-out;
 }

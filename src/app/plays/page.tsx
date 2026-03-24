@@ -95,8 +95,7 @@ export default async function PlaysPage() {
 									{/* 情報 */}
 									<div className="p-4">
 										<p className="mb-2 line-clamp-2 text-sm font-semibold text-amber-950 group-hover:text-amber-800">
-											{entry.game.nameJa ??
-												entry.game.name}
+											{entry.game.customNameJa ?? entry.game.nameJa ?? entry.game.name}
 										</p>
 										<div className="flex items-center justify-between">
 											<StarDisplay rating={entry.rating} />

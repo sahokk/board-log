@@ -1,0 +1,46 @@
+import { redirect } from "next/navigation"
+import Link from "next/link"
+import { getAdminSession } from "@/lib/admin"
+import { prisma } from "@/lib/prisma"
+import AdminGamesClient from "./AdminGamesClient"
+
+export default async function AdminGamesPage() {
+  const admin = await getAdminSession()
+  if (!admin) redirect("/")
+
+  const games = await prisma.game.findMany({
+    where: { nameJa: { not: null } },
+    select: {
+      id: true,
+      name: true,
+      bggId: true,
+      nameJa: true,
+      customNameJa: true,
+      imageUrl: true,
+      nameReports: {
+        where: { status: "PENDING" },
+        select: {
+          id: true,
+          suggestedName: true,
+          reason: true,
+          createdAt: true,
+          reporter: { select: { username: true, displayName: true, name: true } },
+        },
+        orderBy: { createdAt: "asc" as const },
+      },
+      _count: { select: { nameReports: { where: { status: "PENDING" } } } },
+    },
+    orderBy: { updatedAt: "desc" },
+  })
+
+  return (
+    <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-2xl font-bold">ゲーム日本語名管理</h1>
+        <Link href="/admin/reports" className="text-sm text-amber-600 hover:underline">← レポート一覧</Link>
+      </div>
+      <p className="text-sm text-gray-500 mb-6">nameJaが設定されているゲーム一覧。customNameJaを直接編集できます。</p>
+      <AdminGamesClient games={games} />
+    </div>
+  )
+}

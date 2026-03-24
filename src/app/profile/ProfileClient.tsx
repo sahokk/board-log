@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faUser } from "@fortawesome/free-solid-svg-icons"
 import Image from "next/image"
 import Link from "next/link"
 import { getDisplayName, getProfileImage } from "@/lib/profile-utils"
@@ -166,7 +168,9 @@ export function ProfileClient({ user, stats, allGames, featuredGames, savedFeatu
                 {profileImage ? (
                   <Image src={profileImage} alt={displayName} fill className="object-cover" sizes="80px" />
                 ) : (
-                  <div className="flex h-full items-center justify-center text-3xl text-amber-400">👤</div>
+                  <div className="flex h-full items-center justify-center">
+                    <FontAwesomeIcon icon={faUser} className="size-8 text-amber-400" />
+                  </div>
                 )}
               </div>
               <div className="min-w-0">

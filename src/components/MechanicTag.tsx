@@ -7,7 +7,7 @@ interface Props {
 }
 
 const TOOLTIP_CLASS =
-  "pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-56 -translate-x-1/2 rounded-xl bg-amber-950 px-3 py-2 text-xs leading-relaxed text-amber-50 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100"
+  "pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-56 -translate-x-1/2 rounded-xl bg-amber-950 px-3 py-2 text-xs leading-relaxed text-amber-50 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
 
 const PILL_CLASS: Record<string, string> = {
   default: "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium",
@@ -22,15 +22,13 @@ export function MechanicTag({ name, variant = "default" }: Readonly<Props>) {
   if (variant === "bare") {
     if (!desc) return <span>{label}</span>
     return (
-      <span className="group relative inline-block">
-        <span className="cursor-help underline decoration-dotted decoration-current underline-offset-2 opacity-90">
-          {label}
-        </span>
+      <button type="button" className="group relative inline-block cursor-help underline decoration-dotted decoration-current underline-offset-2 opacity-90">
+        {label}
         <span role="tooltip" className={TOOLTIP_CLASS}>
           {desc}
           <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-amber-950" />
         </span>
-      </span>
+      </button>
     )
   }
 
@@ -41,14 +39,12 @@ export function MechanicTag({ name, variant = "default" }: Readonly<Props>) {
   }
 
   return (
-    <span className="group relative inline-block">
-      <span className={`${pillClass} cursor-help underline decoration-dotted decoration-amber-400 underline-offset-2`}>
-        {label}
-      </span>
+    <button type="button" className={`group relative inline-block ${pillClass} cursor-help underline decoration-dotted decoration-amber-400 underline-offset-2`}>
+      {label}
       <span role="tooltip" className={TOOLTIP_CLASS}>
         {desc}
         <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-amber-950" />
       </span>
-    </span>
+    </button>
   )
 }

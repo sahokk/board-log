@@ -24,11 +24,13 @@ model User {
   isProfilePublic  Boolean @default(true)  // Whether public profile URL is accessible
   featuredEntryIds String?                 // JSON: up to 3 GameEntry IDs shown on business card
   cardTheme        String  @default("amber") // Business card color theme
+  role             Role    @default(USER)
 
   accounts      Account[]
   sessions      Session[]
   gameEntries   GameEntry[]
   wishlistItems WishlistItem[]
+  nameReports   NameReport[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -76,6 +78,17 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ReportStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 // Application domain models
 
 model Game {
@@ -94,6 +107,7 @@ model Game {
 
   gameEntries   GameEntry[]
   wishlistItems WishlistItem[]
+  nameReports   NameReport[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -147,4 +161,24 @@ model PlaySession {
 
   @@index([gameEntryId])
   @@index([playedAt])
+}
+
+// ゲーム名の誤り報告
+model NameReport {
+  id            String       @id @default(cuid())
+  gameId        String
+  reporterId    String
+  suggestedName String       // 提案する日本語名
+  reason        String?      @db.Text // 任意コメント
+  status        ReportStatus @default(PENDING)
+  reviewedById  String?      // 承認・却下したadminのuserId
+
+  game         Game  @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  reporter     User  @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([gameId])
 }
