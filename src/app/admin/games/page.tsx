@@ -34,7 +34,7 @@ export default async function AdminGamesPage() {
   })
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-6 py-8">
       <div className="flex items-center justify-between mb-2">
         <h1 className="text-2xl font-bold">ゲーム日本語名管理</h1>
         <Link href="/admin/reports" className="text-sm text-amber-600 hover:underline">← レポート一覧</Link>

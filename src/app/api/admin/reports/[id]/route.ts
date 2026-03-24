@@ -29,6 +29,7 @@ export async function PATCH(request: NextRequest, { params }: Props) {
       prisma.game.update({
         where: { id: report.gameId },
         data: { customNameJa: report.suggestedName },
+        select: { id: true },
       }),
       // このレポートを承認
       prisma.nameReport.update({
@@ -62,5 +63,5 @@ export async function PATCH(request: NextRequest, { params }: Props) {
     })
   }
 
-  return NextResponse.json({ ok: true })
+  return NextResponse.json({ ok: true, customNameJa: action === "approve" ? report.suggestedName : undefined })
 }
