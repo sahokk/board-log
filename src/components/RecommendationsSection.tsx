@@ -18,17 +18,21 @@ interface Props {
 }
 
 export function RecommendationsSection({ initialGames, username }: Readonly<Props>) {
-  const [games, setGames] = useState<RecommendedGame[]>(() => {
-    if (globalThis.window === undefined) return initialGames
+  const [games, setGames] = useState<RecommendedGame[]>(initialGames)
+  const [isPending, startTransition] = useTransition()
+
+  // マウント後にキャッシュを適用（サーバーと初回レンダーを一致させるため useEffect で行う）
+  useEffect(() => {
     try {
       const cached = sessionStorage.getItem(STORAGE_KEY)
-      if (cached) return JSON.parse(cached) as RecommendedGame[]
+      if (cached) {
+        const parsed = JSON.parse(cached) as RecommendedGame[]
+        if (parsed.length > 0) setGames(parsed)
+      }
     } catch {
       // ignore
     }
-    return initialGames
-  })
-  const [isPending, startTransition] = useTransition()
+  }, [])
 
   useEffect(() => {
     try {
