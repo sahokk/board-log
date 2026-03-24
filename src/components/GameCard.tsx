@@ -3,14 +3,14 @@ import Link from "next/link"
 import { WishlistButton } from "@/components/WishlistButton"
 
 interface Props {
-  gameId: string
-  detailHref: string
-  name: string
-  imageUrl?: string | null
-  subtext?: string | null
-  year?: number | null
-  wishlisted: boolean
-  sizes?: string
+  readonly gameId: string
+  readonly detailHref: string
+  readonly name: string
+  readonly imageUrl?: string | null
+  readonly subtext?: string | null
+  readonly year?: number | null
+  readonly wishlisted: boolean
+  readonly sizes?: string
 }
 
 export function GameCard({ gameId, detailHref, name, imageUrl, subtext, year, wishlisted, sizes = "(max-width: 640px) 50vw, 25vw" }: Props) {
@@ -34,8 +34,8 @@ export function GameCard({ gameId, detailHref, name, imageUrl, subtext, year, wi
         </div>
         <div className="px-3 pb-1 pt-2">
           <p className="mb-1 line-clamp-2 text-xs font-semibold text-amber-950">{name}</p>
-          {subtext && <p className="mt-0.5 line-clamp-1 text-xs text-amber-700/50">{subtext}</p>}
-          {year && <p className="mt-0.5 text-xs font-medium text-amber-700/60">{year}年</p>}
+          {subtext && <p className="mt-0.5 text-xs text-amber-700/50">{subtext}</p>}
+          {!!year && <p className="mt-0.5 text-xs font-medium text-amber-700/60">{year}年</p>}
         </div>
       </Link>
 
