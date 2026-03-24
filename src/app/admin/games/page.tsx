@@ -41,7 +41,9 @@ export default async function AdminGamesPage() {
             {games.map((game) => (
               <tr key={game.id} className="border-b border-gray-100 hover:bg-gray-50">
                 <td className="py-2 pr-2">
-                  <GameImage src={game.imageUrl ?? null} alt={game.name} className="w-8 h-8 rounded object-cover" />
+                  <div className="relative w-8 h-8 rounded overflow-hidden shrink-0">
+                    <GameImage src={game.imageUrl ?? null} alt={game.name} className="object-contain p-0.5" />
+                  </div>
                 </td>
                 <td className="py-2 pr-4 text-gray-700 max-w-50 truncate">{game.name}</td>
                 <td className="py-2 pr-4 text-gray-500">{game.nameJa}</td>

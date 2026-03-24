@@ -31,8 +31,8 @@ export default async function AdminReportsPage() {
             return (
               <div key={report.id} className="border border-gray-200 rounded-xl p-4 bg-white shadow-sm">
                 <div className="flex gap-4">
-                  <div className="w-14 h-14 shrink-0">
-                    <GameImage src={report.game.imageUrl ?? null} alt={report.game.name} className="w-14 h-14 rounded-lg object-cover" />
+                  <div className="relative w-14 h-14 shrink-0 rounded-lg overflow-hidden">
+                    <GameImage src={report.game.imageUrl ?? null} alt={report.game.name} className="object-contain p-1" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-gray-900 truncate">{report.game.name}</p>
