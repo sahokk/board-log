@@ -212,14 +212,14 @@ export default async function PublicProfilePage({ params }: Props) {
         </div>
         {/* 称号 */}
         <div className="mb-12">
-          <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">称号</h2>
+          <h2 className="mb-6 text-lg sm:text-2xl font-bold tracking-tight text-amber-950">称号</h2>
           <TitleBadges titles={titles} />
         </div>
 
         {/* メカニクス */}
         {topMechanics.length > 0 && (
           <div className="mb-12">
-            <h2 className="mb-4 text-xl font-bold tracking-tight text-amber-950">よく遊ぶメカニクス</h2>
+            <h2 className="mb-4 text-lg font-bold tracking-tight text-amber-950">よく遊ぶメカニクス</h2>
             <div className="wood-card rounded-2xl p-5 shadow-sm">
               <div className="flex flex-wrap gap-2">
                 {topMechanics.map(({ name, nameEn, count }, i) => (
@@ -238,14 +238,14 @@ export default async function PublicProfilePage({ params }: Props) {
         {/* 気になるリスト */}
         {user.wishlistItems.length > 0 && (
           <div className="mb-12">
-            <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">
+            <h2 className="mb-6 text-lg sm:text-2xl font-bold tracking-tight text-amber-950">
               {"気になるリスト"}<span className="ml-2 text-base font-normal text-amber-800/60">{user.wishlistItems.length}タイトル</span>
             </h2>
             <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {user.wishlistItems.map(({ game }) => (
                 <Link
                   key={game.id}
-                  href={`/u/${username}/games/${game.id}`}
+                  href={`/games/${game.id}`}
                   className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
                 >
                   <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
@@ -268,7 +268,7 @@ export default async function PublicProfilePage({ params }: Props) {
 
         {/* 遊んだゲームリスト */}
         <div className="mb-12">
-          <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">
+          <h2 className="mb-6 text-lg sm:text-2xl font-bold tracking-tight text-amber-950">
             {"遊んだゲームリスト"}<span className="ml-2 text-base font-normal text-amber-800/60">{uniqueGames}タイトル</span>
           </h2>
           {entries.length === 0 ? (

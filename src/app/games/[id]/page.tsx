@@ -7,6 +7,10 @@ import { translateCategory } from "@/lib/bgg/translations"
 import { deduplicateMechanics } from "@/lib/bgg/mechanic-labels"
 import { MechanicTag } from "@/components/MechanicTag"
 import { WishlistButton } from "@/components/WishlistButton"
+import ReportNameButton from "@/components/ReportNameButton"
+import AdminGameNameEditor from "@/components/AdminGameNameEditor"
+import BackButton from "@/components/BackButton"
+import { isAdminUser } from "@/lib/admin"
 import type { Metadata } from "next"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faUsers, faClock, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
@@ -19,10 +23,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   const game = await prisma.game.findUnique({
     where: { id },
-    select: { name: true, nameJa: true },
+    select: { name: true, nameJa: true, customNameJa: true },
   })
   if (!game) return { title: "ゲームが見つかりません" }
-  return { title: (game.nameJa ?? game.name) + " | Boardory" }
+  return { title: (game.customNameJa ?? game.nameJa ?? game.name) + " | Boardory" }
 }
 
 export default async function GameDetailPage({ params }: Props) {
@@ -31,125 +35,139 @@ export default async function GameDetailPage({ params }: Props) {
   if (!game) notFound()
 
   const session = await auth()
-  const wishlisted = session?.user?.id
-    ? !!(await prisma.wishlistItem.findFirst({
-        where: { userId: session.user.id, gameId: id },
-      }))
-    : false
-
-  const categories = game.categories
-    ? game.categories.split(",").map((c) => translateCategory(c.trim())).filter(Boolean)
-    : []
-  const mechanics = game.mechanics ? deduplicateMechanics(game.mechanics) : []
+  const [wishlisted, admin, pendingReports] = await Promise.all([
+    session?.user?.id
+      ? prisma.wishlistItem.findUnique({
+          where: { userId_gameId: { userId: session.user.id, gameId: id } },
+        }).then((r) => r !== null)
+      : Promise.resolve(false),
+    session?.user?.id ? isAdminUser(session.user.id) : Promise.resolve(false),
+    prisma.nameReport.count({ where: { gameId: id, status: "PENDING" } }),
+  ])
 
   return (
     <div className="wood-texture min-h-screen py-12">
-      <div className="mx-auto max-w-xl px-6">
+      <div className="mx-auto max-w-lg px-6">
+        <BackButton />
 
-        <Link href="/" className="mb-6 inline-flex items-center gap-1 text-sm text-amber-700 hover:text-amber-900">
-          ← ホームに戻る
-        </Link>
+        {/* ゲーム箱画像 */}
+        <div className="wood-card relative mx-auto mb-8 h-48 w-48 sm:h-64 sm:w-64 overflow-hidden rounded-2xl shadow-lg">
+          <div className="relative h-full bg-linear-to-br from-amber-50/30 to-amber-100/30">
+            {game.imageUrl ? (
+              <Image
+                src={game.imageUrl}
+                alt={game.customNameJa ?? game.nameJa ?? game.name}
+                fill
+                className="object-contain p-6"
+                sizes="(max-width: 640px) 192px, 256px"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center text-amber-300">
+                <span className="text-7xl">🎲</span>
+              </div>
+            )}
+          </div>
+        </div>
 
-        <div className="wood-card mt-4 overflow-hidden rounded-2xl shadow-sm">
-
-          {/* ヘッダー */}
-          <div className="flex gap-5 p-6">
-            <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-xl bg-amber-100/60">
-              {game.imageUrl ? (
-                <Image
-                  src={game.imageUrl}
-                  alt={game.customNameJa ?? game.nameJa ?? game.name}
-                  fill
-                  className="object-contain p-2"
-                  sizes="112px"
+        {/* ゲーム名 */}
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold tracking-tight text-amber-950">
+            {game.customNameJa ?? game.nameJa ?? game.name}
+          </h1>
+          {(game.customNameJa || game.nameJa) && (
+            <p className="mt-1 text-sm text-amber-800/60">{game.name}</p>
+          )}
+          {session?.user?.id && (
+            <div className="mt-2 flex flex-col items-center gap-1">
+              {admin ? (
+                <AdminGameNameEditor
+                  gameId={game.id}
+                  currentCustomName={game.customNameJa}
+                  pendingReportCount={pendingReports}
                 />
               ) : (
-                <div className="flex h-full items-center justify-center text-4xl text-amber-300">🎲</div>
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <h1 className="text-xl font-bold leading-tight text-amber-950">
-                {game.customNameJa ?? game.nameJa ?? game.name}
-              </h1>
-              {(game.customNameJa || game.nameJa) && (
-                <p className="mt-0.5 text-sm text-amber-700/60">{game.name}</p>
-              )}
-              <div className="mt-3 flex flex-wrap gap-3 text-xs text-amber-800/70">
-                {game.playingTime && (
-                  <span className="flex items-center gap-1">
-                    <FontAwesomeIcon icon={faClock} className="size-3" />
-                    {game.playingTime}分
-                  </span>
-                )}
-                {game.minPlayers != null && game.maxPlayers != null && (
-                  <span className="flex items-center gap-1">
-                    <FontAwesomeIcon icon={faUsers} className="size-3" />
-                    {game.minPlayers}〜{game.maxPlayers}人
-                  </span>
-                )}
-                {game.weight != null && (
-                  <span className="flex items-center gap-1">
-                    <FontAwesomeIcon icon={faScaleBalanced} className="size-3" />
-                    重さ {game.weight.toFixed(1)}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* カテゴリ・メカニクス */}
-          {(categories.length > 0 || mechanics.length > 0) && (
-            <div className="space-y-4 border-t border-amber-100 px-6 py-4">
-              {categories.length > 0 && (
-                <div>
-                  <p className="mb-2 text-xs font-semibold text-amber-800/60">カテゴリ</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {categories.map((c) => (
-                      <span
-                        key={c}
-                        className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs text-amber-800"
-                      >
-                        {c}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {mechanics.length > 0 && (
-                <div>
-                  <p className="mb-2 text-xs font-semibold text-amber-800/60">メカニクス</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {mechanics.map((m) => (
-                      <MechanicTag key={m} name={m} variant="outline" />
-                    ))}
-                  </div>
-                </div>
+                <ReportNameButton gameId={game.id} currentNameJa={game.customNameJa ?? game.nameJa} />
               )}
             </div>
           )}
+        </div>
 
-          {/* アクションボタン */}
-          <div className="flex flex-col gap-2 border-t border-amber-100 p-5">
-            <Link
-              href={`/record?gameId=${game.id}`}
-              className="block w-full rounded-xl bg-amber-900 py-3 text-center text-sm font-medium text-white transition-colors hover:bg-amber-800"
-            >
-              遊んだ！
-            </Link>
-            <WishlistButton gameId={game.id} initialWishlisted={wishlisted} />
+        {/* BGG メタデータ */}
+        {(game.bggId || game.categories || game.mechanics || game.weight || game.playingTime) && (
+          <div className="wood-card mb-6 rounded-2xl p-6 shadow-sm space-y-4">
             {game.bggId && (
               <a
                 href={`https://boardgamegeek.com/boardgame/${game.bggId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full rounded-xl border border-amber-300 py-2.5 text-center text-xs font-medium text-amber-800 transition-colors hover:bg-amber-50"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-amber-800 underline hover:text-amber-950"
               >
-                BGGで詳細を見る
+                BGGで詳細を見る →
               </a>
             )}
+            {(game.minPlayers || game.maxPlayers || game.playingTime || game.weight) && (
+              <div className="flex flex-wrap gap-4 text-sm text-amber-800/80">
+                {(game.minPlayers || game.maxPlayers) && (
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faUsers} className="size-3.5" />
+                    {game.minPlayers ?? "?"}{game.maxPlayers && game.maxPlayers !== game.minPlayers ? `〜${game.maxPlayers}` : ""}人
+                  </span>
+                )}
+                {game.playingTime && (
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faClock} className="size-3.5" />
+                    {game.playingTime}分
+                  </span>
+                )}
+                {game.weight && (
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faScaleBalanced} className="size-3.5" />
+                    複雑度 {game.weight.toFixed(1)} / 5
+                  </span>
+                )}
+              </div>
+            )}
+            {game.categories && (
+              <div>
+                <p className="mb-2 text-xs font-medium text-amber-800/60">カテゴリ</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {game.categories.split(",").map((cat) => {
+                    const label = translateCategory(cat.trim())
+                    if (!label) return null
+                    return (
+                      <span key={cat} className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">
+                        {label}
+                      </span>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+            {game.mechanics && (
+              <div>
+                <p className="mb-2 text-xs font-medium text-amber-800/60">メカニクス</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {deduplicateMechanics(game.mechanics).map((mech) => (
+                    <MechanicTag key={mech} name={mech} variant="outline" />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
+        )}
 
-        </div>
+        {/* アクション */}
+        {session?.user?.id && (
+          <div className="mb-6 flex flex-col gap-3">
+            <Link
+              href={`/record?gameId=${game.id}`}
+              className="block w-full rounded-xl bg-amber-900 py-3 text-center text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md"
+            >
+              遊んだ！
+            </Link>
+            <WishlistButton gameId={game.id} initialWishlisted={wishlisted} />
+          </div>
+        )}
       </div>
     </div>
   )
