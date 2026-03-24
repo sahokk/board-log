@@ -68,8 +68,13 @@ export function SearchClient({ username }: Props) {
   const urlPage = Number(searchParams.get("page") ?? "0")
 
   const [query, setQuery] = useState(urlQuery)
-  const cachedData = globalThis.window !== undefined ? getCache() : null
-  const isCacheHit = cachedData?.query === urlQuery && urlQuery !== ""
+  // 初回のみキャッシュを読む（毎レンダーの sessionStorage 読み取りを避けるため ref に保持）
+  const initCacheRef = useRef<{ data: SearchCache | null; hit: boolean } | null>(null)
+  if (initCacheRef.current === null) {
+    const data = globalThis.window !== undefined ? getCache() : null
+    initCacheRef.current = { data, hit: data?.query === urlQuery && urlQuery !== "" }
+  }
+  const { data: cachedData, hit: isCacheHit } = initCacheRef.current
 
   const [results, setResults] = useState<GameResult[]>(isCacheHit ? cachedData!.results : [])
   const [page, setPage] = useState(isCacheHit ? cachedData!.page : urlPage)

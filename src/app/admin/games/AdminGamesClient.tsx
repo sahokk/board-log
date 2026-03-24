@@ -97,20 +97,24 @@ function GameRow({ game, isHidden, isExpanded, onToggleHide, onToggleExpand, onU
   const [editing, setEditing] = useState(false)
   const [value, setValue] = useState(game.customNameJa ?? "")
   const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState(false)
 
   useEffect(() => { setValue(game.customNameJa ?? "") }, [game.customNameJa])
 
   async function patchName(nameToSet: string | null) {
     setSaving(true)
+    setSaveError(false)
     try {
       const res = await fetch("/api/admin/games", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ gameId: game.id, customNameJa: nameToSet }),
       })
-      if (!res.ok) throw new Error("Failed")
+      if (!res.ok) { setSaveError(true); return }
       setEditing(false)
       onUpdateName(nameToSet?.trim() || null)
+    } catch {
+      setSaveError(true)
     } finally {
       setSaving(false)
     }
@@ -188,11 +192,12 @@ function GameRow({ game, isHidden, isExpanded, onToggleHide, onToggleExpand, onU
                 {saving ? "…" : "保存"}
               </button>
               <button
-                onClick={() => { setValue(game.customNameJa ?? ""); setEditing(false) }}
+                onClick={() => { setValue(game.customNameJa ?? ""); setEditing(false); setSaveError(false) }}
                 className="shrink-0 text-xs text-gray-400 hover:text-gray-600"
               >
                 ×
               </button>
+              {saveError && <span className="shrink-0 text-xs text-red-500">保存失敗</span>}
             </div>
           ) : (
             <button
@@ -283,18 +288,21 @@ export default function AdminGamesClient({ games }: Readonly<{ games: Game[] }>)
   }
 
   async function applyReport(reportId: string, gameId: string) {
-    const res = await fetch(`/api/admin/reports/${reportId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "approve" }),
-    })
-    if (res.ok) {
+    try {
+      const res = await fetch(`/api/admin/reports/${reportId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "approve" }),
+      })
+      if (!res.ok) { alert("採用に失敗しました"); return }
       const data = await res.json() as { customNameJa?: string }
       setLocalGames((prev) => prev.map((g) => {
         if (g.id !== gameId) return g
         return { ...g, customNameJa: data.customNameJa ?? g.customNameJa, nameReports: [], _count: { nameReports: 0 } }
       }))
       setExpanded((prev) => { const next = new Set(prev); next.delete(gameId); return next })
+    } catch {
+      alert("採用に失敗しました")
     }
   }
 
