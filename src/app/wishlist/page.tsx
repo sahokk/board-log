@@ -4,6 +4,9 @@ import Link from "next/link"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { WishlistButton } from "@/components/WishlistButton"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+
+import { faHeart } from "@fortawesome/free-regular-svg-icons"
 
 export default async function WishlistPage() {
   const session = await auth()
@@ -35,10 +38,12 @@ export default async function WishlistPage() {
 
         {items.length === 0 ? (
           <div className="wood-card rounded-2xl p-16 text-center shadow-sm">
-            <div className="mb-4 text-5xl">🤍</div>
+            <div className="mb-4 text-5xl text-amber-300">
+              <FontAwesomeIcon icon={faHeart} />
+            </div>
             <p className="mb-2 text-lg font-medium text-amber-900">気になるゲームを追加しよう</p>
             <p className="mb-8 text-sm text-amber-800/70">
-              ゲーム検索やおすすめから 🤍 をタップすると追加されます
+              ゲーム検索やおすすめから <FontAwesomeIcon icon={faHeart} className="text-amber-800" /> をタップすると追加されます
             </p>
             <Link
               href="/"
@@ -48,7 +53,7 @@ export default async function WishlistPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {items.map(({ game }) => (
               <Link
                 key={game.id}
@@ -59,7 +64,7 @@ export default async function WishlistPage() {
                   {game.imageUrl ? (
                     <Image
                       src={game.imageUrl}
-                      alt={game.nameJa ?? game.name}
+                      alt={game.customNameJa ?? game.nameJa ?? game.name}
                       fill
                       className="object-contain p-3"
                       sizes="(max-width: 640px) 50vw, 20vw"
@@ -75,7 +80,7 @@ export default async function WishlistPage() {
                 </div>
                 <div className="p-3">
                   <p className="line-clamp-2 text-xs font-semibold text-amber-950">
-                    {game.nameJa ?? game.name}
+                    {game.customNameJa ?? game.nameJa ?? game.name}
                   </p>
                 </div>
               </Link>

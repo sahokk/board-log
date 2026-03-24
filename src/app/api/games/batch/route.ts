@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
         id: true,
         name: true,
         nameJa: true,
+        customNameJa: true,
         imageUrl: true,
         mechanics: true,
         categories: true,

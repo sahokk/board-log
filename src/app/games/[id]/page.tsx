@@ -8,6 +8,8 @@ import { deduplicateMechanics } from "@/lib/bgg/mechanic-labels"
 import { MechanicTag } from "@/components/MechanicTag"
 import { WishlistButton } from "@/components/WishlistButton"
 import type { Metadata } from "next"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faUsers, faClock, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
 
 interface Props {
   readonly params: Promise<{ id: string }>
@@ -44,8 +46,8 @@ export default async function GameDetailPage({ params }: Props) {
     <div className="wood-texture min-h-screen py-12">
       <div className="mx-auto max-w-xl px-6">
 
-        <Link href="/shindan" className="mb-6 inline-flex items-center gap-1 text-sm text-amber-700 hover:text-amber-900">
-          ← 診断に戻る
+        <Link href="/" className="mb-6 inline-flex items-center gap-1 text-sm text-amber-700 hover:text-amber-900">
+          ← ホームに戻る
         </Link>
 
         <div className="wood-card mt-4 overflow-hidden rounded-2xl shadow-sm">
@@ -73,12 +75,23 @@ export default async function GameDetailPage({ params }: Props) {
                 <p className="mt-0.5 text-sm text-amber-700/60">{game.name}</p>
               )}
               <div className="mt-3 flex flex-wrap gap-3 text-xs text-amber-800/70">
-                {game.playingTime && <span>⏱ {game.playingTime}分</span>}
+                {game.playingTime && (
+                  <span className="flex items-center gap-1">
+                    <FontAwesomeIcon icon={faClock} className="size-3" />
+                    {game.playingTime}分
+                  </span>
+                )}
                 {game.minPlayers != null && game.maxPlayers != null && (
-                  <span>👥 {game.minPlayers}〜{game.maxPlayers}人</span>
+                  <span className="flex items-center gap-1">
+                    <FontAwesomeIcon icon={faUsers} className="size-3" />
+                    {game.minPlayers}〜{game.maxPlayers}人
+                  </span>
                 )}
                 {game.weight != null && (
-                  <span>⚖️ 重さ {game.weight.toFixed(1)}</span>
+                  <span className="flex items-center gap-1">
+                    <FontAwesomeIcon icon={faScaleBalanced} className="size-3" />
+                    重さ {game.weight.toFixed(1)}
+                  </span>
                 )}
               </div>
             </div>

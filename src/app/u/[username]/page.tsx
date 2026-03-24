@@ -7,10 +7,15 @@ import { calculateTitles } from "@/lib/titles"
 import { calculateBoardgameType } from "@/lib/boardgame-type"
 import { getMechanicJaName } from "@/lib/bgg/mechanic-labels"
 import { GameImage } from "@/components/GameImage"
+import { getGameName } from "@/lib/game-utils"
 import { TitleBadges } from "@/components/TitleBadges"
 import { MechanicTag } from "@/components/MechanicTag"
 import { BoardgameTypeCard } from "@/components/BoardgameTypeCard"
+import { ShareButtons } from "@/components/ShareButtons"
 import type { Metadata } from "next"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faStar as faStarSolid, faUser } from "@fortawesome/free-solid-svg-icons"
+import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons"
 
 interface Props {
   readonly params: Promise<{ username: string }>
@@ -55,6 +60,7 @@ export default async function PublicProfilePage({ params }: Props) {
               id: true,
               name: true,
               nameJa: true,
+              customNameJa: true,
               imageUrl: true,
               categories: true,
               mechanics: true,
@@ -149,8 +155,8 @@ export default async function PublicProfilePage({ params }: Props) {
                       sizes="(max-width: 640px) 80px, 96px"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-3xl sm:text-4xl text-amber-400">
-                      👤
+                    <div className="flex h-full items-center justify-center">
+                      <FontAwesomeIcon icon={faUser} className="size-8 sm:size-10 text-amber-400" />
                     </div>
                   )}
                 </div>
@@ -172,31 +178,25 @@ export default async function PublicProfilePage({ params }: Props) {
                       ))}
                     </div>
                   )}
-                  <div className="mt-3">
-                    <a
-                      href={"https://x.com/intent/tweet?text=" + shareText + "&url=" + shareUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 rounded-full bg-black px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-800 transition-colors"
-                    >
-                      <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.733-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                      シェア
-                    </a>
-                  </div>
+                  <ShareButtons
+                    url={`${baseUrl}/u/${username}`}
+                    encodedUrl={shareUrl}
+                    encodedText={shareText}
+                  />
                 </div>
               </div>
 
               {/* Right: Stats */}
-              <div className="flex items-center justify-center gap-8 sm:flex-col sm:items-end sm:justify-start sm:gap-5 sm:shrink-0 border-t sm:border-t-0 sm:border-l border-amber-200/60 pt-5 sm:pt-0 sm:pl-8">
+              <div className="flex items-center justify-center gap-6 sm:flex-col sm:items-end sm:justify-start sm:gap-5 sm:shrink-0 border-t sm:border-t-0 sm:border-l border-amber-200/60 pt-5 sm:pt-0 sm:pl-8">
                 <div className="text-center sm:text-right">
-                  <p className="text-3xl sm:text-4xl font-bold tabular-nums tracking-tight text-amber-950">
+                  <p className="text-2xl sm:text-4xl font-bold tabular-nums tracking-tight text-amber-950">
                     {totalSessions}
                   </p>
                   <p className="mt-0.5 text-xs font-medium text-amber-700/70">総プレイ数</p>
                 </div>
                 <div className="h-8 w-px sm:h-px sm:w-12 bg-amber-200/60" />
                 <div className="text-center sm:text-right">
-                  <p className="text-3xl sm:text-4xl font-bold tabular-nums tracking-tight text-amber-950">
+                  <p className="text-2xl sm:text-4xl font-bold tabular-nums tracking-tight text-amber-950">
                     {uniqueGames}
                   </p>
                   <p className="mt-0.5 text-xs font-medium text-amber-700/70">ゲーム種類</p>
@@ -207,7 +207,7 @@ export default async function PublicProfilePage({ params }: Props) {
         </div>
 
         {/* Boardgame Type */}
-        <div className="mb-4">
+        <div className="mb-8">
           <BoardgameTypeCard type={boardgameType} />
         </div>
         {/* 称号 */}
@@ -241,7 +241,7 @@ export default async function PublicProfilePage({ params }: Props) {
             <h2 className="mb-6 text-2xl font-bold tracking-tight text-amber-950">
               {"気になるリスト"}<span className="ml-2 text-base font-normal text-amber-800/60">{user.wishlistItems.length}タイトル</span>
             </h2>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {user.wishlistItems.map(({ game }) => (
                 <Link
                   key={game.id}
@@ -251,13 +251,13 @@ export default async function PublicProfilePage({ params }: Props) {
                   <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
                     <GameImage
                       src={game.imageUrl}
-                      alt={game.nameJa ?? game.name}
+                      alt={getGameName(game)}
                       sizes="(max-width: 640px) 50vw, 20vw"
                     />
                   </div>
                   <div className="p-3">
-                    <p className="line-clamp-2 text-xs font-semibold text-amber-950">
-                      {game.nameJa ?? game.name}
+                    <p className="line-clamp-2 text-xs sm:text-sm font-semibold text-amber-950">
+                      {getGameName(game)}
                     </p>
                   </div>
                 </Link>
@@ -277,7 +277,7 @@ export default async function PublicProfilePage({ params }: Props) {
               <p className="text-lg font-medium text-amber-900">まだプレイ記録がありません</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {entries.map((entry) => {
                 return (
                   <Link
@@ -288,23 +288,22 @@ export default async function PublicProfilePage({ params }: Props) {
                     <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
                       <GameImage
                         src={entry.game.imageUrl}
-                        alt={entry.game.nameJa ?? entry.game.name}
+                        alt={getGameName(entry.game)}
                         sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
                       />
                     </div>
                     <div className="p-3">
-                      <p className="mb-1.5 line-clamp-2 text-xs font-semibold text-amber-950">
-                        {entry.game.nameJa ?? entry.game.name}
+                      <p className="mb-1.5 line-clamp-2 text-xs sm:text-sm font-semibold text-amber-950">
+                        {getGameName(entry.game)}
                       </p>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-0.5">
                           {[1, 2, 3, 4, 5].map((star) => (
-                            <span
+                            <FontAwesomeIcon
                               key={star}
-                              className={star <= entry.rating ? "text-amber-500 text-xs" : "text-amber-200/40 text-xs"}
-                            >
-                              ★
-                            </span>
+                              icon={star <= entry.rating ? faStarSolid : faStarRegular}
+                              className={star <= entry.rating ? "text-amber-500 text-[10px]" : "text-amber-200/40 text-[10px]"}
+                            />
                           ))}
                         </div>
                         <span className="text-xs text-amber-700/50">{entry._count.sessions}回</span>

@@ -100,10 +100,10 @@ export default async function ResultPage({ searchParams }: Props) {
               ゲームを登録すると、プレイ回数が反映されてより精度の高い診断になります
             </p>
             <Link
-              href="/api/auth/signin"
+              href={"/signin?callbackUrl=" + encodeURIComponent("/onboarding?importGames=" + (games ?? ""))}
               className="mt-3 inline-block rounded-lg bg-amber-900 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-800"
             >
-              ログインして始める
+              登録してゲームを記録する
             </Link>
           </div>
         </div>

@@ -3,6 +3,9 @@ import Link from "next/link";
 import {auth} from "@/lib/auth";
 import { getUserGameEntriesWithLatest } from "@/lib/queries";
 import { GameImage } from "@/components/GameImage";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar as faStarSolid } from "@fortawesome/free-solid-svg-icons";
+import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 
 function formatDate(date: Date): string {
 	return new Intl.DateTimeFormat("ja-JP", {
@@ -16,13 +19,11 @@ function StarDisplay({rating}: {readonly rating: number}) {
 	return (
 		<div className="flex items-center gap-0.5">
 			{[1, 2, 3, 4, 5].map((star) => (
-				<span
+				<FontAwesomeIcon
 					key={star}
-					className={
-						star <= rating ? "text-amber-500" : "text-amber-200/40"
-					}>
-					★
-				</span>
+					icon={star <= rating ? faStarSolid : faStarRegular}
+					className={star <= rating ? "text-amber-500" : "text-amber-200/40"}
+				/>
 			))}
 		</div>
 	);
@@ -74,7 +75,7 @@ export default async function PlaysPage() {
 						</div>
 					</div>
 				) : (
-					<div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+					<div className="grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
 						{entries.map((entry) => {
 							const latestSession = entry.sessions[0];
 							return (
@@ -94,8 +95,7 @@ export default async function PlaysPage() {
 									{/* 情報 */}
 									<div className="p-4">
 										<p className="mb-2 line-clamp-2 text-sm font-semibold text-amber-950 group-hover:text-amber-800">
-											{entry.game.nameJa ??
-												entry.game.name}
+											{entry.game.customNameJa ?? entry.game.nameJa ?? entry.game.name}
 										</p>
 										<div className="flex items-center justify-between">
 											<StarDisplay rating={entry.rating} />

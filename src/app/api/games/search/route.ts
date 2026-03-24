@@ -7,7 +7,7 @@ interface GameResult {
   bggId: string | null
   name: string
   nameJa: string | null
-  customNameJa?: string | null
+  customNameJa: string | null
   yearPublished?: number
   imageUrl?: string
   thumbnailUrl?: string
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
               { name: { contains: trimmed, mode: "insensitive" } },
               { nameJa: { contains: trimmed, mode: "insensitive" } },
               { customNameJa: { contains: trimmed, mode: "insensitive" } },
-            ]
+            ],
           },
           take: 20,
         })
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
       bggId: g.bggId,
       name: g.name,
       nameJa: g.nameJa,
-      customNameJa: g.customNameJa ?? null,
+      customNameJa: g.customNameJa,
       imageUrl: g.imageUrl ?? undefined,
       mechanics: g.mechanics,
       categories: g.categories,
@@ -98,6 +98,7 @@ export async function GET(request: NextRequest) {
           bggId: g.bggId,
           name: g.name,
           nameJa: g.nameJa,
+          customNameJa: g.customNameJa,
           yearPublished: details[i].yearPublished,
           imageUrl: g.imageUrl ?? undefined,
           thumbnailUrl: details[i].thumbnailUrl,

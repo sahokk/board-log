@@ -1,9 +1,11 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { useSession, signIn, signOut } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import Image from "next/image"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faUser } from "@fortawesome/free-solid-svg-icons"
 
 interface Props {
   readonly username?: string | null
@@ -49,8 +51,8 @@ export function AuthButton({ username }: Props) {
               />
             </div>
           ) : (
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm">
-              👤
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200">
+              <FontAwesomeIcon icon={faUser} className="size-4 text-gray-500" />
             </div>
           )}
         </button>
@@ -97,12 +99,12 @@ export function AuthButton({ username }: Props) {
   }
 
   return (
-    <button
-      onClick={() => signIn("google")}
+    <Link
+      href="/signin"
       className="rounded-xl bg-amber-900 px-5 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md"
     >
       ログイン
-    </button>
+    </Link>
   )
 }
 

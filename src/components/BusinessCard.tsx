@@ -1,5 +1,8 @@
 import Image from "next/image"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faUser } from "@fortawesome/free-solid-svg-icons"
 import { getDisplayName, getProfileImage, parseFavoriteGenres } from "@/lib/profile-utils"
+import { getGameName } from "@/lib/game-utils"
 import type { TitleWithUnlocked } from "@/lib/titles"
 import type { BoardgameType } from "@/lib/boardgame-type"
 import type { CardTheme } from "@/lib/card-themes"
@@ -7,6 +10,8 @@ import type { CardTheme } from "@/lib/card-themes"
 interface Game {
   id: string
   name: string
+  nameJa?: string | null
+  customNameJa?: string | null
   imageUrl: string | null
 }
 
@@ -83,8 +88,8 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
             {profileImage ? (
               <Image src={profileImage} alt={displayName} fill className="object-cover" sizes="76px" />
             ) : (
-              <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, background: "rgba(255,255,255,0.1)" }}>
-                👤
+              <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.1)" }}>
+                <FontAwesomeIcon icon={faUser} style={{ width: 32, height: 32, opacity: 0.6 }} />
               </div>
             )}
           </div>
@@ -159,7 +164,7 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
                 }}>
                   <div style={{ position: "relative", aspectRatio: "1", background: "#fdf6e3" }}>
                     {game.imageUrl ? (
-                      <Image src={game.imageUrl} alt={game.name} fill className="object-contain" style={{ padding: 8 }} sizes="180px" />
+                      <Image src={game.imageUrl} alt={getGameName(game)} fill className="object-contain" style={{ padding: 8 }} sizes="180px" />
                     ) : (
                       <div style={{ display: "flex", height: "100%", alignItems: "center", justifyContent: "center", fontSize: 28 }}>🎲</div>
                     )}
@@ -168,7 +173,7 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
                     <p style={{
                       fontSize: 10, fontWeight: 600, color: "#451a03", lineHeight: 1.3, textAlign: "center",
                       display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
-                    }}>{game.name}</p>
+                    }}>{getGameName(game)}</p>
                   </div>
                 </div>
               ))}

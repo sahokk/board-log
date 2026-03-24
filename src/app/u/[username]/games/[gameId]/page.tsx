@@ -7,7 +7,13 @@ import { translateCategory } from "@/lib/bgg/translations"
 import { deduplicateMechanics } from "@/lib/bgg/mechanic-labels"
 import { MechanicTag } from "@/components/MechanicTag"
 import { WishlistButton } from "@/components/WishlistButton"
+import ReportNameButton from "@/components/ReportNameButton"
+import AdminGameNameEditor from "@/components/AdminGameNameEditor"
+import BackButton from "./BackButton"
+import { isAdminUser } from "@/lib/admin"
 import type { Metadata } from "next"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faUsers, faClock, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
 
 interface Props {
   readonly params: Promise<{ username: string; gameId: string }>
@@ -36,27 +42,25 @@ export default async function PublicGamePage({ params }: Props) {
   const game = await prisma.game.findUnique({ where: { id: gameId } })
   if (!game) notFound()
 
-  // ログイン中ならウィッシュリスト状態を確認
+  // ログイン中ならウィッシュリスト状態・admin・report数を確認
   const session = await auth()
-  const wishlisted = session?.user?.id
-    ? (await prisma.wishlistItem.findUnique({
-        where: { userId_gameId: { userId: session.user.id, gameId: game.id } },
-      })) !== null
-    : false
+  const [wishlisted, admin, pendingReports] = await Promise.all([
+    session?.user?.id
+      ? prisma.wishlistItem.findUnique({
+          where: { userId_gameId: { userId: session.user.id, gameId: game.id } },
+        }).then((r) => r !== null)
+      : Promise.resolve(false),
+    session?.user?.id ? isAdminUser(session.user.id) : Promise.resolve(false),
+    prisma.nameReport.count({ where: { gameId: game.id, status: "PENDING" } }),
+  ])
 
   return (
     <div className="wood-texture min-h-screen py-12">
       <div className="mx-auto max-w-lg px-6">
-        {/* 戻るリンク */}
-        <Link
-          href={`/u/${username}`}
-          className="mb-8 inline-flex items-center text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
-        >
-          ← プロフィールに戻る
-        </Link>
+        <BackButton />
 
         {/* ゲーム箱画像 */}
-        <div className="wood-card relative mx-auto mb-8 h-64 w-64 overflow-hidden rounded-2xl shadow-lg">
+        <div className="wood-card relative mx-auto mb-8 h-48 w-48 sm:h-64 sm:w-64 overflow-hidden rounded-2xl shadow-lg">
           <div className="relative h-full bg-linear-to-br from-amber-50/30 to-amber-100/30">
             {game.imageUrl ? (
               <Image
@@ -64,7 +68,7 @@ export default async function PublicGamePage({ params }: Props) {
                 alt={game.customNameJa ?? game.nameJa ?? game.name}
                 fill
                 className="object-contain p-6"
-                sizes="256px"
+                sizes="(max-width: 640px) 192px, 256px"
               />
             ) : (
               <div className="flex h-full items-center justify-center text-amber-300">
@@ -81,6 +85,19 @@ export default async function PublicGamePage({ params }: Props) {
           </h1>
           {(game.customNameJa || game.nameJa) && (
             <p className="mt-1 text-sm text-amber-800/60">{game.name}</p>
+          )}
+          {session?.user?.id && (
+            <div className="mt-2 flex flex-col items-center gap-1">
+              {admin ? (
+                <AdminGameNameEditor
+                  gameId={game.id}
+                  currentCustomName={game.customNameJa}
+                  pendingReportCount={pendingReports}
+                />
+              ) : (
+                <ReportNameButton gameId={game.id} currentNameJa={game.customNameJa ?? game.nameJa} />
+              )}
+            </div>
           )}
         </div>
 
@@ -100,12 +117,23 @@ export default async function PublicGamePage({ params }: Props) {
             {(game.minPlayers || game.maxPlayers || game.playingTime || game.weight) && (
               <div className="flex flex-wrap gap-4 text-sm text-amber-800/80">
                 {(game.minPlayers || game.maxPlayers) && (
-                  <span>
-                    👥 {game.minPlayers ?? "?"}{game.maxPlayers && game.maxPlayers !== game.minPlayers ? `〜${game.maxPlayers}` : ""}人
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faUsers} className="size-3.5" />
+                    {game.minPlayers ?? "?"}{game.maxPlayers && game.maxPlayers !== game.minPlayers ? `〜${game.maxPlayers}` : ""}人
                   </span>
                 )}
-                {game.playingTime && <span>⏱ {game.playingTime}分</span>}
-                {game.weight && <span>⚖️ 複雑度 {game.weight.toFixed(1)} / 5</span>}
+                {game.playingTime && (
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faClock} className="size-3.5" />
+                    {game.playingTime}分
+                  </span>
+                )}
+                {game.weight && (
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faScaleBalanced} className="size-3.5" />
+                    複雑度 {game.weight.toFixed(1)} / 5
+                  </span>
+                )}
               </div>
             )}
             {game.categories && (

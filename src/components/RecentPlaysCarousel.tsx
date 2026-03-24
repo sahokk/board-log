@@ -2,12 +2,15 @@
 
 import { useEffect, useRef } from "react"
 import Image from "next/image"
+import { getGameName } from "@/lib/game-utils"
 
 interface Play {
   id: string
   game: {
     id: string
     name: string
+    nameJa: string | null
+    customNameJa: string | null
     imageUrl: string | null
   }
 }
@@ -66,7 +69,7 @@ export function RecentPlaysCarousel({ plays }: Props) {
         {[...plays, ...plays].map((play, index) => (
           <div
             key={`${play.id}-${index}`}
-            className="group shrink-0 w-48"
+            className="group shrink-0 w-36 sm:w-48"
           >
             <div className="wood-card overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
               {/* 箱画像 */}
@@ -74,10 +77,10 @@ export function RecentPlaysCarousel({ plays }: Props) {
                 {play.game.imageUrl ? (
                   <Image
                     src={play.game.imageUrl}
-                    alt={play.game.name}
+                    alt={getGameName(play.game)}
                     fill
                     className="object-contain p-4"
-                    sizes="192px"
+                    sizes="(max-width: 640px) 144px, 192px"
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center text-amber-300">
@@ -89,7 +92,7 @@ export function RecentPlaysCarousel({ plays }: Props) {
               {/* タイトルのみ */}
               <div className="p-3">
                 <p className="line-clamp-2 text-sm font-semibold text-amber-950 group-hover:text-amber-800">
-                  {play.game.name}
+                  {getGameName(play.game)}
                 </p>
               </div>
             </div>

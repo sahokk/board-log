@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faUser } from "@fortawesome/free-solid-svg-icons"
 
 const GENRE_OPTIONS = [
   "戦略",
@@ -164,9 +166,6 @@ export function ProfileEditForm({
           placeholder="山田 太郎"
           className="w-full rounded-xl border border-amber-200 bg-amber-50/30 px-4 py-3 text-sm text-amber-950 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
         />
-        <p className="mt-1 text-xs text-amber-800/70">
-          空欄の場合、Googleアカウント名が使用されます
-        </p>
       </div>
 
       {/* Profile Image Upload */}
@@ -186,8 +185,8 @@ export function ProfileEditForm({
                 sizes="80px"
               />
             ) : (
-              <div className="flex h-full items-center justify-center text-3xl text-amber-400">
-                👤
+              <div className="flex h-full items-center justify-center">
+                <FontAwesomeIcon icon={faUser} className="size-8 text-amber-400" />
               </div>
             )}
           </div>

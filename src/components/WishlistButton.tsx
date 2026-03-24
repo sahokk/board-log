@@ -1,6 +1,10 @@
 "use client"
 
 import { useState } from "react"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons"
+import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons"
+import { useToast } from "@/components/Toast"
 
 interface Props {
   gameId: string
@@ -11,6 +15,8 @@ interface Props {
 export function WishlistButton({ gameId, initialWishlisted, size = "default" }: Props) {
   const [wishlisted, setWishlisted] = useState(initialWishlisted)
   const [loading, setLoading] = useState(false)
+  const [popping, setPopping] = useState(false)
+  const { showToast } = useToast()
 
   const toggle = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -23,11 +29,26 @@ export function WishlistButton({ gameId, initialWishlisted, size = "default" }: 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ gameId }),
       })
-      if (res.ok) setWishlisted((v) => !v)
+      if (res.ok) {
+        const adding = !wishlisted
+        setWishlisted(adding)
+        if (adding) {
+          setPopping(true)
+          showToast("♥ 気になるリストに追加しました")
+        }
+      }
     } finally {
       setLoading(false)
     }
   }
+
+  const heartIcon = (
+    <FontAwesomeIcon
+      icon={wishlisted ? faHeartSolid : faHeartRegular}
+      className={`${wishlisted ? "text-pink-500" : ""} ${popping ? "animate-heart-pop" : ""}`}
+      onAnimationEnd={() => setPopping(false)}
+    />
+  )
 
   if (size === "icon") {
     return (
@@ -41,7 +62,7 @@ export function WishlistButton({ gameId, initialWishlisted, size = "default" }: 
             : "bg-white/80 text-amber-700 hover:bg-amber-50"
         }`}
       >
-        {wishlisted ? "🩷" : "🤍"}
+        {heartIcon}
       </button>
     )
   }
@@ -56,7 +77,7 @@ export function WishlistButton({ gameId, initialWishlisted, size = "default" }: 
           : "border border-amber-300 text-amber-800 hover:bg-amber-50"
       }`}
     >
-      <span>{wishlisted ? "🩷" : "🤍"}</span>
+      {heartIcon}
       <span>{wishlisted ? "気になり中" : "気になる"}</span>
     </button>
   )

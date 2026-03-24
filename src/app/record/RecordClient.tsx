@@ -4,6 +4,9 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faStar as faStarSolid } from "@fortawesome/free-solid-svg-icons"
+import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons"
 
 interface Game {
   id: string
@@ -133,8 +136,16 @@ export function RecordClient({ game, existingEntryId, existingRating }: Props) {
           このゲームの評価 <span className="text-red-600">*</span>
         </p>
         {existingRating && (
-          <p className="mb-2 text-xs text-amber-700/60">
-            現在の評価: {"★".repeat(existingRating)}{"☆".repeat(5 - existingRating)}（変更可）
+          <p className="mb-2 flex items-center gap-0.5 text-xs text-amber-700/60">
+            現在の評価:&nbsp;
+            {[1, 2, 3, 4, 5].map((s) => (
+              <FontAwesomeIcon
+                key={s}
+                icon={s <= existingRating ? faStarSolid : faStarRegular}
+                className={s <= existingRating ? "text-amber-500" : "text-amber-200/40"}
+              />
+            ))}
+            &nbsp;（変更可）
           </p>
         )}
         <div className="flex gap-2">
@@ -148,13 +159,10 @@ export function RecordClient({ game, existingEntryId, existingRating }: Props) {
               className="text-4xl transition-transform hover:scale-110 focus:outline-none"
               aria-label={`${star}点`}
             >
-              <span
-                className={
-                  star <= (hoverRating || rating) ? "text-amber-500" : "text-amber-200/40"
-                }
-              >
-                ★
-              </span>
+              <FontAwesomeIcon
+                icon={star <= (hoverRating || rating) ? faStarSolid : faStarRegular}
+                className={star <= (hoverRating || rating) ? "text-amber-500" : "text-amber-200/40"}
+              />
             </button>
           ))}
         </div>

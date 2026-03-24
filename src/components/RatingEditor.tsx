@@ -3,6 +3,9 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/components/Toast"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faStar as faStarSolid } from "@fortawesome/free-solid-svg-icons"
+import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons"
 
 interface Props {
   readonly entryId: string
@@ -46,12 +49,11 @@ export function RatingEditor({ entryId, initialRating }: Props) {
       <div className="flex items-center gap-3">
         <div className="flex gap-0.5">
           {[1, 2, 3, 4, 5].map((star) => (
-            <span
+            <FontAwesomeIcon
               key={star}
+              icon={star <= rating ? faStarSolid : faStarRegular}
               className={star <= rating ? "text-amber-500" : "text-amber-200/40"}
-            >
-              ★
-            </span>
+            />
           ))}
         </div>
         <button
@@ -77,9 +79,10 @@ export function RatingEditor({ entryId, initialRating }: Props) {
             className="text-3xl transition-transform hover:scale-110 focus:outline-none"
             aria-label={`${star}点`}
           >
-            <span className={star <= (hoverRating || rating) ? "text-amber-500" : "text-amber-200/40"}>
-              ★
-            </span>
+            <FontAwesomeIcon
+              icon={star <= (hoverRating || rating) ? faStarSolid : faStarRegular}
+              className={star <= (hoverRating || rating) ? "text-amber-500" : "text-amber-200/40"}
+            />
           </button>
         ))}
       </div>
