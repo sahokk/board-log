@@ -163,39 +163,90 @@ export async function getRecommendations(userId: string): Promise<RecommendedGam
     where: {
       id: { notIn: excludedIds },
       imageUrl: { not: null },
-      OR: top.map((m) => ({ mechanics: { contains: m } })),
+      OR: [
+        // 上位メカニクス
+        ...top.map((m) => ({
+          mechanics: { contains: m },
+        })),
+        // 中間カテゴリ（探索枠）
+        ...Object.keys(userProfile).map((c) => ({
+          mechanics: { contains: c },
+        })),
+      ],
     },
-    take: 30,
+    take: 150,
   })
 
-  const scored = candidates.map((game) => {
-    const gameMechanics = game.mechanics?.split("|").map((s) => s.trim()).filter(Boolean) ?? []
+  const filtered = candidates.filter((game) => {
+    const gameMechanics =
+      game.mechanics?.split("|").map((s) => s.trim()).filter(Boolean) ?? []
 
-    // 中間カテゴリの一致度でスコア算出
-    const score = scoreGameAgainstProfile(gameMechanics, userProfile)
+    const matchCount = top.filter((m) =>
+      gameMechanics.includes(m)
+    ).length
 
-    // おすすめ理由：スコアに最も貢献したメカニクスを表示
-    let reason = ""
-    for (const mech of top) {
-      const ja = getMechanicJaName(mech)
-      if (ja && gameMechanics.includes(mech)) {
-        reason = `「${ja}」好きにおすすめ`
-        break
-      }
-    }
+    // 1つ以上一致に緩和
+    return matchCount >= 1
+  })
+
+  const scored = filtered.map((game) => {
+  const gameMechanics =
+    game.mechanics?.split("|").map((s) => s.trim()).filter(Boolean) ?? []
+
+    const matchCount = top.filter((m) =>
+      gameMechanics.includes(m)
+    ).length
+
+    // 中間カテゴリ一致スコア
+    const baseScore = scoreGameAgainstProfile(gameMechanics, userProfile)
+
+    // 少し探索寄りに補正（一致が少ないほど微加点）
+    const diversityBonus = 0.1 * (1 - matchCount / Math.max(top.length, 1))
+
+    const score = baseScore + diversityBonus
+
+    // おすすめ理由（複数化）
+    const reasons = top
+      .filter((m) => gameMechanics.includes(m))
+      .slice(0, 2)
+      .map((m) => `「${getMechanicJaName(m)}」`)
+      .join("・")
+
+    const reason = reasons ? `${reasons}好きにおすすめ` : ""
 
     return { game, score, reason }
   })
 
-  // 上位16件から8件をランダムに選ぶ（リロードのたびに結果が変わる）
-  const top16 = scored.sort((a, b) => b.score - a.score).slice(0, 16)
-  for (let i = top16.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [top16[i], top16[j]] = [top16[j], top16[i]]
+  const sorted = scored.toSorted((a, b) => b.score - a.score)
+
+  // スコア帯分割
+  const topTier = sorted.slice(0, 10)
+  const midTier = sorted.slice(10, 50)
+  const lowTier = sorted.slice(50, 100)
+
+  // ランダム抽出関数
+  const pickRandom = <T>(arr: T[], n: number): T[] => {
+    const shuffled = [...arr]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    return shuffled.slice(0, n)
   }
 
-  return top16
-    .slice(0, 8)
+  // バランスよく混ぜる
+  const mixed = [
+    ...pickRandom(topTier, 4),
+    ...pickRandom(midTier, 3),
+    ...pickRandom(lowTier, 1),
+  ]
+
+  for (let i = mixed.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[mixed[i], mixed[j]] = [mixed[j], mixed[i]]
+  }
+
+  return mixed
     .map(({ game, reason }) => ({
       id: game.id,
       name: game.name,
