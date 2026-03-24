@@ -1,6 +1,9 @@
 # dependencies
 node_modules/
 
+# local reference documents
+document/
+
 # next.js
 .next/
 out/

@@ -11,7 +11,18 @@ interface Game {
   imageUrl?: string | null
 }
 
-export function OnboardingClient({ isLoggedIn }: { readonly isLoggedIn: boolean }) {
+interface Props {
+  readonly isLoggedIn: boolean
+  readonly importGameIds?: string | null
+}
+
+function submitLabel(isSubmitting: boolean, loggedIn: boolean, count: number) {
+  if (isSubmitting) return "登録中…"
+  if (!loggedIn) return "ログインして " + (count > 0 ? count + "件を" : "") + "登録する"
+  return count > 0 ? count + "件のゲームを登録する" : "ゲームを選んでください"
+}
+
+export function OnboardingClient({ isLoggedIn, importGameIds }: Props) {
   const router = useRouter()
   const [query, setQuery] = useState("")
   const [results, setResults] = useState<Game[]>([])
@@ -20,9 +31,26 @@ export function OnboardingClient({ isLoggedIn }: { readonly isLoggedIn: boolean 
   const [showResults, setShowResults] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone] = useState(false)
+  const [loadingImport, setLoadingImport] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // 診断から渡されたゲームIDを初期選択に反映
+  useEffect(() => {
+    if (!importGameIds) return
+    const ids = importGameIds.split(",").filter(Boolean)
+    if (ids.length === 0) return
+
+    setLoadingImport(true)
+    fetch(`/api/games/batch?ids=${ids.join(",")}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.games?.length > 0) setSelected(data.games)
+      })
+      .catch(() => {})
+      .finally(() => setLoadingImport(false))
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // 検索デバウンス
   useEffect(() => {
@@ -81,7 +109,8 @@ export function OnboardingClient({ isLoggedIn }: { readonly isLoggedIn: boolean 
 
   const handleSubmit = async () => {
     if (!isLoggedIn) {
-      router.push("/api/auth/signin?callbackUrl=/onboarding")
+      const callbackUrl = "/onboarding" + (importGameIds ? "?importGames=" + importGameIds : "")
+      router.push("/signin?callbackUrl=" + encodeURIComponent(callbackUrl))
       return
     }
     if (selected.length === 0 || submitting) return
@@ -100,6 +129,14 @@ export function OnboardingClient({ isLoggedIn }: { readonly isLoggedIn: boolean 
     } finally {
       setSubmitting(false)
     }
+  }
+
+  if (loadingImport) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-amber-300 border-t-amber-700" />
+      </div>
+    )
   }
 
   if (done) {
@@ -123,7 +160,9 @@ export function OnboardingClient({ isLoggedIn }: { readonly isLoggedIn: boolean 
           遊んだゲームをまとめて登録しよう
         </h1>
         <p className="mt-3 text-sm text-amber-800/70">
-          日付なしで一括登録できます。後から日付や評価を追加できます。
+          {importGameIds
+            ? "診断で選んだゲームが追加されています。他にも追加・変更できます。"
+            : "日付なしで一括登録できます。後から日付や評価を追加できます。"}
         </p>
       </div>
 
@@ -145,7 +184,6 @@ export function OnboardingClient({ isLoggedIn }: { readonly isLoggedIn: boolean 
             <div className="absolute right-3 top-3.5 h-4 w-4 animate-spin rounded-full border-2 border-amber-300 border-t-amber-700" />
           )}
 
-          {/* 検索結果ドロップダウン */}
           {showResults && results.length > 0 && (
             <div
               ref={dropdownRef}
@@ -238,18 +276,12 @@ export function OnboardingClient({ isLoggedIn }: { readonly isLoggedIn: boolean 
           disabled={selected.length === 0 || submitting}
           className="w-full rounded-xl bg-amber-900 py-4 text-sm font-semibold text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {submitting
-            ? "登録中…"
-            : !isLoggedIn
-              ? `ログインして ${selected.length > 0 ? `${selected.length}件を` : ""}登録する`
-              : selected.length > 0
-                ? `${selected.length}件のゲームを登録する`
-                : "ゲームを選んでください"}
+          {submitLabel(submitting, isLoggedIn, selected.length)}
         </button>
 
         {!isLoggedIn && selected.length > 0 && (
           <p className="mt-2 text-center text-xs text-amber-700/60">
-            Googleアカウントでログインして登録します
+            ログインして登録します
           </p>
         )}
       </div>

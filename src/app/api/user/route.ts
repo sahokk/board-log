@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { requireAuth } from "@/lib/api-utils"
 import { CARD_THEMES } from "@/lib/card-themes"
+import { supabaseAdmin } from "@/lib/supabase/server"
 
 export async function PUT(request: NextRequest) {
   const { userId, error } = await requireAuth()
@@ -150,3 +151,33 @@ export async function GET() {
     )
   }
 }
+
+export async function DELETE() {
+  const { userId, error } = await requireAuth()
+  if (error) return error
+
+  // Fetch email before deletion to remove Supabase auth user (Credentials login)
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } })
+
+  // User の削除で Account/Session/GameEntry/WishlistItem/PlaySession が cascade 削除される
+  await prisma.user.delete({ where: { id: userId } })
+
+  // Also delete from Supabase so Credentials login cannot recreate this account
+  if (user?.email) {
+    let supabaseUserId: string | undefined
+    let page = 1
+    while (!supabaseUserId) {
+      const { data } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 1000 })
+      if (!data?.users.length) break
+      supabaseUserId = data.users.find((u) => u.email === user.email)?.id
+      if (data.users.length < 1000) break
+      page++
+    }
+    if (supabaseUserId) {
+      await supabaseAdmin.auth.admin.deleteUser(supabaseUserId)
+    }
+  }
+
+  return NextResponse.json({ success: true })
+}
+

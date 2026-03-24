@@ -164,9 +164,6 @@ export function ProfileEditForm({
           placeholder="山田 太郎"
           className="w-full rounded-xl border border-amber-200 bg-amber-50/30 px-4 py-3 text-sm text-amber-950 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
         />
-        <p className="mt-1 text-xs text-amber-800/70">
-          空欄の場合、Googleアカウント名が使用されます
-        </p>
       </div>
 
       {/* Profile Image Upload */}
