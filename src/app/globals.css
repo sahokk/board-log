@@ -16,7 +16,6 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-mplus);
-  --font-heading: var(--font-klee);
 }
 
 body {
@@ -26,7 +25,11 @@ body {
 }
 
 h1, h2, h3 {
-  font-family: var(--font-klee), "Klee One", sans-serif;
+  font-family: var(--font-mochiy), "Mochiy Pop One", sans-serif;
+}
+
+.font-logo {
+  font-family: var(--font-kaisei), "Kaisei Decol", sans-serif;
 }
 
 /* Wood grain texture using CSS gradients */
