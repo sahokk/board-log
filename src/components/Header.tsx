@@ -2,6 +2,9 @@ import Link from "next/link"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { AuthButton } from "@/components/AuthButton"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faList } from "@fortawesome/free-solid-svg-icons"
+import { faHeart } from "@fortawesome/free-regular-svg-icons"
 
 export async function Header() {
   const session = await auth()
@@ -15,25 +18,25 @@ export async function Header() {
   return (
     <header className="wood-header relative z-50 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="text-xl font-semibold tracking-tight text-amber-950">
+        <Link href="/" className="font-logo text-xl font-semibold tracking-tight text-amber-950">
           🎲 Boardory
         </Link>
-        <nav className="flex items-center gap-3 sm:gap-6">
+        <nav className="flex items-center gap-2 sm:gap-6">
           {session?.user && (
             <>
               <Link
                 href="/plays"
-                className="flex items-center gap-1 text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
+                className="flex items-center gap-1 text-xs sm:text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
               >
-                <span className="text-base">📋</span>
-                <span className="hidden sm:inline">遊んだゲーム</span>
+                <FontAwesomeIcon icon={faList} className="size-3.5 sm:size-4" />
+                <span>遊んだゲーム</span>
               </Link>
               <Link
                 href="/wishlist"
-                className="flex items-center gap-1 text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
+                className="flex items-center gap-1 text-xs sm:text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
               >
-                <span className="text-base">🤍</span>
-                <span className="hidden sm:inline">気になる</span>
+                <FontAwesomeIcon icon={faHeart} className="size-3.5 sm:size-4" />
+                <span>気になる</span>
               </Link>
             </>
           )}

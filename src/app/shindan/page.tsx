@@ -22,7 +22,7 @@ async function getPopularGames() {
     const ids = topEntries.map((e) => e.gameId)
     const games = await prisma.game.findMany({
       where: { id: { in: ids }, imageUrl: { not: null } },
-      select: { id: true, name: true, nameJa: true, imageUrl: true, mechanics: true, categories: true, weight: true },
+      select: { id: true, name: true, nameJa: true, customNameJa: true, imageUrl: true, mechanics: true, categories: true, weight: true },
     })
 
     const gameMap = new Map(games.map((g) => [g.id, g]))

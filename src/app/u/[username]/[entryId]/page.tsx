@@ -11,6 +11,9 @@ import { RatingEditor } from "@/components/RatingEditor"
 import { SessionList } from "@/components/SessionList"
 import { DeleteButton } from "@/components/DeleteButton"
 import type { Metadata } from "next"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faStar as faStarSolid, faUsers, faClock, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
+import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons"
 
 interface Props {
   readonly params: Promise<{ username: string; entryId: string }>
@@ -76,7 +79,7 @@ export default async function PublicGameDetailPage({ params }: Props) {
         </Link>
 
         {/* ゲーム箱画像 */}
-        <div className="wood-card relative mx-auto mb-8 h-64 w-64 overflow-hidden rounded-2xl shadow-lg">
+        <div className="wood-card relative mx-auto mb-8 h-48 w-48 sm:h-64 sm:w-64 overflow-hidden rounded-2xl shadow-lg">
           <div className="relative h-full bg-linear-to-br from-amber-50/30 to-amber-100/30">
             {game.imageUrl ? (
               <Image
@@ -84,7 +87,7 @@ export default async function PublicGameDetailPage({ params }: Props) {
                 alt={game.nameJa ?? game.name}
                 fill
                 className="object-contain p-6"
-                sizes="256px"
+                sizes="(max-width: 640px) 192px, 256px"
               />
             ) : (
               <div className="flex h-full items-center justify-center text-amber-300">
@@ -120,12 +123,23 @@ export default async function PublicGameDetailPage({ params }: Props) {
             {(game.minPlayers || game.maxPlayers || game.playingTime || game.weight) && (
               <div className="flex flex-wrap gap-4 text-sm text-amber-800/80">
                 {(game.minPlayers || game.maxPlayers) && (
-                  <span>
-                    👥 {game.minPlayers ?? "?"}{game.maxPlayers && game.maxPlayers !== game.minPlayers ? `〜${game.maxPlayers}` : ""}人
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faUsers} className="size-3.5" />
+                    {game.minPlayers ?? "?"}{game.maxPlayers && game.maxPlayers !== game.minPlayers ? `〜${game.maxPlayers}` : ""}人
                   </span>
                 )}
-                {game.playingTime && <span>⏱ {game.playingTime}分</span>}
-                {game.weight && <span>⚖️ 複雑度 {game.weight.toFixed(1)} / 5</span>}
+                {game.playingTime && (
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faClock} className="size-3.5" />
+                    {game.playingTime}分
+                  </span>
+                )}
+                {game.weight && (
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faScaleBalanced} className="size-3.5" />
+                    複雑度 {game.weight.toFixed(1)} / 5
+                  </span>
+                )}
               </div>
             )}
             {game.categories && (
@@ -166,17 +180,17 @@ export default async function PublicGameDetailPage({ params }: Props) {
             ) : (
               <div className="flex gap-0.5">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <span
+                  <FontAwesomeIcon
                     key={star}
+                    icon={star <= entry.rating ? faStarSolid : faStarRegular}
                     className={star <= entry.rating ? "text-amber-500" : "text-amber-200/40"}
-                  >
-                    ★
-                  </span>
+                  />
                 ))}
               </div>
             )}
           </div>
         </div>
+
 
         {/* オーナー以外のアクション */}
         {!isOwner && session?.user?.id && (
@@ -191,58 +205,81 @@ export default async function PublicGameDetailPage({ params }: Props) {
           </div>
         )}
 
-        {/* プレイ記録一覧 */}
-        <div className="mb-6">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-amber-950">
-              プレイ記録{" "}
-              <span className="text-sm font-normal text-amber-800/60">
-                {entry.sessions.length}回
-              </span>
-            </h2>
-            {isOwner && (
-              <Link
-                href={`/record?gameId=${game.id}`}
-                className="rounded-lg bg-amber-900 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-amber-800"
-              >
-                + 追加
-              </Link>
+        {/* 評価 */}
+        {isOwner && (
+          <div className="wood-card mb-6 rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-amber-800/70">評価</span>
+              {isOwner ? (
+                <RatingEditor entryId={entry.id} initialRating={entry.rating} />
+              ) : (
+                <div className="flex gap-0.5">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span
+                      key={star}
+                      className={star <= entry.rating ? "text-amber-500" : "text-amber-200/40"}
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* オーナーのみ: プレイ記録一覧 */}
+        {isOwner && (
+          <div className="mb-6">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-amber-950">
+                プレイ記録{" "}
+                <span className="text-sm font-normal text-amber-800/60">
+                  {entry.sessions.length}回
+                </span>
+              </h2>
+                <Link
+                  href={`/record?gameId=${game.id}`}
+                  className="rounded-lg bg-amber-900 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-amber-800"
+                >
+                  + 追加
+                </Link>
+            </div>
+
+            {entry.sessions.length === 0 && (
+              <div className="wood-card rounded-2xl p-8 text-center shadow-sm">
+                <p className="text-sm text-amber-800/70">まだプレイ記録がありません</p>
+              </div>
+            )}
+            {entry.sessions.length > 0 && isOwner && (
+              <SessionList
+                sessions={entry.sessions.map((s) => ({
+                  id: s.id,
+                  playedAt: s.playedAt?.toISOString() ?? null,
+                  memo: s.memo,
+                  imageUrl: s.imageUrl,
+                }))}
+                emptyRedirectPath={`/u/${username}`}
+              />
+            )}
+            {entry.sessions.length > 0 && !isOwner && session?.user?.id && (
+              <div className="space-y-3">
+                {entry.sessions.map((s) => (
+                  <div key={s.id} className="wood-card rounded-2xl p-4 shadow-sm">
+                    <p className="text-sm font-semibold text-amber-950">
+                      {formatDate(s.playedAt)}
+                    </p>
+                    {s.memo && (
+                      <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-amber-900/80">
+                        {s.memo}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
             )}
           </div>
-
-          {entry.sessions.length === 0 && (
-            <div className="wood-card rounded-2xl p-8 text-center shadow-sm">
-              <p className="text-sm text-amber-800/70">まだプレイ記録がありません</p>
-            </div>
-          )}
-          {entry.sessions.length > 0 && isOwner && (
-            <SessionList
-              sessions={entry.sessions.map((s) => ({
-                id: s.id,
-                playedAt: s.playedAt?.toISOString() ?? null,
-                memo: s.memo,
-                imageUrl: s.imageUrl,
-              }))}
-              emptyRedirectPath={`/u/${username}`}
-            />
-          )}
-          {entry.sessions.length > 0 && !isOwner && session?.user?.id && (
-            <div className="space-y-3">
-              {entry.sessions.map((s) => (
-                <div key={s.id} className="wood-card rounded-2xl p-4 shadow-sm">
-                  <p className="text-sm font-semibold text-amber-950">
-                    {formatDate(s.playedAt)}
-                  </p>
-                  {s.memo && (
-                    <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-amber-900/80">
-                      {s.memo}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        )}
 
         {/* オーナーのみ：記録全削除 */}
         {isOwner && (

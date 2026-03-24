@@ -62,7 +62,7 @@ export default async function ProfilePage() {
   const allGames = entries.map((e) => ({
     id: e.game.id,
     entryId: e.id,
-    name: e.game.nameJa || e.game.name,
+    name: e.game.customNameJa ?? e.game.nameJa ?? e.game.name,
     imageUrl: e.game.imageUrl,
     sessionCount: e.sessions.length,
     rating: e.rating,

@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react"
 import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import Image from "next/image"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faUser } from "@fortawesome/free-solid-svg-icons"
 
 interface Props {
   readonly username?: string | null
@@ -49,8 +51,8 @@ export function AuthButton({ username }: Props) {
               />
             </div>
           ) : (
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm">
-              👤
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200">
+              <FontAwesomeIcon icon={faUser} className="size-4 text-gray-500" />
             </div>
           )}
         </button>

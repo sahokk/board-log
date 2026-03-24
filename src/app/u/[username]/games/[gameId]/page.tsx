@@ -8,6 +8,8 @@ import { deduplicateMechanics } from "@/lib/bgg/mechanic-labels"
 import { MechanicTag } from "@/components/MechanicTag"
 import { WishlistButton } from "@/components/WishlistButton"
 import type { Metadata } from "next"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faUsers, faClock, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
 
 interface Props {
   readonly params: Promise<{ username: string; gameId: string }>
@@ -56,15 +58,15 @@ export default async function PublicGamePage({ params }: Props) {
         </Link>
 
         {/* ゲーム箱画像 */}
-        <div className="wood-card relative mx-auto mb-8 h-64 w-64 overflow-hidden rounded-2xl shadow-lg">
+        <div className="wood-card relative mx-auto mb-8 h-48 w-48 sm:h-64 sm:w-64 overflow-hidden rounded-2xl shadow-lg">
           <div className="relative h-full bg-linear-to-br from-amber-50/30 to-amber-100/30">
             {game.imageUrl ? (
               <Image
                 src={game.imageUrl}
-                alt={game.nameJa ?? game.name}
+                alt={game.customNameJa ?? game.nameJa ?? game.name}
                 fill
                 className="object-contain p-6"
-                sizes="256px"
+                sizes="(max-width: 640px) 192px, 256px"
               />
             ) : (
               <div className="flex h-full items-center justify-center text-amber-300">
@@ -77,9 +79,9 @@ export default async function PublicGamePage({ params }: Props) {
         {/* ゲーム名 */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold tracking-tight text-amber-950">
-            {game.nameJa ?? game.name}
+            {game.customNameJa ?? game.nameJa ?? game.name}
           </h1>
-          {game.nameJa && (
+          {(game.customNameJa || game.nameJa) && (
             <p className="mt-1 text-sm text-amber-800/60">{game.name}</p>
           )}
         </div>
@@ -100,12 +102,23 @@ export default async function PublicGamePage({ params }: Props) {
             {(game.minPlayers || game.maxPlayers || game.playingTime || game.weight) && (
               <div className="flex flex-wrap gap-4 text-sm text-amber-800/80">
                 {(game.minPlayers || game.maxPlayers) && (
-                  <span>
-                    👥 {game.minPlayers ?? "?"}{game.maxPlayers && game.maxPlayers !== game.minPlayers ? `〜${game.maxPlayers}` : ""}人
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faUsers} className="size-3.5" />
+                    {game.minPlayers ?? "?"}{game.maxPlayers && game.maxPlayers !== game.minPlayers ? `〜${game.maxPlayers}` : ""}人
                   </span>
                 )}
-                {game.playingTime && <span>⏱ {game.playingTime}分</span>}
-                {game.weight && <span>⚖️ 複雑度 {game.weight.toFixed(1)} / 5</span>}
+                {game.playingTime && (
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faClock} className="size-3.5" />
+                    {game.playingTime}分
+                  </span>
+                )}
+                {game.weight && (
+                  <span className="flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faScaleBalanced} className="size-3.5" />
+                    複雑度 {game.weight.toFixed(1)} / 5
+                  </span>
+                )}
               </div>
             )}
             {game.categories && (

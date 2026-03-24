@@ -22,12 +22,12 @@ export function TitleBadges({ titles }: Props) {
         {titles.map((title) => (
           <div
             key={title.id}
-            className="relative"
+            className="relative h-full"
             onMouseEnter={() => setActiveTooltip(title.id)}
             onMouseLeave={() => setActiveTooltip(null)}
           >
             <div
-              className={`flex flex-col items-center rounded-xl p-3 text-center transition-all ${
+              className={`flex h-full flex-col items-center rounded-xl p-3 text-center transition-all ${
                 title.unlocked
                   ? "bg-amber-50 shadow-sm"
                   : "bg-gray-100 opacity-40 grayscale"
