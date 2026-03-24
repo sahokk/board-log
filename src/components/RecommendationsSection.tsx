@@ -44,7 +44,7 @@ export function RecommendationsSection({ initialGames, username }: Readonly<Prop
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
         {games.map((game) => (
           <Link
             key={game.id}
@@ -74,7 +74,7 @@ export function RecommendationsSection({ initialGames, username }: Readonly<Prop
                 {getGameName(game)}
               </p>
               {game.reason && (
-                <p className="line-clamp-1 text-xs text-amber-600/80">{game.reason}</p>
+                <p className="text-xs text-amber-600/80">{game.reason}</p>
               )}
             </div>
           </Link>

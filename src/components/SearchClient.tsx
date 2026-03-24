@@ -151,7 +151,7 @@ export function SearchClient({ username }: Props) {
       {/* 検索結果グリッド */}
       {results.length > 0 && (
         <>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-6">
             {displayed.map((game) => (
               <div
                 key={game.id}
@@ -178,7 +178,7 @@ export function SearchClient({ username }: Props) {
                     )}
                   </div>
                   <div className="px-3 pb-1 pt-2">
-                    <p className="line-clamp-2 text-xs font-semibold text-amber-950">
+                    <p className="line-clamp-2 text-xs sm:text-sm font-semibold text-amber-950">
                       {getGameName(game)}
                     </p>
                     {(game.customNameJa ?? game.nameJa) && (
