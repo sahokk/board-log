@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, Fragment } from "react"
 import { useRouter } from "next/navigation"
 import { GameImage } from "@/components/GameImage"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -140,7 +140,7 @@ function ReportsPanel({ reports, onApply }: Readonly<{ reports: Report[]; onAppl
   )
 }
 
-export default function AdminGamesClient({ games }: { games: Game[] }) {
+export default function AdminGamesClient({ games }: Readonly<{ games: Game[] }>) {
   const [hidden, setHidden] = useState<Set<string>>(new Set())
   const [showHidden, setShowHidden] = useState(false)
   const [filterReports, setFilterReports] = useState(false)
@@ -241,8 +241,8 @@ export default function AdminGamesClient({ games }: { games: Game[] }) {
           </thead>
           <tbody>
             {visible.map((game) => (
-              <>
-                <tr key={game.id} className="border-b border-gray-100 hover:bg-gray-50 align-middle">
+              <Fragment key={game.id}>
+                <tr className="border-b border-gray-100 hover:bg-gray-50 align-middle">
                   <td className="py-2 pr-2">
                     <div className="relative w-8 h-8 rounded overflow-hidden shrink-0">
                       <GameImage src={game.imageUrl ?? null} alt={game.name} className="object-contain p-0.5" />
@@ -297,7 +297,7 @@ export default function AdminGamesClient({ games }: { games: Game[] }) {
                     </td>
                   </tr>
                 )}
-              </>
+              </Fragment>
             ))}
             {visible.length === 0 && (
               <tr>
