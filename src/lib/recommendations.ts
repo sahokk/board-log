@@ -76,6 +76,7 @@ export interface RecommendedGame {
   id: string
   name: string
   nameJa: string | null
+  customNameJa: string | null
   imageUrl: string | null
   categories: string | null
   playingTime: number | null
@@ -200,6 +201,7 @@ export async function getRecommendations(userId: string): Promise<RecommendedGam
       id: game.id,
       name: game.name,
       nameJa: game.nameJa,
+      customNameJa: game.customNameJa,
       imageUrl: game.imageUrl,
       categories: game.categories,
       playingTime: game.playingTime,

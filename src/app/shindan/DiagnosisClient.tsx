@@ -4,11 +4,13 @@ import { useState, useEffect, useRef } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { GameImage } from "@/components/GameImage"
+import { getGameName } from "@/lib/game-utils"
 
 interface SearchGame {
   id: string
   name: string
   nameJa: string | null
+  customNameJa: string | null
   imageUrl?: string | null
   mechanics?: string | null
   categories?: string | null
@@ -121,7 +123,7 @@ export function DiagnosisClient({ suggestedGames = [] }: Props) {
 
   const removeGame = (id: string) => setSelected((prev) => prev.filter((g) => g.id !== id))
 
-  const gameName = (g: SearchGame) => g.nameJa ?? g.name
+  const gameName = (g: SearchGame) => getGameName(g)
 
   const handleLoadMore = async () => {
     const nextOffset = bggOffset + 20

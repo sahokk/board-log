@@ -1,5 +1,6 @@
 import Image from "next/image"
 import { getDisplayName, getProfileImage, parseFavoriteGenres } from "@/lib/profile-utils"
+import { getGameName } from "@/lib/game-utils"
 import type { TitleWithUnlocked } from "@/lib/titles"
 import type { BoardgameType } from "@/lib/boardgame-type"
 import type { CardTheme } from "@/lib/card-themes"
@@ -7,6 +8,8 @@ import type { CardTheme } from "@/lib/card-themes"
 interface Game {
   id: string
   name: string
+  nameJa?: string | null
+  customNameJa?: string | null
   imageUrl: string | null
 }
 

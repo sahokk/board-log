@@ -5,12 +5,14 @@ import Image from "next/image"
 import Link from "next/link"
 import { ManualGameForm } from "@/components/ManualGameForm"
 import { WishlistButton } from "@/components/WishlistButton"
+import { getGameName } from "@/lib/game-utils"
 
 interface GameResult {
   id: string
   bggId?: string | null
   name: string
   nameJa?: string | null
+  customNameJa?: string | null
   yearPublished?: number
   imageUrl?: string
   thumbnailUrl?: string
@@ -164,7 +166,7 @@ export function SearchClient({ username }: Props) {
                     {game.imageUrl ? (
                       <Image
                         src={game.imageUrl}
-                        alt={game.nameJa ?? game.name}
+                        alt={getGameName(game)}
                         fill
                         className="object-contain p-3"
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 17vw"
@@ -177,9 +179,9 @@ export function SearchClient({ username }: Props) {
                   </div>
                   <div className="px-3 pb-1 pt-2">
                     <p className="line-clamp-2 text-xs font-semibold text-amber-950">
-                      {game.nameJa ?? game.name}
+                      {getGameName(game)}
                     </p>
-                    {game.nameJa && (
+                    {(game.customNameJa ?? game.nameJa) && (
                       <p className="mt-0.5 line-clamp-1 text-xs text-amber-700/50">
                         {game.name}
                       </p>
