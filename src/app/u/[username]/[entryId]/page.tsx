@@ -85,7 +85,7 @@ export default async function PublicGameDetailPage({ params }: Props) {
             {game.imageUrl ? (
               <Image
                 src={game.imageUrl}
-                alt={game.nameJa ?? game.name}
+                alt={game.customNameJa ?? game.nameJa ?? game.name}
                 fill
                 className="object-contain p-6"
                 sizes="(max-width: 640px) 192px, 256px"
