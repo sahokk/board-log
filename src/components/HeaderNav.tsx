@@ -12,6 +12,7 @@ interface Props {
   readonly username: string | null
   readonly isAdmin: boolean
   readonly isLoggedIn: boolean
+  readonly pendingReports: number
 }
 
 const navLinks = (isAdmin: boolean) => [
@@ -20,7 +21,7 @@ const navLinks = (isAdmin: boolean) => [
   ...(isAdmin ? [{ href: "/admin/reports", label: "Admin", icon: faShield }] : []),
 ]
 
-export function HeaderNav({ username, isAdmin, isLoggedIn }: Props) {
+export function HeaderNav({ username, isAdmin, isLoggedIn, pendingReports }: Props) {
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
@@ -49,10 +50,15 @@ export function HeaderNav({ username, isAdmin, isLoggedIn }: Props) {
             <Link
               key={link.href}
               href={link.href}
-              className="flex items-center gap-1.5 text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
+              className="relative flex items-center gap-1.5 text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
             >
               <FontAwesomeIcon icon={link.icon} className="size-4" />
               <span>{link.label}</span>
+              {link.href === "/admin/reports" && pendingReports > 0 && (
+                <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                  {pendingReports}
+                </span>
+              )}
             </Link>
           ))}
         </div>
@@ -82,7 +88,12 @@ export function HeaderNav({ username, isAdmin, isLoggedIn }: Props) {
                 className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-amber-900 hover:bg-amber-100/40 transition-colors"
               >
                 <FontAwesomeIcon icon={link.icon} className="size-4 text-amber-700" />
-                {link.label}
+                <span>{link.label}</span>
+                {link.href === "/admin/reports" && pendingReports > 0 && (
+                  <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-xs font-bold text-white">
+                    {pendingReports}
+                  </span>
+                )}
               </Link>
             ))}
           </div>

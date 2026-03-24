@@ -13,6 +13,9 @@ export async function Header() {
     : null
   const username = dbUser?.username ?? null
   const isAdmin = dbUser?.role === "ADMIN"
+  const pendingReports = isAdmin
+    ? await prisma.nameReport.count({ where: { status: "PENDING" } })
+    : 0
 
   return (
     <header className="wood-header relative z-50 backdrop-blur-sm">
@@ -24,6 +27,7 @@ export async function Header() {
           username={username}
           isAdmin={isAdmin}
           isLoggedIn={!!session?.user}
+          pendingReports={pendingReports}
         />
       </div>
     </header>
