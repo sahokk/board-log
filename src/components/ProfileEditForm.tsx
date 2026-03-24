@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faUser } from "@fortawesome/free-solid-svg-icons"
 
 const GENRE_OPTIONS = [
   "戦略",
@@ -183,8 +185,8 @@ export function ProfileEditForm({
                 sizes="80px"
               />
             ) : (
-              <div className="flex h-full items-center justify-center text-3xl text-amber-400">
-                👤
+              <div className="flex h-full items-center justify-center">
+                <FontAwesomeIcon icon={faUser} className="size-8 text-amber-400" />
               </div>
             )}
           </div>

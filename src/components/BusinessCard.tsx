@@ -1,4 +1,6 @@
 import Image from "next/image"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faUser } from "@fortawesome/free-solid-svg-icons"
 import { getDisplayName, getProfileImage, parseFavoriteGenres } from "@/lib/profile-utils"
 import { getGameName } from "@/lib/game-utils"
 import type { TitleWithUnlocked } from "@/lib/titles"
@@ -86,8 +88,8 @@ export function BusinessCard({ user, stats, featuredGames, boardgameType, theme,
             {profileImage ? (
               <Image src={profileImage} alt={displayName} fill className="object-cover" sizes="76px" />
             ) : (
-              <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, background: "rgba(255,255,255,0.1)" }}>
-                👤
+              <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.1)" }}>
+                <FontAwesomeIcon icon={faUser} style={{ width: 32, height: 32, opacity: 0.6 }} />
               </div>
             )}
           </div>
