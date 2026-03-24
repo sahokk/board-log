@@ -58,7 +58,7 @@ export function ResultShareButtons({ type, resultUrl }: Props) {
   }
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-col gap-2 sm:flex-row">
       <button
         onClick={handleCopy}
         className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-100"

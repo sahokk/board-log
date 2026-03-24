@@ -14,17 +14,11 @@ export default async function WishlistPage() {
     redirect("/api/auth/signin?callbackUrl=/wishlist")
   }
 
-  const [items, me] = await Promise.all([
-    prisma.wishlistItem.findMany({
-      where: { userId: session.user.id },
-      include: { game: true },
-      orderBy: { createdAt: "desc" },
-    }),
-    prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { username: true },
-    }),
-  ])
+  const items = await prisma.wishlistItem.findMany({
+    where: { userId: session.user.id },
+    include: { game: true },
+    orderBy: { createdAt: "desc" },
+  })
 
   return (
     <div className="wood-texture min-h-screen py-12">
@@ -57,7 +51,7 @@ export default async function WishlistPage() {
             {items.map(({ game }) => (
               <Link
                 key={game.id}
-                href={me?.username ? `/u/${me.username}/games/${game.id}` : `/record?gameId=${game.id}`}
+                href={`/games/${game.id}`}
                 className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
               >
                 <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">

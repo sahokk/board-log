@@ -2,10 +2,8 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
-import Image from "next/image"
-import Link from "next/link"
 import { ManualGameForm } from "@/components/ManualGameForm"
-import { WishlistButton } from "@/components/WishlistButton"
+import { GameCard } from "@/components/GameCard"
 import { getGameName } from "@/lib/game-utils"
 
 interface GameResult {
@@ -53,13 +51,9 @@ function clearCache() {
   }
 }
 
-interface Props {
-  readonly username?: string | null
-}
-
 const PAGE_SIZE = 6
 
-export function SearchClient({ username }: Props) {
+export function SearchClient() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
@@ -68,24 +62,28 @@ export function SearchClient({ username }: Props) {
   const urlPage = Number(searchParams.get("page") ?? "0")
 
   const [query, setQuery] = useState(urlQuery)
-  // 初回のみキャッシュを読む（毎レンダーの sessionStorage 読み取りを避けるため ref に保持）
-  const initCacheRef = useRef<{ data: SearchCache | null; hit: boolean } | null>(null)
-  if (initCacheRef.current === null) {
-    const data = globalThis.window !== undefined ? getCache() : null
-    initCacheRef.current = { data, hit: data?.query === urlQuery && urlQuery !== "" }
-  }
-  const { data: cachedData, hit: isCacheHit } = initCacheRef.current
-
-  const [results, setResults] = useState<GameResult[]>(isCacheHit ? cachedData!.results : [])
-  const [page, setPage] = useState(isCacheHit ? cachedData!.page : urlPage)
+  const [results, setResults] = useState<GameResult[]>([])
+  const [page, setPage] = useState(urlPage)
   const [loading, setLoading] = useState(false)
-  const [searched, setSearched] = useState(isCacheHit || !!urlQuery)
+  const [searched, setSearched] = useState(!!urlQuery)
   const [error, setError] = useState<string | null>(null)
   const [showManualForm, setShowManualForm] = useState(false)
   const [wishlistedIds, setWishlistedIds] = useState<Set<string>>(new Set())
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isFirstRender = useRef(true)
-  const skipInitialFetch = useRef(isCacheHit)
+  const skipInitialFetch = useRef(false)
+
+  // マウント後にキャッシュを適用（SSRと初回レンダーを一致させるため useEffect で行う）
+  useEffect(() => {
+    const cached = getCache()
+    if (cached?.query === urlQuery && urlQuery !== "") {
+      setResults(cached.results)
+      setPage(cached.page)
+      setSearched(true)
+      skipInitialFetch.current = true
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     fetch("/api/wishlist")
@@ -180,7 +178,6 @@ export function SearchClient({ username }: Props) {
   const endNum = Math.min((page + 1) * PAGE_SIZE, results.length)
 
   function gameDetailHref(game: GameResult): string {
-    if (username) return `/u/${username}/games/${game.id}`
     return `/games/${game.id}`
   }
 
@@ -233,61 +230,17 @@ export function SearchClient({ username }: Props) {
         <>
           <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-6">
             {displayed.map((game) => (
-              <div
+              <GameCard
                 key={game.id}
-                className="wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-              >
-                {/* 箱画像＋名前 → 詳細ページへ */}
-                <Link
-                  href={gameDetailHref(game)}
-                  className="flex flex-1 flex-col"
-                >
-                  <div className="relative aspect-square bg-linear-to-br from-amber-50/30 to-amber-100/30">
-                    {game.imageUrl ? (
-                      <Image
-                        src={game.imageUrl}
-                        alt={getGameName(game)}
-                        fill
-                        className="object-contain p-3"
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 17vw"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-amber-300">
-                        <span className="text-4xl">🎲</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="px-3 pb-1 pt-2">
-                    <p className="line-clamp-2 text-xs sm:text-sm font-semibold text-amber-950">
-                      {getGameName(game)}
-                    </p>
-                    {(game.customNameJa ?? game.nameJa) && (
-                      <p className="mt-0.5 line-clamp-1 text-xs text-amber-700/50">
-                        {game.name}
-                      </p>
-                    )}
-                    {game.yearPublished && (
-                      <p className="mt-0.5 text-xs font-medium text-amber-700/60">
-                        {game.yearPublished}年
-                      </p>
-                    )}
-                  </div>
-                </Link>
-
-                {/* アクションボタン */}
-                <div className="flex flex-col gap-1.5 px-3 pb-3 pt-1">
-                  <Link
-                    href={`/record?gameId=${game.id}`}
-                    className="block w-full rounded-lg bg-amber-900 px-3 py-2 text-center text-xs font-medium text-white transition-colors hover:bg-amber-800"
-                  >
-                    遊んだ！
-                  </Link>
-                  <WishlistButton
-                    gameId={game.id}
-                    initialWishlisted={wishlistedIds.has(game.id)}
-                  />
-                </div>
-              </div>
+                gameId={game.id}
+                detailHref={gameDetailHref(game)}
+                name={getGameName(game)}
+                imageUrl={game.imageUrl}
+                subtext={(game.customNameJa ?? game.nameJa) ? game.name : undefined}
+                year={game.yearPublished}
+                wishlisted={wishlistedIds.has(game.id)}
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 17vw"
+              />
             ))}
           </div>
 
@@ -297,7 +250,7 @@ export function SearchClient({ username }: Props) {
               <button
                 onClick={() => setPage((p) => p - 1)}
                 disabled={page === 0}
-                className="rounded-xl border border-amber-300 px-4 py-2 text-sm font-medium text-amber-800 transition-colors hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-30"
+                className="rounded-lg border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-800 transition-colors hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-30"
               >
                 ← 前の結果
               </button>
@@ -309,7 +262,7 @@ export function SearchClient({ username }: Props) {
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={page >= totalPages - 1}
-                className="rounded-xl border border-amber-300 px-4 py-2 text-sm font-medium text-amber-800 transition-colors hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-30"
+                className="rounded-lg border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-800 transition-colors hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-30"
               >
                 次の結果 →
               </button>

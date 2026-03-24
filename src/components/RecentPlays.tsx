@@ -25,7 +25,7 @@ export async function RecentPlays() {
   return (
     <section className="mb-16">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold tracking-tight text-amber-950">
+        <h2 className="text-lg sm:text-2xl font-bold tracking-tight text-amber-950">
           最近のプレイ
         </h2>
         <p className="mt-1 text-sm text-amber-800/70">みんなの思い出</p>

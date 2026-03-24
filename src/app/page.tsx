@@ -4,24 +4,21 @@ import { RecommendationsSection } from "@/components/RecommendationsSection"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { getRecommendations } from "@/lib/recommendations"
+import { SectionHeader } from "@/components/SectionHeader"
 
 export default async function Home() {
   const session = await auth()
 
-  const [recommendations, wishlistItems, me, entryCount] = session?.user?.id
+  const [recommendations, wishlistItems, entryCount] = session?.user?.id
     ? await Promise.all([
         getRecommendations(session.user.id),
         prisma.wishlistItem.findMany({
           where: { userId: session.user.id },
           select: { gameId: true },
         }),
-        prisma.user.findUnique({
-          where: { id: session.user.id },
-          select: { username: true },
-        }),
         prisma.gameEntry.count({ where: { userId: session.user.id } }),
       ])
-    : [[], [], null, null]
+    : [[], [], null]
 
   const wishlistedIds = new Set(wishlistItems.map((w) => w.gameId))
   const recommendedGames = recommendations.map((g) => ({
@@ -67,18 +64,15 @@ export default async function Home() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl px-6 py-12 space-y-16">
+      <div className="mx-auto max-w-6xl px-6 py-6 sm:py-12 space-y-12 sm:space-y-16">
         {/* ゲーム検索 */}
         <section>
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold tracking-tight text-amber-950">ゲームを探す</h2>
-            <p className="mt-1 text-sm text-amber-800/70">遊んだゲームを登録しよう</p>
-          </div>
-          <GameSearchSection username={me?.username ?? null} />
+          <SectionHeader title="ゲームを探す" subtitle="遊んだゲームを登録しよう" />
+          <GameSearchSection />
         </section>
 
         {/* おすすめゲーム */}
-        <RecommendationsSection initialGames={recommendedGames} username={me?.username ?? null} />
+        <RecommendationsSection initialGames={recommendedGames} />
       </div>
     </div>
   )

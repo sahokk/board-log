@@ -43,7 +43,7 @@ export default async function PlaysPage() {
 				{/* ヘッダー */}
 				<div className="mb-10 flex items-center justify-between">
 					<div>
-						<h1 className="text-3xl font-bold tracking-tight text-amber-950">
+						<h1 className="text-xl sm:text-3xl font-bold tracking-tight text-amber-950">
 							遊んだゲームリスト
 						</h1>
 						<p className="mt-1 text-sm text-amber-800/70">
@@ -52,7 +52,7 @@ export default async function PlaysPage() {
 					</div>
 					<Link
 						href="/"
-						className="rounded-xl bg-amber-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md">
+						className="rounded-xl bg-amber-900 px-3 py-2 text-xs sm:px-5 sm:py-2.5 sm:text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md">
 						+ 記録する
 					</Link>
 				</div>
