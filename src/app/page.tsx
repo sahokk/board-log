@@ -33,11 +33,11 @@ export default async function Home() {
     <div className="min-h-screen wood-texture">
       {/* ヒーローセクション */}
       <section className="border-b border-amber-200/50">
-        <div className="mx-auto max-w-6xl px-6 py-16 text-center">
-          <h1 className="mb-4 text-5xl font-bold tracking-tight text-amber-950">
+        <div className="mx-auto max-w-6xl px-6 py-8 sm:py-16 text-center">
+          <h1 className="mb-4 text-3xl sm:text-5xl font-bold tracking-tight text-amber-950">
             🎲 Boardory
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-amber-900/80">
+          <p className="mx-auto max-w-2xl text-base sm:text-lg text-amber-900/80">
             遊んだボードゲームをアルバムのように振り返ろう
           </p>
           {session ? (
