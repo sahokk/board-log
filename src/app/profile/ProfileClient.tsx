@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { signOut } from "next-auth/react"
 import Image from "next/image"
 import Link from "next/link"
 import { getDisplayName, getProfileImage } from "@/lib/profile-utils"
@@ -81,7 +82,7 @@ export function ProfileClient({ user, stats, allGames, featuredGames, savedFeatu
     setDeleting(true)
     try {
       const res = await fetch("/api/user", { method: "DELETE" })
-      if (res.ok) router.push("/")
+      if (res.ok) await signOut({ redirectTo: "/" })
     } finally {
       setDeleting(false)
     }
