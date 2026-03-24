@@ -8,6 +8,7 @@ import { deduplicateMechanics } from "@/lib/bgg/mechanic-labels"
 import { MechanicTag } from "@/components/MechanicTag"
 import { WishlistButton } from "@/components/WishlistButton"
 import ReportNameButton from "@/components/ReportNameButton"
+import BackButton from "./BackButton"
 import type { Metadata } from "next"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faUsers, faClock, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
@@ -50,13 +51,7 @@ export default async function PublicGamePage({ params }: Props) {
   return (
     <div className="wood-texture min-h-screen py-12">
       <div className="mx-auto max-w-lg px-6">
-        {/* 戻るリンク */}
-        <Link
-          href={`/u/${username}`}
-          className="mb-8 inline-flex items-center text-sm font-medium text-amber-800 transition-colors hover:text-amber-950"
-        >
-          ← プロフィールに戻る
-        </Link>
+        <BackButton />
 
         {/* ゲーム箱画像 */}
         <div className="wood-card relative mx-auto mb-8 h-48 w-48 sm:h-64 sm:w-64 overflow-hidden rounded-2xl shadow-lg">
