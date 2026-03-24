@@ -46,7 +46,7 @@ export default async function PlayDetailPage({ params }: Props) {
         </Link>
 
         {/* ゲーム箱画像 */}
-        <div className="wood-card relative mx-auto mb-8 h-64 w-64 overflow-hidden rounded-2xl shadow-lg">
+        <div className="wood-card relative mx-auto mb-8 h-48 w-48 sm:h-64 sm:w-64 overflow-hidden rounded-2xl shadow-lg">
           <div className="relative h-full bg-linear-to-br from-amber-50/30 to-amber-100/30">
             {entry.game.imageUrl ? (
               <Image
@@ -54,7 +54,7 @@ export default async function PlayDetailPage({ params }: Props) {
                 alt={entry.game.name}
                 fill
                 className="object-contain p-6"
-                sizes="256px"
+                sizes="(max-width: 640px) 192px, 256px"
               />
             ) : (
               <div className="flex h-full items-center justify-center text-amber-300">
