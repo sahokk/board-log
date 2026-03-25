@@ -137,7 +137,7 @@ export function ManualGameForm({ onCancel, initialName = "" }: Props) {
               type="file"
               accept="image/*"
               onChange={handleFileChange}
-              className="block w-full text-sm text-amber-900 file:mr-4 file:rounded-lg file:border-0 file:bg-amber-900 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-amber-800"
+              className="block w-full text-xs text-amber-900 file:mr-2 file:rounded-lg file:border-0 file:bg-amber-900 file:px-4 file:py-2 file:text-xs file:font-medium file:text-white hover:file:bg-amber-800"
             />
             <p className="mt-1 text-xs text-amber-800/70">
               JPEG, PNG, WebP, GIF (最大5MB)
@@ -159,14 +159,14 @@ export function ManualGameForm({ onCancel, initialName = "" }: Props) {
           type="button"
           onClick={onCancel}
           disabled={submitting}
-          className="wood-card flex-1 rounded-xl px-6 py-3 text-center text-sm font-medium text-amber-900 shadow-sm transition-all hover:bg-amber-100/30 disabled:opacity-50"
+          className="wood-card flex-1 rounded-xl px-2 py-2 text-center text-sm font-medium text-amber-900 shadow-sm transition-all hover:bg-amber-100/30 disabled:opacity-50"
         >
           戻る
         </button>
         <button
           type="submit"
           disabled={submitting || !name.trim()}
-          className="flex-1 rounded-xl bg-amber-900 px-6 py-3 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md disabled:opacity-50"
+          className="flex-1 rounded-xl bg-amber-900 px-2 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md disabled:opacity-50"
         >
           {submitting ? "登録中..." : "登録して遊んだ！"}
         </button>

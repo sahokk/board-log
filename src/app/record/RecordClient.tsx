@@ -121,12 +121,6 @@ export function RecordClient({ game, existingEntryId, existingRating }: Props) {
         </div>
         <div className="flex-1">
           <p className="font-medium text-amber-950">{game.name}</p>
-          <Link
-            href="/"
-            className="text-xs text-amber-800/70 underline hover:text-amber-950"
-          >
-            ゲームを変える
-          </Link>
         </div>
       </div>
 

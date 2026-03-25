@@ -270,33 +270,18 @@ export function SearchClient() {
           )}
 
           {/* 手動追加 */}
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center wood-card flex flex-col overflow-hidden rounded-2xl shadow-sm p-6">
             <p className="mb-2 text-sm text-amber-800/70">
               お探しのゲームが見つかりませんか？
             </p>
             <button
               onClick={() => setShowManualForm(true)}
-              className="text-sm font-medium text-amber-900 underline transition-colors hover:text-amber-700"
+              className="rounded-xl bg-amber-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md"
             >
-              ゲームを手動で追加する
+              ゲームを手動で追加
             </button>
           </div>
         </>
-      )}
-
-      {/* 未検索状態 */}
-      {!searched && !loading && (
-        <div className="text-center">
-          <p className="mb-4 text-sm text-amber-800/70">
-            ゲーム名で検索するか、手動で追加できます
-          </p>
-          <button
-            onClick={() => setShowManualForm(true)}
-            className="text-sm font-medium text-amber-900 underline transition-colors hover:text-amber-700"
-          >
-            ゲームを手動で追加する
-          </button>
-        </div>
       )}
     </div>
   )
