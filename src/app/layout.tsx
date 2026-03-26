@@ -1,4 +1,6 @@
 import type { Metadata } from "next"
+import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { M_PLUS_Rounded_1c, Zen_Maru_Gothic } from "next/font/google"
 import "./globals.css"
 import { config } from "@fortawesome/fontawesome-svg-core"
@@ -49,6 +51,8 @@ export default function RootLayout({
             <Footer />
           </div>
         </Providers>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
