@@ -9,34 +9,20 @@ export const metadata: Metadata = {
 
 const AXIS_DESCRIPTIONS = [
   {
-    icon: "♟️",
-    label: "戦略性",
-    detail:
-      "ゲームのメカニクス（ワーカープレイスメント・エンジン構築など）とBGGのweight値から算出。思考を要するゲームをよく遊ぶほど高くなります。",
+    icon: "⚖️",
+    label: "深さ・重さ",
+    detail: "BGGのweight値とエンジン構築・ワーカープレイスメントなどの複雑系メカニクスから算出。軽量パーティゲームほど低く、重量戦略ゲームほど高くなります。"
   },
   {
-    icon: "🤝",
-    label: "対人性",
-    detail:
-      "エリアコントロール・交渉・ブラフなど他プレイヤーへの干渉度から算出。駆け引きや対決を楽しむゲームほど高くなります。",
-  },
-  {
-    icon: "🎉",
-    label: "盛り上がり",
-    detail:
-      "パーティゲームやロールプレイ・ストーリーテリングなどのメカニクスから算出。場を盛り上げるゲームほど高くなります。",
+    icon: "⚔️",
+    label: "対戦性",
+    detail: "エリアコントロール・交渉・妨害などの干渉系メカニクスで高く、協力ゲームメカニクスで低くなります。中間はニュートラル（ソロ・並行プレイなど）。"
   },
   {
     icon: "🎲",
-    label: "運要素",
+    label: "カオス度",
     detail:
-      "ダイスロール・プッシュユアラック・ランダム生産などのメカニクスから算出。運が勝敗に影響するゲームほど高くなります。",
-  },
-  {
-    icon: "⚡",
-    label: "テンポ",
-    detail:
-      "リアルタイム系やスピードマッチングなどから算出。テンポよく進むゲームほど高く、重い戦略ゲームは低くなります。",
+      "ダイスロール・プッシュユアラックなど運要素メカニクスで高く、ワーカープレイスメント・エンジン構築など確定的メカニクスで低くなります。",
   },
 ]
 
@@ -50,7 +36,7 @@ export default function TypesPage() {
           <p className="mb-3 text-4xl">🎲</p>
           <h1 className="text-3xl font-bold tracking-tight text-amber-950">ボドゲタイプ一覧</h1>
           <p className="mt-3 text-sm text-amber-800/70">
-            プレイ記録から5つの軸を算出し、10種類のタイプに分類します
+            プレイ記録から3つの軸を算出し、10種類のタイプに分類します
           </p>
           <Link
             href="/shindan"
@@ -84,7 +70,7 @@ export default function TypesPage() {
         <div className="wood-card mt-10 rounded-2xl p-6 shadow-sm">
           <h2 className="mb-5 text-base font-bold text-amber-950">診断の仕組み</h2>
           <p className="mb-4 text-sm text-amber-900/80">
-            BGGに登録されたゲームのメカニクス情報とプレイ回数をもとに、5つの軸でスコアを算出します。
+            BGGに登録されたゲームのメカニクスなどの情報とプレイ回数をもとに、3つの軸でスコアを算出します。
             スコアの組み合わせによって上の10種類のいずれかのタイプが決まります。
           </p>
           <div className="space-y-4">
