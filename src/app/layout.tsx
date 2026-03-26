@@ -26,6 +26,10 @@ export const metadata: Metadata = {
   title: "Boardory - ボードゲームの思い出アルバム",
   description:
     "遊んだボードゲームを記録して、思い出アルバムのように振り返ろう",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
 }
 
 export default function RootLayout({
