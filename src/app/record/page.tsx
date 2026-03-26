@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { RecordClient } from "./RecordClient"
+import BackButton from "@/components/BackButton"
 
 interface Props {
   readonly searchParams: Promise<{ gameId?: string }>
@@ -30,9 +31,11 @@ export default async function RecordPage({ searchParams }: Props) {
   return (
     <div className="wood-texture min-h-screen py-12">
       <div className="mx-auto max-w-lg px-6">
-        <h1 className="mb-8 text-3xl font-bold tracking-tight text-amber-950">
+        <BackButton />
+        
+        <h2 className="mb-8 text-3xl font-bold tracking-tight text-amber-950">
           プレイを記録
-        </h1>
+        </h2>
         <RecordClient
           game={game ? { id: game.id, name: game.customNameJa ?? game.nameJa ?? game.name, imageUrl: game.imageUrl } : null}
           existingEntryId={existingEntry?.id ?? null}

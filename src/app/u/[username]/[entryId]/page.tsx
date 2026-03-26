@@ -225,29 +225,6 @@ export default async function PublicGameDetailPage({ params }: Props) {
           </div>
         )}
 
-        {/* 評価 */}
-        {isOwner && (
-          <div className="wood-card mb-6 rounded-2xl p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-amber-800/70">評価</span>
-              {isOwner ? (
-                <RatingEditor entryId={entry.id} initialRating={entry.rating} />
-              ) : (
-                <div className="flex gap-0.5">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span
-                      key={star}
-                      className={star <= entry.rating ? "text-amber-500" : "text-amber-200/40"}
-                    >
-                      ★
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
         {/* オーナーのみ: プレイ記録一覧 */}
         {isOwner && (
           <div className="mb-6">

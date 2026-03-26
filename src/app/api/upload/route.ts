@@ -6,7 +6,7 @@ import { requireAuth } from "@/lib/api-utils"
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 
 // Allowed image types
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]
+const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"])
 
 export async function POST(request: NextRequest) {
   const { userId, error: authError } = await requireAuth()
@@ -21,9 +21,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate file type
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    if (!ALLOWED_TYPES.has(file.type)) {
       return NextResponse.json(
-        { error: "Invalid file type. Allowed: JPEG, PNG, WebP, GIF" },
+        { error: "Invalid file type. Allowed: JPEG, PNG, WebP" },
         { status: 400 }
       )
     }

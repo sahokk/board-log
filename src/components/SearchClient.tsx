@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
-import { ManualGameForm } from "@/components/ManualGameForm"
 import { GameCard } from "@/components/GameCard"
 import { getGameName } from "@/lib/game-utils"
 
@@ -67,7 +66,6 @@ export function SearchClient() {
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(!!urlQuery)
   const [error, setError] = useState<string | null>(null)
-  const [showManualForm, setShowManualForm] = useState(false)
   const [wishlistedIds, setWishlistedIds] = useState<Set<string>>(new Set())
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isFirstRender = useRef(true)
@@ -138,7 +136,6 @@ export function SearchClient() {
       setLoading(true)
       setError(null)
       setSearched(true)
-      setShowManualForm(false)
       if (delay > 0) setPage(0)
       try {
         const res = await fetch(`/api/games/search?q=${encodeURIComponent(query.trim())}`)
@@ -157,20 +154,6 @@ export function SearchClient() {
       if (debounceRef.current) clearTimeout(debounceRef.current)
     }
   }, [query])
-
-  if (showManualForm) {
-    return (
-      <div>
-        <h2 className="mb-6 text-xl font-bold text-amber-950">ゲームを手動で追加</h2>
-        <div className="wood-card rounded-2xl p-6 shadow-sm">
-          <ManualGameForm
-            onCancel={() => setShowManualForm(false)}
-            initialName={query}
-          />
-        </div>
-      </div>
-    )
-  }
 
   const totalPages = Math.ceil(results.length / PAGE_SIZE)
   const displayed = results.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
@@ -197,31 +180,12 @@ export function SearchClient() {
         )}
       </div>
 
-      {/* エラー */}
-      {error && (
-        <div className="mb-6">
-          <p className="text-sm text-red-700">{error}</p>
-          <button
-            onClick={() => setShowManualForm(true)}
-            className="mt-3 rounded-xl bg-amber-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md"
-          >
-            ゲームを手動で追加
-          </button>
-        </div>
-      )}
-
       {/* 結果なし */}
       {searched && !loading && results.length === 0 && !error && (
         <div className="text-center">
           <p className="mb-4 text-sm text-amber-800/70">
             「{query}」に一致するゲームが見つかりませんでした。
           </p>
-          <button
-            onClick={() => setShowManualForm(true)}
-            className="rounded-xl bg-amber-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-amber-800 hover:shadow-md"
-          >
-            ゲームを手動で追加
-          </button>
         </div>
       )}
 
@@ -268,35 +232,7 @@ export function SearchClient() {
               </button>
             </div>
           )}
-
-          {/* 手動追加 */}
-          <div className="mt-6 text-center">
-            <p className="mb-2 text-sm text-amber-800/70">
-              お探しのゲームが見つかりませんか？
-            </p>
-            <button
-              onClick={() => setShowManualForm(true)}
-              className="text-sm font-medium text-amber-900 underline transition-colors hover:text-amber-700"
-            >
-              ゲームを手動で追加する
-            </button>
-          </div>
         </>
-      )}
-
-      {/* 未検索状態 */}
-      {!searched && !loading && (
-        <div className="text-center">
-          <p className="mb-4 text-sm text-amber-800/70">
-            ゲーム名で検索するか、手動で追加できます
-          </p>
-          <button
-            onClick={() => setShowManualForm(true)}
-            className="text-sm font-medium text-amber-900 underline transition-colors hover:text-amber-700"
-          >
-            ゲームを手動で追加する
-          </button>
-        </div>
       )}
     </div>
   )
