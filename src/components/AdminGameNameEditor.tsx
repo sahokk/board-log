@@ -12,7 +12,7 @@ interface Props {
   pendingReportCount: number
 }
 
-export default function AdminGameNameEditor({ gameId, currentCustomName, pendingReportCount }: Props) {
+export default function AdminGameNameEditor({ gameId, currentCustomName, pendingReportCount }: Readonly<Props>) {
   const router = useRouter()
   const [editing, setEditing] = useState(false)
   const [value, setValue] = useState(currentCustomName ?? "")
@@ -82,8 +82,7 @@ export default function AdminGameNameEditor({ gameId, currentCustomName, pending
         >
           <span className="inline-flex items-center justify-center w-4 h-4 bg-red-500 text-white rounded-full text-[10px] font-bold">
             {pendingReportCount}
-          </span>
-          件の報告
+          </span>件の報告
         </Link>
       )}
     </div>

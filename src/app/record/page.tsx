@@ -33,9 +33,9 @@ export default async function RecordPage({ searchParams }: Props) {
       <div className="mx-auto max-w-lg px-6">
         <BackButton />
         
-        <h1 className="mb-8 text-3xl font-bold tracking-tight text-amber-950">
+        <h2 className="mb-8 text-3xl font-bold tracking-tight text-amber-950">
           プレイを記録
-        </h1>
+        </h2>
         <RecordClient
           game={game ? { id: game.id, name: game.customNameJa ?? game.nameJa ?? game.name, imageUrl: game.imageUrl } : null}
           existingEntryId={existingEntry?.id ?? null}
