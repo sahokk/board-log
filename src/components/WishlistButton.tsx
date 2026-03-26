@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useSession, signIn } from "next-auth/react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons"
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons"
@@ -12,13 +13,19 @@ interface Props {
   size?: "icon" | "default"
 }
 
-export function WishlistButton({ gameId, initialWishlisted, size = "default" }: Props) {
+export function WishlistButton({ gameId, initialWishlisted, size = "default" }: Readonly<Props>) {
+  const { data: session } = useSession()
   const [wishlisted, setWishlisted] = useState(initialWishlisted)
   const [loading, setLoading] = useState(false)
   const [popping, setPopping] = useState(false)
   const { showToast } = useToast()
 
   const toggle = async (e: React.MouseEvent) => {
+    if (!session?.user.id) {
+      signIn(undefined, { callbackUrl: `/games/${gameId}` })
+      return
+    }
+    
     e.preventDefault()
     e.stopPropagation()
     if (loading) return

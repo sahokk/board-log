@@ -72,7 +72,9 @@ export default async function Home() {
         </section>
 
         {/* おすすめゲーム */}
-        <RecommendationsSection initialGames={recommendedGames} />
+        {session?.user?.id && (
+          <RecommendationsSection initialGames={recommendedGames} />
+        )}
       </div>
     </div>
   )
